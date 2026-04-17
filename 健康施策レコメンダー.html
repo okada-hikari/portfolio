@@ -203,17 +203,17 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 <!-- Hero -->
 <header class="hero">
   <div class="hero-inner">
-    <span class="hero-badge"><span class="hero-badge-dot"></span>ROI Simulator Powered: 導入後シミュレーション連携</span>
-    <h1 class="hero-title">組織の課題から<br><span class="accent">最適な健康施策を提案。</span></h1>
+    <span class="hero-badge"><span class="hero-badge-dot"></span>ROIシミュレーターと連携できる</span>
+    <h1 class="hero-title">うちの会社、<br><span class="accent">何から始めればいい？</span></h1>
     <p class="hero-sub">
-      課題をチェックするだけで、15の施策データベースから<br>
-      優先度付きTOP5を自動レコメンド。<br>
-      コスト・効果・導入難易度を一覧比較できる。
+      会社の困りごとを選ぶだけで、<br>
+      「まずやるべき施策TOP5」を自動で提案。<br>
+      かかるお金・効果・始めやすさがひと目でわかる。
     </p>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-num">15</div><div class="hero-stat-label">施策DB</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">TOP5</div><div class="hero-stat-label">優先提案</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">APIキー不要</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">15</div><div class="hero-stat-label">施策から選定</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">TOP5</div><div class="hero-stat-label">おすすめ提案</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0円</div><div class="hero-stat-label">完全無料</div></div>
     </div>
     <a href="#input" class="hero-cta">診断を始める</a>
   </div>
@@ -231,8 +231,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
     <!-- Step 1 -->
     <div class="form-wrap active" id="step1">
       <div class="form-card">
-        <div class="form-title">企業情報を入力</div>
-        <div class="form-desc">組織の規模と業種から最適な施策の規模感を算出します</div>
+        <div class="form-title">会社の情報を教えてください</div>
+        <div class="form-desc">会社の大きさと業種に合った施策を選ぶために使います</div>
         <div class="form-group">
           <label class="form-label">従業員数</label>
           <select class="form-select" id="empCount">
@@ -277,8 +277,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
     <!-- Step 2 -->
     <div class="form-wrap" id="step2">
       <div class="form-card">
-        <div class="form-title">組織の健康課題を選択</div>
-        <div class="form-desc">当てはまるものを全てチェックしてください（複数選択OK）</div>
+        <div class="form-title">今、困っていることは？</div>
+        <div class="form-desc">当てはまるものを全部チェックしてください（いくつでもOK）</div>
         <div class="check-grid" id="issueGrid"></div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goStep(1)">戻る</button>
@@ -290,8 +290,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
     <!-- Step 3 -->
     <div class="form-wrap" id="step3">
       <div class="form-card">
-        <div class="form-title">予算感を選択</div>
-        <div class="form-desc">1人あたり月額の健康投資予算（目安）</div>
+        <div class="form-title">1人あたり月いくらかけられる？</div>
+        <div class="form-desc">ざっくりでOK。近い金額を選んでください</div>
         <div class="budget-grid" id="budgetGrid"></div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goStep(2)">戻る</button>
@@ -328,7 +328,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   <div class="footer-inner">
     <div>
       <div class="footer-brand">健康施策レコメンダー</div>
-      <p class="footer-desc">健康経営・HRテック領域のポートフォリオとして制作。11年の現場マネジメント経験と厚労省・経産省の健康経営ガイドラインを基に施策DBを構築。</p>
+      <p class="footer-desc">健康経営・HRテック向けのポートフォリオとして制作。11年のマネジメント経験をもとに、現場で実際に効く施策を厳選しています。</p>
     </div>
     <div class="footer-col">
       <h5>ABOUT</h5>
@@ -348,7 +348,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
     </div>
   </div>
   <div class="disclaimer">
-    ※本ツールは健康経営施策の検討支援用デモです。実際の施策導入においては、産業医・社労士・健康経営コンサルタント等の専門家にご相談ください。施策の効果は組織規模・業種・既存制度により大きく異なります。
+    ※これは施策を考えるためのデモツールです。実際に導入する場合は、産業医や専門家にご相談ください。効果は会社の規模や業種によって変わります。
   </div>
   <div class="credit">Portfolio &copy; 2026 Hikari Okada</div>
 </footer>
@@ -358,16 +358,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
    課題データ
    ============================ */
 const ISSUES = [
-  {id:'mental',    label:'メンタル不調の増加',      desc:'休職者やストレス高得点者が増えている'},
-  {id:'turnover',  label:'離職率が高い',            desc:'3年以内離職率が業界平均を上回る'},
-  {id:'lifestyle', label:'生活習慣病リスク',        desc:'健診で要注意・要治療の割合が高い'},
-  {id:'present',   label:'プレゼンティーズム',      desc:'出勤してるがパフォーマンスが低い'},
-  {id:'exercise',  label:'運動不足',                desc:'運動習慣のない従業員が多い'},
-  {id:'comm',      label:'コミュニケーション低下',  desc:'部門間の連携やチーム結束力が弱い'},
-  {id:'overtime',  label:'長時間労働',              desc:'残業時間が慢性的に多い'},
-  {id:'sleep',     label:'睡眠の質が低い',          desc:'不眠や疲労感を訴える従業員が多い'},
-  {id:'diet',      label:'食生活の乱れ',            desc:'欠食・外食過多・栄養バランスの偏り'},
-  {id:'smoke',     label:'喫煙率が高い',            desc:'業界平均を上回る喫煙率'},
+  {id:'mental',    label:'心の不調が増えている',      desc:'休む人やストレスを抱える人が目立つ'},
+  {id:'turnover',  label:'人がすぐ辞めてしまう',      desc:'入社しても長く続かない'},
+  {id:'lifestyle', label:'健診の結果が悪い人が多い',  desc:'血圧・血糖値など、引っかかる人が多い'},
+  {id:'present',   label:'出勤してるけど元気がない',  desc:'来てはいるけど集中力やパフォーマンスが低い'},
+  {id:'exercise',  label:'運動する人が少ない',        desc:'デスクワーク中心で体を動かす機会がない'},
+  {id:'comm',      label:'社内の会話が減っている',    desc:'チームや部署の間で連携がうまくいかない'},
+  {id:'overtime',  label:'残業が多い',                desc:'帰れない日が続いている'},
+  {id:'sleep',     label:'よく眠れていない人が多い',  desc:'疲れが取れない、寝つきが悪いという声がある'},
+  {id:'diet',      label:'食事がバラバラ',            desc:'朝食抜き・コンビニ飯・栄養が偏りがち'},
+  {id:'smoke',     label:'タバコを吸う人が多い',      desc:'喫煙率が高く、健康リスクが心配'},
 ];
 
 const BUDGETS = [
@@ -382,123 +382,123 @@ const BUDGETS = [
    ============================ */
 const MEASURES = [
   {
-    id:'stress_check', name:'ストレスチェック制度強化',
-    desc:'法定ストレスチェックに加え、パルスサーベイ（月次簡易調査）を導入。早期にメンタル不調を察知し、ラインケアにつなげる仕組みを構築。',
+    id:'stress_check', name:'ストレスチェックを強化する',
+    desc:'年1回の法定チェックに加えて、月1回のかんたんアンケートを導入。心の不調を早めにキャッチして、上司や専門家につなげる。',
     effect:4, difficulty:2, cost:300, period:'1-2ヶ月',
     targets:['mental','present','turnover'],
-    tags:['義務化済','低コスト','即効性あり'],
+    tags:['法律で義務','安い','すぐ効果あり'],
     category:'メンタル'
   },
   {
-    id:'1on1', name:'1on1定期面談の導入',
-    desc:'上司と部下が週1-隔週で15-30分の対話。業務相談だけでなく、キャリアや体調も含めた「関係性構築」が目的。管理職研修とセットで効果倍増。',
+    id:'1on1', name:'上司と部下の1on1面談を始める',
+    desc:'週1回か隔週で15-30分、上司と部下が1対1で話す時間を作る。仕事の話だけでなく、体調やキャリアの相談もOKにするのがポイント。',
     effect:5, difficulty:3, cost:0, period:'1-3ヶ月',
     targets:['mental','turnover','comm','present'],
-    tags:['コストゼロ','管理職育成','継続が鍵'],
+    tags:['お金かからない','上司の成長にも','続けることが大事'],
     category:'マネジメント'
   },
   {
-    id:'health_seminar', name:'健康セミナー・ワークショップ',
-    desc:'産業医や外部講師による睡眠・栄養・運動のリテラシー向上セミナー。オンライン開催なら全拠点対応可。年4回の四半期開催が効果的。',
-    effect:3, difficulty:1, cost:500, period:'即日',
+    id:'health_seminar', name:'健康セミナーを開く',
+    desc:'睡眠・食事・運動について、専門家が分かりやすく教えるセミナー。オンラインなら全拠点からOK。年4回やると効果が出やすい。',
+    effect:3, difficulty:1, cost:500, period:'すぐ始められる',
     targets:['lifestyle','exercise','sleep','diet'],
-    tags:['導入容易','啓発型','外部講師'],
+    tags:['始めやすい','知識が増える','外部の先生に頼める'],
     category:'教育'
   },
   {
-    id:'exercise_program', name:'運動プログラム補助',
-    desc:'フィットネスジム法人契約、オンラインフィットネス導入、または社内運動プログラム。週1回30分から開始し、習慣化を支援。',
+    id:'exercise_program', name:'運動する機会をつくる',
+    desc:'ジムの法人契約やオンラインフィットネスの導入。週1回30分からでOK。まず「体を動かす習慣」をつけることが目標。',
     effect:4, difficulty:2, cost:1500, period:'1-2ヶ月',
     targets:['exercise','lifestyle','mental','sleep'],
-    tags:['福利厚生','習慣化','エビデンス豊富'],
+    tags:['福利厚生にもなる','習慣化','効果の証拠が多い'],
     category:'運動'
   },
   {
-    id:'mental_hotline', name:'メンタルヘルス相談窓口（EAP）',
-    desc:'外部EAP（従業員支援プログラム）を導入し、24時間匿名相談を可能に。本人だけでなく家族も利用可にすると利用率が向上。',
+    id:'mental_hotline', name:'心の相談窓口をつくる（EAP）',
+    desc:'外部の相談サービスを導入して、24時間いつでも匿名で相談できるようにする。家族も使えるようにすると利用率が上がる。',
     effect:4, difficulty:1, cost:800, period:'2-4週間',
     targets:['mental','turnover','present'],
-    tags:['外部委託','匿名性','家族利用可'],
+    tags:['外部に任せられる','名前を出さなくてOK','家族もOK'],
     category:'メンタル'
   },
   {
-    id:'flex_remote', name:'フレックス / リモートワーク',
-    desc:'コアタイムなしフレックスやリモート日数拡大。通勤ストレス軽減と自律的な時間管理を促進。制度設計と評価基準の整備が前提。',
+    id:'flex_remote', name:'働く時間と場所を柔軟にする',
+    desc:'フレックスタイムやリモートワークの日を増やす。通勤のストレスが減り、自分のペースで働けるようになる。評価の仕組みも一緒に整えるのが大事。',
     effect:4, difficulty:4, cost:0, period:'2-6ヶ月',
     targets:['overtime','mental','turnover','comm'],
-    tags:['制度変更','評価制度連動','ゼロコスト'],
+    tags:['制度を変える必要あり','お金かからない','評価方法も見直す'],
     category:'働き方'
   },
   {
-    id:'meal_support', name:'食事補助 / 社食改善',
-    desc:'社食のメニュー改善、健康弁当の補助、置き社食サービス導入。「栄養バランスの良い食事が手軽に取れる環境」を整備。',
+    id:'meal_support', name:'食事のサポートを入れる',
+    desc:'社食メニューの改善、健康弁当の補助、オフィスに置く食事サービスなど。「体にいいものが手軽に食べられる」環境をつくる。',
     effect:3, difficulty:2, cost:2000, period:'1-3ヶ月',
     targets:['diet','lifestyle','present'],
-    tags:['福利厚生','満足度向上','見える効果'],
+    tags:['福利厚生','社員の満足度UP','目に見えて変わる'],
     category:'食事'
   },
   {
-    id:'sleep_program', name:'睡眠改善プログラム',
-    desc:'睡眠セミナー+ウェアラブルデバイス+個別コーチング。睡眠スコアの可視化で自己改善を促進。3ヶ月プログラムが標準。',
+    id:'sleep_program', name:'睡眠を良くするプログラム',
+    desc:'睡眠の勉強会 + スマートウォッチで睡眠データを見える化 + 個別アドバイス。自分の睡眠の質が数字で分かるので改善しやすい。',
     effect:4, difficulty:3, cost:2500, period:'3ヶ月',
     targets:['sleep','present','mental','lifestyle'],
-    tags:['データ活用','個別対応','ROI高'],
+    tags:['データで見える','1人ずつ対応','効果が高い'],
     category:'睡眠'
   },
   {
-    id:'no_smoke', name:'禁煙支援プログラム',
-    desc:'禁煙外来費用補助+社内禁煙チャレンジ+インセンティブ。喫煙所の段階的廃止と合わせて実施すると効果的。',
+    id:'no_smoke', name:'禁煙をサポートする',
+    desc:'禁煙外来の費用を会社が出す + 社内で禁煙チャレンジ + 成功したらご褒美。喫煙スペースも段階的に減らしていくと効果的。',
     effect:3, difficulty:3, cost:1000, period:'3-6ヶ月',
     targets:['smoke','lifestyle'],
-    tags:['医療費削減','段階的導入','助成金あり'],
+    tags:['医療費が減る','少しずつ導入','助成金が使える'],
     category:'生活習慣'
   },
   {
-    id:'walking_event', name:'ウォーキングイベント / 歩数チャレンジ',
-    desc:'部門対抗の歩数チャレンジやウォーキングラリー。アプリ連動でゲーミフィケーション。コミュニケーション活性化の副次効果も。',
-    effect:3, difficulty:1, cost:300, period:'即日',
+    id:'walking_event', name:'歩数チャレンジをやる',
+    desc:'チーム対抗で歩数を競うイベント。アプリで歩数を記録してランキング化。楽しみながら運動でき、チームの会話も増える。',
+    effect:3, difficulty:1, cost:300, period:'すぐ始められる',
     targets:['exercise','comm','lifestyle'],
-    tags:['低コスト','チーム活性','継続しやすい'],
+    tags:['安い','チームが仲良くなる','続けやすい'],
     category:'運動'
   },
   {
-    id:'occupational_dr', name:'産業医面談の強化',
-    desc:'法定の月1回訪問を週1回に拡大、またはオンライン産業医を導入。高ストレス者や長時間労働者への面談をルーティン化。',
+    id:'occupational_dr', name:'産業医の面談を増やす',
+    desc:'月1回の訪問を週1回に増やす、またはオンラインで産業医に相談できるようにする。ストレスが高い人や残業が多い人に定期的に声をかける。',
     effect:4, difficulty:2, cost:1500, period:'1ヶ月',
     targets:['mental','overtime','lifestyle'],
-    tags:['法的対応','専門家活用','早期発見'],
+    tags:['法律対応にも','専門家に頼れる','早く気づける'],
     category:'医療'
   },
   {
-    id:'health_point', name:'健康ポイント制度',
-    desc:'歩数・健診受診・セミナー参加等にポイント付与し、福利厚生と交換。行動変容のナッジとして有効。アプリ連動が前提。',
+    id:'health_point', name:'健康ポイント制度をつくる',
+    desc:'歩いた歩数、健診を受けた、セミナーに参加した、などでポイントがもらえる。ポイントは福利厚生と交換OK。ゲーム感覚で健康になれる。',
     effect:3, difficulty:3, cost:500, period:'2-3ヶ月',
     targets:['exercise','lifestyle','diet','comm'],
-    tags:['ゲーミフィケーション','データ蓄積','習慣化'],
+    tags:['ゲーム感覚','データが貯まる','習慣になりやすい'],
     category:'インセンティブ'
   },
   {
-    id:'linecare', name:'ラインケア研修（管理職向け）',
-    desc:'管理職が部下のメンタル変化に気づき、適切に対応するスキルを習得。傾聴・声かけ・専門家接続の3ステップを実践形式で学ぶ。',
-    effect:4, difficulty:2, cost:500, period:'即日-1ヶ月',
+    id:'linecare', name:'管理職向けの「気づき研修」',
+    desc:'上司が部下の変化に気づいて、声をかけて、必要なら専門家につなぐ。この3ステップを実践形式で学ぶ研修。1on1と組み合わせると効果大。',
+    effect:4, difficulty:2, cost:500, period:'すぐ-1ヶ月',
     targets:['mental','turnover','comm'],
-    tags:['管理職必須','予防型','1on1連動'],
+    tags:['管理職に必須','予防になる','1on1と相性いい'],
     category:'マネジメント'
   },
   {
-    id:'engagement_survey', name:'ワークエンゲージメント調査',
-    desc:'半年に1回の本調査+月次パルスサーベイでエンゲージメント推移を定点観測。施策のPDCAサイクルの「C」として必須。',
+    id:'engagement_survey', name:'社員のやる気を定期的に測る',
+    desc:'半年に1回の本格アンケート + 月1回のかんたんアンケートで、社員のやる気や満足度の変化を追いかける。施策がうまくいってるかの確認にも使える。',
     effect:3, difficulty:2, cost:400, period:'2-4週間',
     targets:['turnover','present','comm','mental'],
-    tags:['可視化','PDCA','データドリブン'],
+    tags:['数字で見える','改善サイクルが回る','データ活用'],
     category:'データ'
   },
   {
-    id:'work_reduction', name:'残業削減・ノー残業デー',
-    desc:'週1ノー残業デー+月上限設定+業務棚卸し。単なる「早く帰れ」ではなく、業務プロセス改善とセットで実施することが成功の鍵。',
+    id:'work_reduction', name:'残業を減らす仕組みをつくる',
+    desc:'週1回のノー残業デー + 月の上限を決める + 無駄な業務を見直す。ただ「早く帰れ」と言うだけでなく、仕事のやり方自体を変えるのが成功のコツ。',
     effect:4, difficulty:4, cost:0, period:'1-3ヶ月',
     targets:['overtime','mental','sleep','turnover'],
-    tags:['業務改善連動','ゼロコスト','トップダウン必須'],
+    tags:['仕事の見直しとセット','お金かからない','経営層の本気が必要'],
     category:'働き方'
   },
 ];
@@ -507,14 +507,14 @@ const MEASURES = [
    相乗効果マッピング
    ============================ */
 const SYNERGIES = [
-  {a:'1on1', b:'linecare', text:'1on1面談 + ラインケア研修 = 管理職の対話スキルが上がり、1on1の質が飛躍的に向上。メンタル不調の早期発見率UP'},
-  {a:'stress_check', b:'mental_hotline', text:'ストレスチェック + EAP = 高ストレス判定者をスムーズに相談窓口へ接続。察知から対応までのリードタイム短縮'},
-  {a:'exercise_program', b:'walking_event', text:'運動プログラム + ウォーキングイベント = 個人の運動習慣 + チームの一体感を同時に獲得'},
-  {a:'sleep_program', b:'health_seminar', text:'睡眠改善 + 健康セミナー = 知識（セミナー）と実践（プログラム）の両輪で行動変容率が2倍に'},
-  {a:'flex_remote', b:'work_reduction', text:'フレックス + 残業削減 = 柔軟な働き方と業務効率化のダブル施策で離職率・プレゼンティーズム同時改善'},
-  {a:'health_point', b:'exercise_program', text:'健康ポイント + 運動プログラム = インセンティブで運動継続率が30-50%向上'},
-  {a:'meal_support', b:'health_seminar', text:'食事補助 + 健康セミナー = 「なぜ食べるか」の知識と「すぐ食べられる」環境のセット提供'},
-  {a:'engagement_survey', b:'1on1', text:'エンゲージメント調査 + 1on1 = 定量データと定性対話で課題を多角的に把握。施策の的中率UP'},
+  {a:'1on1', b:'linecare', text:'1on1面談 + 気づき研修 = 上司の聞く力が上がって、面談の中身がグッと良くなる'},
+  {a:'stress_check', b:'mental_hotline', text:'ストレスチェック + 相談窓口 = 「しんどい人」を見つけたらすぐ相談につなげられる'},
+  {a:'exercise_program', b:'walking_event', text:'運動プログラム + 歩数チャレンジ = 個人の運動習慣 + チームの一体感、両方手に入る'},
+  {a:'sleep_program', b:'health_seminar', text:'睡眠改善 + セミナー = 「なぜ大事か」を知って「実際にやる」の両方がそろう'},
+  {a:'flex_remote', b:'work_reduction', text:'柔軟な働き方 + 残業削減 = 自分のペースで働けて、かつ早く帰れる。辞める人が減る'},
+  {a:'health_point', b:'exercise_program', text:'健康ポイント + 運動プログラム = ご褒美があると運動を続ける人が30-50%増える'},
+  {a:'meal_support', b:'health_seminar', text:'食事サポート + セミナー = 「なぜ食べるか」の知識 + 「すぐ食べられる」環境のセット'},
+  {a:'engagement_survey', b:'1on1', text:'やる気調査 + 1on1 = 数字で見える課題と、対話で聞ける本音、両方から手が打てる'},
 ];
 
 /* ============================
