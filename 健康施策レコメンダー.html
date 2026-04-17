@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康施策レコメンダー｜組織の課題に最適な健康経営施策をAIが提案</title>
+<meta name="description" content="組織の健康課題を入力するだけで、優先度付きTOP5施策を提案。コスト・効果・導入難易度を比較し、ROIシミュレーターと連携。">
+<meta property="og:title" content="健康施策レコメンダー">
+<meta property="og:description" content="組織の健康課題からTOP5施策を提案。コスト・効果・難易度を一覧比較。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#141826">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141826;--surface:#1a1f35;--surface-2:#232942;--surface-3:#2a3150;
+  --border:#2a3150;--border-2:#3a4268;
+  --text:#e8ecf5;--text-dim:#8b92a8;--text-faint:#5a6280;
+  --blue:#3d7dff;--cyan:#00d4ff;--orange:#ff9248;
+  --ok:#3dd9b8;--warn:#ffb84d;--error:#ff5a5a;--purple:#a855f7;--pink:#ff6b9d;
+  --radius:14px;--radius-sm:8px;--radius-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;-webkit-font-smoothing:antialiased}
+.mono{font-family:'DM Mono',monospace}
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+.section{padding:80px 20px}
+
+/* Hero */
+.hero{
+  position:relative;min-height:78vh;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 20%,rgba(61,125,255,.18),transparent),
+    radial-gradient(ellipse 700px 500px at 80% 80%,rgba(61,217,184,.12),transparent),
+    radial-gradient(ellipse 500px 400px at 50% 50%,rgba(255,146,72,.08),transparent),
+    var(--bg);
+}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.hero-inner{position:relative;z-index:2;text-align:center;max-width:900px;padding:0 20px}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 18px;border-radius:100px;background:rgba(61,217,184,.12);border:1px solid rgba(61,217,184,.35);color:var(--ok);font-size:13px;font-weight:500;margin-bottom:28px}
+.hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1.hero-title{font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:-.02em;line-height:1.2;margin-bottom:24px}
+h1.hero-title .accent{background:linear-gradient(135deg,var(--ok),var(--cyan) 60%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{font-size:clamp(15px,1.8vw,18px);color:var(--text-dim);margin-bottom:40px;line-height:1.8}
+.hero-stats{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:40px}
+.hero-stat{padding:14px 22px;border-radius:var(--radius);background:rgba(255,255,255,.04);border:1px solid var(--border);min-width:120px}
+.hero-stat-num{font-family:'DM Mono',monospace;font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--ok),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-stat-label{font-size:12px;color:var(--text-dim);margin-top:4px}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;padding:18px 38px;background:linear-gradient(135deg,var(--ok),var(--cyan));color:#141826;font-size:16px;font-weight:700;border:none;border-radius:100px;cursor:pointer;transition:all .25s;box-shadow:0 8px 30px rgba(61,217,184,.3);text-decoration:none}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(61,217,184,.5)}
+
+/* Steps */
+.steps-bar{display:flex;gap:0;margin-bottom:32px;background:var(--surface);border:1px solid var(--border);border-radius:100px;overflow:hidden}
+.step-tab{flex:1;padding:14px 16px;text-align:center;font-size:13px;font-weight:700;color:var(--text-faint);cursor:pointer;transition:all .2s;border:none;background:transparent;font-family:inherit}
+.step-tab.active{background:linear-gradient(135deg,var(--ok),var(--cyan));color:#141826}
+.step-tab.done{color:var(--ok)}
+
+/* Form */
+.form-wrap{display:none;max-width:800px;margin:0 auto}
+.form-wrap.active{display:block}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;margin-bottom:20px}
+.form-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.form-desc{font-size:14px;color:var(--text-dim);margin-bottom:24px}
+.form-group{margin-bottom:20px}
+.form-label{font-size:13px;font-weight:600;margin-bottom:8px;display:block;color:var(--text-dim)}
+.form-input,.form-select{
+  width:100%;padding:12px 16px;border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1px solid var(--border);
+  color:var(--text);font-size:14px;font-family:inherit;outline:none;
+}
+.form-input:focus,.form-select:focus{border-color:var(--cyan)}
+.form-select{cursor:pointer}
+
+/* Checkbox grid */
+.check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.check-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;
+}
+.check-item:hover{border-color:var(--border-2)}
+.check-item.checked{background:rgba(61,217,184,.08);border-color:var(--ok)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid var(--border-2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:12px;color:transparent;transition:all .2s;
+}
+.check-item.checked .check-box{background:var(--ok);border-color:var(--ok);color:#141826}
+.check-text{font-size:13px;font-weight:500}
+.check-desc{font-size:11px;color:var(--text-faint);margin-top:2px}
+
+/* Budget cards */
+.budget-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.budget-card{
+  text-align:center;padding:20px 12px;border-radius:var(--radius);
+  background:var(--surface-2);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;
+}
+.budget-card:hover{border-color:var(--border-2)}
+.budget-card.selected{background:rgba(61,217,184,.08);border-color:var(--ok)}
+.budget-price{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.budget-label{font-size:11px;color:var(--text-dim)}
+
+/* Buttons */
+.btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--ok),var(--cyan));color:#141826;box-shadow:0 6px 20px rgba(61,217,184,.3)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--border-2)}
+.btn:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+
+/* Result */
+.result-wrap{display:none;padding:40px 20px 80px}
+.result-wrap.active{display:block}
+.result-header{text-align:center;margin-bottom:40px}
+.result-header h2{font-size:clamp(24px,4vw,34px);font-weight:900;margin-bottom:12px}
+.result-header p{font-size:15px;color:var(--text-dim)}
+.result-summary{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;
+}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.summary-label{font-size:12px;color:var(--text-dim);margin-bottom:6px}
+.summary-value{font-family:'DM Mono',monospace;font-size:24px;font-weight:700}
+
+/* Recommendation cards */
+.rec-list{display:grid;gap:16px;margin-bottom:32px}
+.rec-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:28px;position:relative;overflow:hidden;transition:all .25s;
+}
+.rec-card:hover{transform:translateY(-2px);border-color:var(--border-2)}
+.rec-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.rec-card:nth-child(1)::before{background:linear-gradient(90deg,var(--ok),var(--cyan))}
+.rec-card:nth-child(2)::before{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.rec-card:nth-child(3)::before{background:linear-gradient(90deg,var(--orange),var(--warn))}
+.rec-card:nth-child(4)::before{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.rec-card:nth-child(5)::before{background:linear-gradient(90deg,var(--text-faint),var(--text-dim))}
+.rec-rank{
+  position:absolute;top:16px;right:16px;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:700;
+  padding:4px 12px;border-radius:6px;
+}
+.rec-rank.r1{background:rgba(61,217,184,.15);color:var(--ok)}
+.rec-rank.r2{background:rgba(61,125,255,.15);color:var(--blue)}
+.rec-rank.r3{background:rgba(255,146,72,.15);color:var(--orange)}
+.rec-rank.r4{background:rgba(168,85,247,.15);color:var(--purple)}
+.rec-rank.r5{background:rgba(139,146,168,.15);color:var(--text-dim)}
+.rec-name{font-size:18px;font-weight:700;margin-bottom:6px;padding-right:80px}
+.rec-desc{font-size:13px;color:var(--text-dim);line-height:1.8;margin-bottom:16px}
+.rec-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.rec-metric{
+  background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;
+}
+.rec-metric-label{font-size:10px;color:var(--text-faint);letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:4px}
+.rec-metric-value{font-size:14px;font-weight:700}
+.rec-tags{display:flex;flex-wrap:wrap;gap:6px}
+.rec-tag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;background:var(--surface-2);color:var(--text-faint);border:1px solid var(--border)}
+
+/* Synergy */
+.synergy-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:32px}
+.synergy-section h3{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.synergy-section h3::before{content:"";width:4px;height:20px;background:linear-gradient(var(--ok),var(--cyan));border-radius:2px}
+.synergy-item{display:flex;gap:14px;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:8px;font-size:13px;line-height:1.7}
+.synergy-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.synergy-text b{color:var(--ok)}
+
+/* Actions */
+.result-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:32px 0}
+
+/* Footer */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 20px 30px;margin-top:60px}
+.footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;margin-bottom:24px}
+.footer-brand{font-weight:700;font-size:16px;margin-bottom:10px}
+.footer-desc{font-size:12px;color:var(--text-dim);line-height:1.8}
+.footer-col h5{font-size:12px;color:var(--ok);margin-bottom:12px;letter-spacing:.1em;font-family:'DM Mono',monospace}
+.footer-col ul{list-style:none}
+.footer-col li{font-size:12px;color:var(--text-dim);margin-bottom:6px}
+.footer-col a{color:inherit;text-decoration:none}
+.footer-col a:hover{color:var(--cyan)}
+.disclaimer{border-top:1px solid var(--border);padding-top:18px;font-size:11px;color:var(--text-faint);line-height:1.8;text-align:center;max-width:900px;margin:0 auto}
+.credit{text-align:center;font-size:11px;color:var(--text-faint);margin-top:14px;font-family:'DM Mono',monospace}
+
+@media(max-width:860px){
+  .section{padding:60px 16px}
+  .check-grid{grid-template-columns:1fr}
+  .budget-grid{grid-template-columns:repeat(2,1fr)}
+  .rec-metrics{grid-template-columns:repeat(2,1fr)}
+  .result-summary{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .steps-bar{border-radius:var(--radius)}
+  .step-tab{font-size:11px;padding:10px 8px}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge"><span class="hero-badge-dot"></span>ROI Simulator Powered: 導入後シミュレーション連携</span>
+    <h1 class="hero-title">組織の課題から<br><span class="accent">最適な健康施策を提案。</span></h1>
+    <p class="hero-sub">
+      課題をチェックするだけで、15の施策データベースから<br>
+      優先度付きTOP5を自動レコメンド。<br>
+      コスト・効果・導入難易度を一覧比較できる。
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">15</div><div class="hero-stat-label">施策DB</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">TOP5</div><div class="hero-stat-label">優先提案</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">APIキー不要</div></div>
+    </div>
+    <a href="#input" class="hero-cta">診断を始める</a>
+  </div>
+</header>
+
+<!-- Input Section -->
+<section class="section" id="input">
+  <div class="container">
+    <div class="steps-bar">
+      <button class="step-tab active" data-step="1">1. 企業情報</button>
+      <button class="step-tab" data-step="2">2. 課題選択</button>
+      <button class="step-tab" data-step="3">3. 予算感</button>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="form-wrap active" id="step1">
+      <div class="form-card">
+        <div class="form-title">企業情報を入力</div>
+        <div class="form-desc">組織の規模と業種から最適な施策の規模感を算出します</div>
+        <div class="form-group">
+          <label class="form-label">従業員数</label>
+          <select class="form-select" id="empCount">
+            <option value="">選択してください</option>
+            <option value="50">50名以下</option>
+            <option value="100">51-100名</option>
+            <option value="300">101-300名</option>
+            <option value="500">301-500名</option>
+            <option value="1000">501-1000名</option>
+            <option value="3000">1001名以上</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">業種</label>
+          <select class="form-select" id="industry">
+            <option value="">選択してください</option>
+            <option value="it">IT / ソフトウェア</option>
+            <option value="manufacturing">製造業</option>
+            <option value="finance">金融 / 保険</option>
+            <option value="retail">小売 / サービス</option>
+            <option value="healthcare">医療 / 介護</option>
+            <option value="construction">建設 / 不動産</option>
+            <option value="logistics">物流 / 運輸</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">平均残業時間（月）</label>
+          <select class="form-select" id="overtime">
+            <option value="20">20時間以下</option>
+            <option value="30">21-30時間</option>
+            <option value="45">31-45時間</option>
+            <option value="60">46時間以上</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="goStep(2)">次へ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="form-wrap" id="step2">
+      <div class="form-card">
+        <div class="form-title">組織の健康課題を選択</div>
+        <div class="form-desc">当てはまるものを全てチェックしてください（複数選択OK）</div>
+        <div class="check-grid" id="issueGrid"></div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goStep(1)">戻る</button>
+          <button class="btn btn-primary" onclick="goStep(3)">次へ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="form-wrap" id="step3">
+      <div class="form-card">
+        <div class="form-title">予算感を選択</div>
+        <div class="form-desc">1人あたり月額の健康投資予算（目安）</div>
+        <div class="budget-grid" id="budgetGrid"></div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goStep(2)">戻る</button>
+          <button class="btn btn-primary" onclick="recommend()">TOP5施策を見る</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Result -->
+<section class="result-wrap" id="resultWrap">
+  <div class="container">
+    <div class="result-header">
+      <h2>推奨施策 TOP5</h2>
+      <p id="resultSub"></p>
+    </div>
+    <div class="result-summary" id="resultSummary"></div>
+    <div class="rec-list" id="recList"></div>
+    <div class="synergy-section">
+      <h3>施策の相乗効果</h3>
+      <div id="synergyList"></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="location.href='健康経営ROIシミュレーター.html'">ROIシミュレーターで試算</button>
+      <button class="btn btn-secondary" onclick="restart()">条件を変えてやり直す</button>
+      <button class="btn btn-secondary" onclick="shareX()">Xでシェア</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">健康施策レコメンダー</div>
+      <p class="footer-desc">健康経営・HRテック領域のポートフォリオとして制作。11年の現場マネジメント経験と厚労省・経産省の健康経営ガイドラインを基に施策DBを構築。</p>
+    </div>
+    <div class="footer-col">
+      <h5>ABOUT</h5>
+      <ul>
+        <li>制作: 岡田 光</li>
+        <li>資格: NSCA-CPT（2015）</li>
+        <li>経験: 部門部長・MVP 2024</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>PORTFOLIO</h5>
+      <ul>
+        <li><a href="ポートフォリオまとめ.html">まとめページ</a></li>
+        <li><a href="健康経営ROIシミュレーター.html">ROIシミュレーター</a></li>
+        <li><a href="1on1コーチングシミュレーター.html">1on1シミュレーター</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="disclaimer">
+    ※本ツールは健康経営施策の検討支援用デモです。実際の施策導入においては、産業医・社労士・健康経営コンサルタント等の専門家にご相談ください。施策の効果は組織規模・業種・既存制度により大きく異なります。
+  </div>
+  <div class="credit">Portfolio &copy; 2026 Hikari Okada</div>
+</footer>
+
+<script>
+/* ============================
+   課題データ
+   ============================ */
+const ISSUES = [
+  {id:'mental',    label:'メンタル不調の増加',      desc:'休職者やストレス高得点者が増えている'},
+  {id:'turnover',  label:'離職率が高い',            desc:'3年以内離職率が業界平均を上回る'},
+  {id:'lifestyle', label:'生活習慣病リスク',        desc:'健診で要注意・要治療の割合が高い'},
+  {id:'present',   label:'プレゼンティーズム',      desc:'出勤してるがパフォーマンスが低い'},
+  {id:'exercise',  label:'運動不足',                desc:'運動習慣のない従業員が多い'},
+  {id:'comm',      label:'コミュニケーション低下',  desc:'部門間の連携やチーム結束力が弱い'},
+  {id:'overtime',  label:'長時間労働',              desc:'残業時間が慢性的に多い'},
+  {id:'sleep',     label:'睡眠の質が低い',          desc:'不眠や疲労感を訴える従業員が多い'},
+  {id:'diet',      label:'食生活の乱れ',            desc:'欠食・外食過多・栄養バランスの偏り'},
+  {id:'smoke',     label:'喫煙率が高い',            desc:'業界平均を上回る喫煙率'},
+];
+
+const BUDGETS = [
+  {value:500,  label:'500円/月', desc:'最小限'},
+  {value:1000, label:'1,000円', desc:'標準的'},
+  {value:3000, label:'3,000円', desc:'積極投資'},
+  {value:5000, label:'5,000円+',desc:'フル装備'},
+];
+
+/* ============================
+   施策データベース（15施策）
+   ============================ */
+const MEASURES = [
+  {
+    id:'stress_check', name:'ストレスチェック制度強化',
+    desc:'法定ストレスチェックに加え、パルスサーベイ（月次簡易調査）を導入。早期にメンタル不調を察知し、ラインケアにつなげる仕組みを構築。',
+    effect:4, difficulty:2, cost:300, period:'1-2ヶ月',
+    targets:['mental','present','turnover'],
+    tags:['義務化済','低コスト','即効性あり'],
+    category:'メンタル'
+  },
+  {
+    id:'1on1', name:'1on1定期面談の導入',
+    desc:'上司と部下が週1-隔週で15-30分の対話。業務相談だけでなく、キャリアや体調も含めた「関係性構築」が目的。管理職研修とセットで効果倍増。',
+    effect:5, difficulty:3, cost:0, period:'1-3ヶ月',
+    targets:['mental','turnover','comm','present'],
+    tags:['コストゼロ','管理職育成','継続が鍵'],
+    category:'マネジメント'
+  },
+  {
+    id:'health_seminar', name:'健康セミナー・ワークショップ',
+    desc:'産業医や外部講師による睡眠・栄養・運動のリテラシー向上セミナー。オンライン開催なら全拠点対応可。年4回の四半期開催が効果的。',
+    effect:3, difficulty:1, cost:500, period:'即日',
+    targets:['lifestyle','exercise','sleep','diet'],
+    tags:['導入容易','啓発型','外部講師'],
+    category:'教育'
+  },
+  {
+    id:'exercise_program', name:'運動プログラム補助',
+    desc:'フィットネスジム法人契約、オンラインフィットネス導入、または社内運動プログラム。週1回30分から開始し、習慣化を支援。',
+    effect:4, difficulty:2, cost:1500, period:'1-2ヶ月',
+    targets:['exercise','lifestyle','mental','sleep'],
+    tags:['福利厚生','習慣化','エビデンス豊富'],
+    category:'運動'
+  },
+  {
+    id:'mental_hotline', name:'メンタルヘルス相談窓口（EAP）',
+    desc:'外部EAP（従業員支援プログラム）を導入し、24時間匿名相談を可能に。本人だけでなく家族も利用可にすると利用率が向上。',
+    effect:4, difficulty:1, cost:800, period:'2-4週間',
+    targets:['mental','turnover','present'],
+    tags:['外部委託','匿名性','家族利用可'],
+    category:'メンタル'
+  },
+  {
+    id:'flex_remote', name:'フレックス / リモートワーク',
+    desc:'コアタイムなしフレックスやリモート日数拡大。通勤ストレス軽減と自律的な時間管理を促進。制度設計と評価基準の整備が前提。',
+    effect:4, difficulty:4, cost:0, period:'2-6ヶ月',
+    targets:['overtime','mental','turnover','comm'],
+    tags:['制度変更','評価制度連動','ゼロコスト'],
+    category:'働き方'
+  },
+  {
+    id:'meal_support', name:'食事補助 / 社食改善',
+    desc:'社食のメニュー改善、健康弁当の補助、置き社食サービス導入。「栄養バランスの良い食事が手軽に取れる環境」を整備。',
+    effect:3, difficulty:2, cost:2000, period:'1-3ヶ月',
+    targets:['diet','lifestyle','present'],
+    tags:['福利厚生','満足度向上','見える効果'],
+    category:'食事'
+  },
+  {
+    id:'sleep_program', name:'睡眠改善プログラム',
+    desc:'睡眠セミナー+ウェアラブルデバイス+個別コーチング。睡眠スコアの可視化で自己改善を促進。3ヶ月プログラムが標準。',
+    effect:4, difficulty:3, cost:2500, period:'3ヶ月',
+    targets:['sleep','present','mental','lifestyle'],
+    tags:['データ活用','個別対応','ROI高'],
+    category:'睡眠'
+  },
+  {
+    id:'no_smoke', name:'禁煙支援プログラム',
+    desc:'禁煙外来費用補助+社内禁煙チャレンジ+インセンティブ。喫煙所の段階的廃止と合わせて実施すると効果的。',
+    effect:3, difficulty:3, cost:1000, period:'3-6ヶ月',
+    targets:['smoke','lifestyle'],
+    tags:['医療費削減','段階的導入','助成金あり'],
+    category:'生活習慣'
+  },
+  {
+    id:'walking_event', name:'ウォーキングイベント / 歩数チャレンジ',
+    desc:'部門対抗の歩数チャレンジやウォーキングラリー。アプリ連動でゲーミフィケーション。コミュニケーション活性化の副次効果も。',
+    effect:3, difficulty:1, cost:300, period:'即日',
+    targets:['exercise','comm','lifestyle'],
+    tags:['低コスト','チーム活性','継続しやすい'],
+    category:'運動'
+  },
+  {
+    id:'occupational_dr', name:'産業医面談の強化',
+    desc:'法定の月1回訪問を週1回に拡大、またはオンライン産業医を導入。高ストレス者や長時間労働者への面談をルーティン化。',
+    effect:4, difficulty:2, cost:1500, period:'1ヶ月',
+    targets:['mental','overtime','lifestyle'],
+    tags:['法的対応','専門家活用','早期発見'],
+    category:'医療'
+  },
+  {
+    id:'health_point', name:'健康ポイント制度',
+    desc:'歩数・健診受診・セミナー参加等にポイント付与し、福利厚生と交換。行動変容のナッジとして有効。アプリ連動が前提。',
+    effect:3, difficulty:3, cost:500, period:'2-3ヶ月',
+    targets:['exercise','lifestyle','diet','comm'],
+    tags:['ゲーミフィケーション','データ蓄積','習慣化'],
+    category:'インセンティブ'
+  },
+  {
+    id:'linecare', name:'ラインケア研修（管理職向け）',
+    desc:'管理職が部下のメンタル変化に気づき、適切に対応するスキルを習得。傾聴・声かけ・専門家接続の3ステップを実践形式で学ぶ。',
+    effect:4, difficulty:2, cost:500, period:'即日-1ヶ月',
+    targets:['mental','turnover','comm'],
+    tags:['管理職必須','予防型','1on1連動'],
+    category:'マネジメント'
+  },
+  {
+    id:'engagement_survey', name:'ワークエンゲージメント調査',
+    desc:'半年に1回の本調査+月次パルスサーベイでエンゲージメント推移を定点観測。施策のPDCAサイクルの「C」として必須。',
+    effect:3, difficulty:2, cost:400, period:'2-4週間',
+    targets:['turnover','present','comm','mental'],
+    tags:['可視化','PDCA','データドリブン'],
+    category:'データ'
+  },
+  {
+    id:'work_reduction', name:'残業削減・ノー残業デー',
+    desc:'週1ノー残業デー+月上限設定+業務棚卸し。単なる「早く帰れ」ではなく、業務プロセス改善とセットで実施することが成功の鍵。',
+    effect:4, difficulty:4, cost:0, period:'1-3ヶ月',
+    targets:['overtime','mental','sleep','turnover'],
+    tags:['業務改善連動','ゼロコスト','トップダウン必須'],
+    category:'働き方'
+  },
+];
+
+/* ============================
+   相乗効果マッピング
+   ============================ */
+const SYNERGIES = [
+  {a:'1on1', b:'linecare', text:'1on1面談 + ラインケア研修 = 管理職の対話スキルが上がり、1on1の質が飛躍的に向上。メンタル不調の早期発見率UP'},
+  {a:'stress_check', b:'mental_hotline', text:'ストレスチェック + EAP = 高ストレス判定者をスムーズに相談窓口へ接続。察知から対応までのリードタイム短縮'},
+  {a:'exercise_program', b:'walking_event', text:'運動プログラム + ウォーキングイベント = 個人の運動習慣 + チームの一体感を同時に獲得'},
+  {a:'sleep_program', b:'health_seminar', text:'睡眠改善 + 健康セミナー = 知識（セミナー）と実践（プログラム）の両輪で行動変容率が2倍に'},
+  {a:'flex_remote', b:'work_reduction', text:'フレックス + 残業削減 = 柔軟な働き方と業務効率化のダブル施策で離職率・プレゼンティーズム同時改善'},
+  {a:'health_point', b:'exercise_program', text:'健康ポイント + 運動プログラム = インセンティブで運動継続率が30-50%向上'},
+  {a:'meal_support', b:'health_seminar', text:'食事補助 + 健康セミナー = 「なぜ食べるか」の知識と「すぐ食べられる」環境のセット提供'},
+  {a:'engagement_survey', b:'1on1', text:'エンゲージメント調査 + 1on1 = 定量データと定性対話で課題を多角的に把握。施策の的中率UP'},
+];
+
+/* ============================
+   State
+   ============================ */
+let selectedIssues = [];
+let selectedBudget = 1000;
+
+/* ============================
+   UI初期化
+   ============================ */
+function initUI(){
+  // 課題チェックボックス
+  const grid = document.getElementById('issueGrid');
+  grid.innerHTML = ISSUES.map(i=>`
+    <div class="check-item" data-id="${i.id}" tabindex="0" role="checkbox" aria-checked="false">
+      <div class="check-box">&#10003;</div>
+      <div><div class="check-text">${i.label}</div><div class="check-desc">${i.desc}</div></div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.check-item').forEach(el=>{
+    el.addEventListener('click',()=>toggleIssue(el));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}});
+  });
+
+  // 予算カード
+  const bg = document.getElementById('budgetGrid');
+  bg.innerHTML = BUDGETS.map((b,i)=>`
+    <div class="budget-card ${i===1?'selected':''}" data-value="${b.value}" tabindex="0" role="radio">
+      <div class="budget-price">${b.label}</div>
+      <div class="budget-label">${b.desc}</div>
+    </div>
+  `).join('');
+  bg.querySelectorAll('.budget-card').forEach(el=>{
+    el.addEventListener('click',()=>{
+      bg.querySelectorAll('.budget-card').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedBudget = parseInt(el.dataset.value);
+    });
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}});
+  });
+}
+
+function toggleIssue(el){
+  const id = el.dataset.id;
+  el.classList.toggle('checked');
+  if(selectedIssues.includes(id)) selectedIssues = selectedIssues.filter(i=>i!==id);
+  else selectedIssues.push(id);
+  el.setAttribute('aria-checked', el.classList.contains('checked'));
+}
+
+/* ============================
+   ステップ遷移
+   ============================ */
+function goStep(n){
+  if(n===2 && !document.getElementById('empCount').value){
+    alert('従業員数を選択してください');return;
+  }
+  if(n===3 && selectedIssues.length===0){
+    alert('課題を1つ以上選択してください');return;
+  }
+  document.querySelectorAll('.form-wrap').forEach(w=>w.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  document.querySelectorAll('.step-tab').forEach((t,i)=>{
+    t.classList.remove('active','done');
+    if(i+1 < n) t.classList.add('done');
+    if(i+1 === n) t.classList.add('active');
+  });
+  document.getElementById('input').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ============================
+   レコメンドロジック
+   ============================ */
+function recommend(){
+  const empCount = parseInt(document.getElementById('empCount').value);
+  const overtime = parseInt(document.getElementById('overtime').value);
+
+  // スコアリング
+  const scored = MEASURES.map(m=>{
+    let score = 0;
+    // 課題マッチ度（最重要）
+    const matchCount = m.targets.filter(t=>selectedIssues.includes(t)).length;
+    score += matchCount * 30;
+    // 効果の高さ
+    score += m.effect * 8;
+    // 予算内か（コストが予算以下なら加点）
+    if(m.cost <= selectedBudget) score += 20;
+    else if(m.cost <= selectedBudget * 2) score += 5;
+    // 導入しやすさ
+    score += (5 - m.difficulty) * 5;
+    // 残業多い場合の補正
+    if(overtime >= 45 && m.targets.includes('overtime')) score += 15;
+    // 規模補正（大企業はEAP・サーベイが効きやすい）
+    if(empCount >= 500 && ['mental_hotline','engagement_survey','stress_check'].includes(m.id)) score += 10;
+    // 小規模は低コスト優先
+    if(empCount <= 100 && m.cost === 0) score += 10;
+    return {...m, score, matchCount};
+  });
+
+  scored.sort((a,b)=>b.score - a.score);
+  const top5 = scored.slice(0,5);
+
+  renderResult(top5, empCount);
+}
+
+/* ============================
+   結果描画
+   ============================ */
+function renderResult(top5, empCount){
+  const industry = document.getElementById('industry').selectedOptions[0].text;
+  document.getElementById('resultSub').textContent =
+    `${industry} / ${empCount}名規模 / 課題${selectedIssues.length}件 / 予算${selectedBudget.toLocaleString()}円/月`;
+
+  // サマリー
+  const totalCost = top5.reduce((s,m)=>s+m.cost,0);
+  const avgEffect = (top5.reduce((s,m)=>s+m.effect,0)/5).toFixed(1);
+  const avgDiff = (top5.reduce((s,m)=>s+m.difficulty,0)/5).toFixed(1);
+  document.getElementById('resultSummary').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">TOP5合計コスト/人/月</div>
+      <div class="summary-value" style="color:var(--ok)">${totalCost.toLocaleString()}円</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">平均期待効果</div>
+      <div class="summary-value" style="color:var(--cyan)">${avgEffect} / 5.0</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">平均導入難易度</div>
+      <div class="summary-value" style="color:var(--orange)">${avgDiff} / 5.0</div>
+    </div>
+  `;
+
+  // TOP5カード
+  const rankCls = ['r1','r2','r3','r4','r5'];
+  const effectBar = v => {
+    const colors = {1:'var(--error)',2:'var(--warn)',3:'var(--orange)',4:'var(--cyan)',5:'var(--ok)'};
+    return `<span style="color:${colors[v]}">${'★'.repeat(v)}${'☆'.repeat(5-v)}</span>`;
+  };
+  const diffLabel = v => {
+    const labels = {1:'とても簡単',2:'簡単',3:'普通',4:'やや難',5:'高難度'};
+    const colors = {1:'var(--ok)',2:'var(--ok)',3:'var(--warn)',4:'var(--orange)',5:'var(--error)'};
+    return `<span style="color:${colors[v]}">${labels[v]}</span>`;
+  };
+
+  document.getElementById('recList').innerHTML = top5.map((m,i)=>`
+    <div class="rec-card">
+      <div class="rec-rank ${rankCls[i]}">TOP ${i+1}</div>
+      <div class="rec-name">${m.name}</div>
+      <div class="rec-desc">${m.desc}</div>
+      <div class="rec-metrics">
+        <div class="rec-metric">
+          <div class="rec-metric-label">EFFECT</div>
+          <div class="rec-metric-value">${effectBar(m.effect)}</div>
+        </div>
+        <div class="rec-metric">
+          <div class="rec-metric-label">DIFFICULTY</div>
+          <div class="rec-metric-value">${diffLabel(m.difficulty)}</div>
+        </div>
+        <div class="rec-metric">
+          <div class="rec-metric-label">COST/PERSON</div>
+          <div class="rec-metric-value" style="color:var(--text)">${m.cost===0?'無料':m.cost.toLocaleString()+'円/月'}</div>
+        </div>
+        <div class="rec-metric">
+          <div class="rec-metric-label">PERIOD</div>
+          <div class="rec-metric-value" style="color:var(--text)">${m.period}</div>
+        </div>
+      </div>
+      <div class="rec-tags">
+        <span class="rec-tag">${m.category}</span>
+        ${m.tags.map(t=>`<span class="rec-tag">${t}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // 相乗効果
+  const top5ids = top5.map(m=>m.id);
+  const matchedSynergies = SYNERGIES.filter(s=>top5ids.includes(s.a)&&top5ids.includes(s.b));
+  document.getElementById('synergyList').innerHTML = matchedSynergies.length > 0
+    ? matchedSynergies.map(s=>`
+        <div class="synergy-item">
+          <div class="synergy-icon">&#x2728;</div>
+          <div class="synergy-text"><b>${s.text}</b></div>
+        </div>
+      `).join('')
+    : '<div class="synergy-item"><div class="synergy-icon">&#x1F4A1;</div><div class="synergy-text">TOP5の組み合わせに特筆すべき相乗効果パターンはありませんが、複数施策の同時導入は単体導入より20-30%高い効果が期待できます。</div></div>';
+
+  document.getElementById('resultWrap').classList.add('active');
+  document.getElementById('resultWrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function restart(){
+  document.getElementById('resultWrap').classList.remove('active');
+  selectedIssues = [];
+  document.querySelectorAll('.check-item').forEach(el=>{el.classList.remove('checked');el.setAttribute('aria-checked','false')});
+  goStep(1);
+}
+
+function shareX(){
+  const text = '組織の健康課題からTOP5施策を自動提案してくれるツール、面白い。\n#健康経営 #HRテック';
+  window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(location.href),'_blank');
+}
+
+/* init */
+initUI();
+document.querySelectorAll('.step-tab').forEach(t=>{
+  t.addEventListener('click',()=>goStep(parseInt(t.dataset.step)));
+});
+</script>
+</body>
+</html>
