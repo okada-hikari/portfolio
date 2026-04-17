@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1on1コーチングシミュレーター｜健康経営・人事向け対話練習ツール</title>
+<meta name="description" content="部下の本音に気づく1on1を、AIと練習。3シナリオ×5ターンで傾聴・共感・質問・フィードバック・アクション誘導の5軸を診断。">
+<meta property="og:title" content="1on1コーチングシミュレーター">
+<meta property="og:description" content="部下の本音に気づく1on1を、AIと練習。5軸スコアリングで自分のコーチングタイプが分かる。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#141826">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141826;
+  --surface:#1a1f35;
+  --surface-2:#232942;
+  --surface-3:#2a3150;
+  --border:#2a3150;
+  --border-2:#3a4268;
+  --text:#e8ecf5;
+  --text-dim:#8b92a8;
+  --text-faint:#5a6280;
+  --blue:#3d7dff;
+  --cyan:#00d4ff;
+  --orange:#ff9248;
+  --axis-listen:#3dd9b8;
+  --axis-empathy:#ff6b9d;
+  --axis-question:#00d4ff;
+  --axis-feedback:#ff9248;
+  --axis-action:#a855f7;
+  --ok:#3dd9b8;
+  --warn:#ffb84d;
+  --error:#ff5a5a;
+  --radius:14px;
+  --radius-sm:8px;
+  --radius-lg:20px;
+  --shadow:0 20px 60px rgba(0,0,0,.4);
+  --shadow-soft:0 4px 20px rgba(0,0,0,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans JP',-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'DM Mono',monospace;letter-spacing:.02em}
+
+/* === レイアウト === */
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+.section{padding:80px 20px}
+
+/* === ヒーロー === */
+.hero{
+  position:relative;
+  min-height:82vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 20%,rgba(61,125,255,.18),transparent),
+    radial-gradient(ellipse 700px 500px at 80% 80%,rgba(0,212,255,.15),transparent),
+    radial-gradient(ellipse 500px 400px at 50% 50%,rgba(255,146,72,.08),transparent),
+    var(--bg);
+}
+.hero::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+.hero-inner{position:relative;z-index:2;text-align:center;max-width:900px;padding:0 20px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:8px 18px;border-radius:100px;
+  background:rgba(61,125,255,.12);
+  border:1px solid rgba(61,125,255,.35);
+  color:var(--cyan);
+  font-size:13px;font-weight:500;
+  margin-bottom:28px;
+}
+.hero-badge-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 12px var(--cyan);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1.hero-title{
+  font-size:clamp(32px,6vw,60px);
+  font-weight:900;
+  letter-spacing:-.02em;
+  line-height:1.2;
+  margin-bottom:24px;
+}
+h1.hero-title .accent{
+  background:linear-gradient(135deg,var(--blue),var(--cyan) 60%,var(--orange));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{
+  font-size:clamp(15px,1.8vw,18px);
+  color:var(--text-dim);
+  margin-bottom:40px;
+  line-height:1.8;
+}
+.hero-stats{
+  display:flex;justify-content:center;gap:16px;flex-wrap:wrap;
+  margin-bottom:40px;
+}
+.hero-stat{
+  padding:14px 22px;border-radius:var(--radius);
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  min-width:120px;
+}
+.hero-stat-num{
+  font-family:'DM Mono',monospace;
+  font-size:28px;font-weight:700;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-stat-label{font-size:12px;color:var(--text-dim);margin-top:4px}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:18px 38px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;font-size:16px;font-weight:700;
+  border:none;border-radius:100px;cursor:pointer;
+  transition:all .25s ease;
+  box-shadow:0 8px 30px rgba(61,125,255,.35);
+  text-decoration:none;
+}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(61,125,255,.5)}
+.hero-cta:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
+
+/* === 使い方 === */
+.section-title{
+  font-size:clamp(24px,3.5vw,34px);
+  font-weight:900;
+  text-align:center;
+  margin-bottom:16px;
+  letter-spacing:-.01em;
+}
+.section-title .accent{color:var(--cyan)}
+.section-sub{
+  text-align:center;
+  color:var(--text-dim);
+  margin-bottom:56px;
+  font-size:15px;
+}
+.steps{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.step{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:32px 24px;
+  position:relative;
+  transition:all .25s ease;
+}
+.step:hover{border-color:var(--border-2);transform:translateY(-3px)}
+.step-num{
+  font-family:'DM Mono',monospace;
+  font-size:14px;color:var(--cyan);
+  font-weight:700;margin-bottom:12px;
+}
+.step-title{font-size:18px;font-weight:700;margin-bottom:10px}
+.step-desc{font-size:14px;color:var(--text-dim);line-height:1.8}
+
+/* === シナリオ選択 === */
+.scenarios{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
+}
+.scenario-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px 24px;
+  cursor:pointer;
+  transition:all .25s ease;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+.scenario-card::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 60%,rgba(61,125,255,.06));
+  pointer-events:none;
+}
+.scenario-card:hover{
+  border-color:var(--blue);
+  transform:translateY(-4px);
+  box-shadow:0 20px 40px rgba(61,125,255,.15);
+}
+.scenario-card:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.scenario-tag{
+  display:inline-block;
+  font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:6px;
+  margin-bottom:14px;
+  letter-spacing:.08em;
+  font-family:'DM Mono',monospace;
+}
+.scenario-tag.s1{background:rgba(255,107,157,.15);color:#ff6b9d;border:1px solid rgba(255,107,157,.3)}
+.scenario-tag.s2{background:rgba(255,146,72,.15);color:var(--orange);border:1px solid rgba(255,146,72,.3)}
+.scenario-tag.s3{background:rgba(168,85,247,.15);color:var(--axis-action);border:1px solid rgba(168,85,247,.3)}
+.scenario-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.scenario-char{
+  font-size:13px;color:var(--cyan);font-weight:500;
+  margin-bottom:12px;
+  font-family:'DM Mono',monospace;
+}
+.scenario-desc{font-size:14px;color:var(--text-dim);line-height:1.8;margin-bottom:16px}
+.scenario-meta{
+  display:flex;gap:14px;
+  font-size:12px;color:var(--text-faint);
+  border-top:1px solid var(--border);
+  padding-top:14px;
+}
+.scenario-meta span{display:flex;align-items:center;gap:5px}
+
+/* === 対話画面 === */
+.dialog-wrap{display:none;padding:30px 20px 100px}
+.dialog-wrap.active{display:block}
+.dialog-header{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 20px;
+  margin-bottom:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;gap:12px;
+}
+.dialog-info{display:flex;align-items:center;gap:14px}
+.dialog-avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--surface-2),var(--surface-3));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  border:1px solid var(--border-2);
+}
+.dialog-name{font-weight:700;font-size:15px}
+.dialog-role{font-size:12px;color:var(--text-dim);font-family:'DM Mono',monospace}
+.dialog-progress{
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--text-dim);
+  font-family:'DM Mono',monospace;
+}
+.progress-bar{
+  width:120px;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;
+}
+.progress-bar-fill{
+  height:100%;width:0;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  transition:width .4s ease;
+}
+
+/* チャット */
+.chat-area{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  min-height:400px;
+  margin-bottom:20px;
+}
+.chat-context{
+  background:var(--surface-2);
+  border-left:3px solid var(--cyan);
+  padding:14px 16px;border-radius:var(--radius-sm);
+  font-size:13px;color:var(--text-dim);
+  margin-bottom:20px;
+  line-height:1.7;
+}
+.chat-context b{color:var(--cyan);font-weight:600}
+.chat-msg{
+  display:flex;gap:12px;margin-bottom:20px;
+  animation:slideIn .4s ease;
+}
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.chat-msg.sub{align-items:flex-start}
+.chat-msg.me{flex-direction:row-reverse;align-items:flex-start}
+.chat-avatar-sm{
+  width:36px;height:36px;border-radius:50%;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  border:1px solid var(--border-2);
+}
+.chat-msg.sub .chat-avatar-sm{background:var(--surface-2)}
+.chat-msg.me .chat-avatar-sm{background:linear-gradient(135deg,var(--blue),var(--cyan));border-color:transparent;font-size:14px;color:#fff;font-weight:700}
+.chat-bubble{
+  max-width:75%;
+  padding:12px 16px;border-radius:14px;
+  font-size:14px;line-height:1.75;
+}
+.chat-msg.sub .chat-bubble{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-top-left-radius:4px;
+}
+.chat-msg.me .chat-bubble{
+  background:linear-gradient(135deg,rgba(61,125,255,.2),rgba(0,212,255,.15));
+  border:1px solid rgba(61,125,255,.3);
+  border-top-right-radius:4px;
+}
+.chat-mood{
+  font-size:11px;color:var(--text-faint);
+  margin-top:4px;font-style:italic;
+}
+
+/* 選択肢 */
+.choice-label{
+  font-size:12px;color:var(--cyan);font-weight:700;
+  letter-spacing:.1em;margin-bottom:12px;
+  font-family:'DM Mono',monospace;
+}
+.choices{display:grid;gap:12px;margin-top:20px}
+.choice{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  cursor:pointer;
+  transition:all .2s ease;
+  text-align:left;
+  font-size:14px;line-height:1.7;
+  color:var(--text);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.choice:hover{
+  border-color:var(--blue);
+  background:var(--surface-3);
+  transform:translateX(3px);
+}
+.choice:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.choice-key{
+  flex-shrink:0;
+  width:28px;height:28px;border-radius:6px;
+  background:var(--surface);
+  border:1px solid var(--border-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:700;
+  color:var(--cyan);
+}
+.choice.selected{
+  background:rgba(61,125,255,.1);
+  border-color:var(--blue);
+  pointer-events:none;
+}
+.choice.selected .choice-key{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* 5軸メーター */
+.axis-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 20px;
+}
+.axis-panel-title{
+  font-size:12px;color:var(--text-dim);
+  letter-spacing:.1em;margin-bottom:14px;
+  font-family:'DM Mono',monospace;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.axis-score-total{
+  font-size:16px;font-weight:700;color:var(--text);
+}
+.axis-bars{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.axis-bar{text-align:center}
+.axis-bar-label{font-size:11px;color:var(--text-dim);margin-bottom:6px}
+.axis-bar-track{
+  height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;
+}
+.axis-bar-fill{
+  height:100%;width:0;border-radius:3px;
+  transition:width .5s ease;
+}
+.axis-bar-value{
+  font-family:'DM Mono',monospace;font-size:12px;color:var(--text);
+  margin-top:4px;font-weight:600;
+}
+.axis-listen .axis-bar-fill{background:var(--axis-listen)}
+.axis-empathy .axis-bar-fill{background:var(--axis-empathy)}
+.axis-question .axis-bar-fill{background:var(--axis-question)}
+.axis-feedback .axis-bar-fill{background:var(--axis-feedback)}
+.axis-action .axis-bar-fill{background:var(--axis-action)}
+
+/* === 結果画面 === */
+.result-wrap{display:none;padding:30px 20px 80px}
+.result-wrap.active{display:block}
+.result-hero{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:40px 32px;
+  text-align:center;
+  margin-bottom:24px;
+  position:relative;
+  overflow:hidden;
+}
+.result-hero::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at top,rgba(61,125,255,.15),transparent 60%);
+  pointer-events:none;
+}
+.result-rank{
+  position:relative;z-index:1;
+  display:inline-block;
+  font-family:'DM Mono',monospace;
+  font-size:72px;font-weight:700;
+  line-height:1;
+  margin-bottom:8px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan),var(--orange));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.result-rank-label{
+  position:relative;z-index:1;
+  font-size:14px;color:var(--text-dim);
+  letter-spacing:.2em;margin-bottom:18px;
+  font-family:'DM Mono',monospace;
+}
+.result-score-big{
+  position:relative;z-index:1;
+  font-family:'DM Mono',monospace;
+  font-size:48px;font-weight:700;
+  color:var(--text);
+  margin-bottom:4px;
+}
+.result-score-big span{font-size:24px;color:var(--text-dim)}
+.result-comment{
+  position:relative;z-index:1;
+  max-width:600px;margin:18px auto 0;
+  font-size:15px;color:var(--text-dim);
+  line-height:1.9;
+}
+
+/* レーダー */
+.result-chart-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:32px;
+  margin-bottom:24px;
+  display:grid;grid-template-columns:1fr 1fr;gap:32px;
+  align-items:center;
+}
+.radar-wrap{display:flex;justify-content:center;align-items:center}
+.radar-svg{width:100%;max-width:320px;height:auto}
+.radar-legend{display:grid;gap:12px}
+.legend-item{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 14px;
+  background:var(--surface-2);border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+}
+.legend-color{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.legend-text{flex:1}
+.legend-name{font-size:13px;font-weight:600}
+.legend-desc{font-size:11px;color:var(--text-dim)}
+.legend-score{
+  font-family:'DM Mono',monospace;font-size:18px;font-weight:700;
+  color:var(--text);
+}
+
+/* ターン別振り返り */
+.turns-review{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px;
+  margin-bottom:24px;
+}
+.turns-review h3{
+  font-size:18px;margin-bottom:18px;font-weight:700;
+  display:flex;align-items:center;gap:10px;
+}
+.turns-review h3::before{
+  content:"";width:4px;height:20px;
+  background:linear-gradient(var(--blue),var(--cyan));border-radius:2px;
+}
+.turn-item{
+  padding:16px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  margin-bottom:10px;
+}
+.turn-item-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;
+  font-size:12px;color:var(--text-dim);
+  font-family:'DM Mono',monospace;
+}
+.turn-grade{
+  padding:2px 10px;border-radius:4px;
+  font-size:11px;font-weight:700;
+}
+.turn-grade.best{background:rgba(61,217,184,.15);color:var(--ok)}
+.turn-grade.mid{background:rgba(255,184,77,.15);color:var(--warn)}
+.turn-grade.ng{background:rgba(255,90,90,.15);color:var(--error)}
+.turn-chose{font-size:13px;margin-bottom:6px;color:var(--text)}
+.turn-chose b{color:var(--cyan);font-weight:600}
+.turn-tip{
+  font-size:12px;color:var(--text-dim);line-height:1.7;
+  padding-top:8px;border-top:1px dashed var(--border);
+  margin-top:8px;
+}
+.turn-tip b{color:var(--orange)}
+
+/* アクション */
+.result-actions{
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+  margin:32px 0 20px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 24px;border-radius:100px;
+  font-size:14px;font-weight:700;
+  cursor:pointer;border:none;
+  text-decoration:none;
+  transition:all .2s ease;
+  font-family:inherit;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;
+  box-shadow:0 6px 20px rgba(61,125,255,.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(61,125,255,.45)}
+.btn-secondary{
+  background:var(--surface-2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{border-color:var(--border-2);background:var(--surface-3)}
+.btn:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+
+/* コーチング理論 */
+.theory{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:32px 28px;
+  margin-top:20px;
+}
+.theory h3{font-size:17px;font-weight:700;margin-bottom:14px}
+.theory ul{list-style:none;display:grid;gap:12px}
+.theory li{
+  font-size:13px;color:var(--text-dim);
+  padding-left:22px;position:relative;line-height:1.8;
+}
+.theory li::before{
+  content:"";position:absolute;left:0;top:10px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--cyan);
+}
+.theory li b{color:var(--text);font-weight:600}
+
+/* AIモード */
+.ai-mode-box{
+  background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(61,125,255,.08));
+  border:1px dashed var(--border-2);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin-top:20px;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ai-mode-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--axis-action),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;flex-shrink:0;
+}
+.ai-mode-box h4{font-size:14px;margin-bottom:4px}
+.ai-mode-box p{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+/* フッター */
+footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:40px 20px 30px;
+  margin-top:60px;
+}
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;
+  margin-bottom:24px;
+}
+.footer-brand{font-weight:700;font-size:16px;margin-bottom:10px}
+.footer-desc{font-size:12px;color:var(--text-dim);line-height:1.8}
+.footer-col h5{font-size:12px;color:var(--cyan);margin-bottom:12px;letter-spacing:.1em;font-family:'DM Mono',monospace}
+.footer-col ul{list-style:none}
+.footer-col li{font-size:12px;color:var(--text-dim);margin-bottom:6px}
+.footer-col a{color:inherit;text-decoration:none}
+.footer-col a:hover{color:var(--cyan)}
+.disclaimer{
+  border-top:1px solid var(--border);
+  padding-top:18px;
+  font-size:11px;color:var(--text-faint);
+  line-height:1.8;text-align:center;
+  max-width:900px;margin:0 auto;
+}
+.disclaimer b{color:var(--text-dim)}
+.credit{
+  text-align:center;
+  font-size:11px;color:var(--text-faint);
+  margin-top:14px;font-family:'DM Mono',monospace;
+}
+
+/* === レスポンシブ === */
+@media(max-width:860px){
+  .section{padding:60px 16px}
+  .steps{grid-template-columns:1fr}
+  .scenarios{grid-template-columns:1fr}
+  .result-chart-card{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr;gap:20px}
+  .hero-stat{min-width:100px;padding:10px 16px}
+  .hero-stat-num{font-size:22px}
+  .axis-bars{grid-template-columns:repeat(5,1fr);gap:6px}
+  .axis-bar-label{font-size:9px}
+  .chat-bubble{max-width:82%;font-size:13px}
+}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- === Hero === -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge"><span class="hero-badge-dot"></span>11年の現場マネジメント経験を反映</span>
+    <h1 class="hero-title">部下の本音に気づく<br>
+      <span class="accent">1on1を、AIと練習する。</span>
+    </h1>
+    <p class="hero-sub">
+      傾聴・共感・質問・フィードバック・アクション誘導の5軸で<br>
+      あなたのコーチングタイプを可視化。<br>
+      <b style="color:var(--cyan)">APIキー不要</b>で3シナリオをすぐ試せる。
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">シナリオ</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">5軸</div>
+        <div class="hero-stat-label">スコアリング</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">¥0</div>
+        <div class="hero-stat-label">無料で体験</div>
+      </div>
+    </div>
+    <a href="#scenarios" class="hero-cta">
+      シナリオを選ぶ →
+    </a>
+  </div>
+</header>
+
+<!-- === 使い方 === -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">使い方は<span class="accent">3ステップ</span></h2>
+    <p class="section-sub">所要時間：1シナリオあたり約5〜7分</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">STEP 01</div>
+        <h3 class="step-title">シナリオを選ぶ</h3>
+        <p class="step-desc">モチベ低下・業務負荷の偏り・キャリア停滞感の3種から部下との1on1シーンを選択。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 02</div>
+        <h3 class="step-title">3択で応答</h3>
+        <p class="step-desc">各ターンで3つの選択肢から発言を選ぶ。部下AIの反応と表情が変わり、会話が進行。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 03</div>
+        <h3 class="step-title">5軸で診断</h3>
+        <p class="step-desc">傾聴・共感・質問・FB・アクション誘導のレーダーチャート＋各ターン振り返りを表示。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === シナリオ選択 === -->
+<section class="section" id="scenarios" style="padding-top:40px">
+  <div class="container">
+    <h2 class="section-title"><span class="accent">シナリオ</span>を選ぶ</h2>
+    <p class="section-sub">実際の現場でよくある3つの1on1シーン</p>
+    <div class="scenarios" id="scenarioList"></div>
+  </div>
+</section>
+
+<!-- === 対話画面 === -->
+<section class="dialog-wrap" id="dialogWrap">
+  <div class="container">
+    <div class="dialog-header">
+      <div class="dialog-info">
+        <div class="dialog-avatar" id="dlgAvatar">👤</div>
+        <div>
+          <div class="dialog-name" id="dlgName"></div>
+          <div class="dialog-role" id="dlgRole"></div>
+        </div>
+      </div>
+      <div class="dialog-progress">
+        <span id="progressText">1 / 5</span>
+        <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-context" id="chatContext"></div>
+      <div id="chatLog"></div>
+      <div id="choicesWrap"></div>
+    </div>
+
+    <div class="axis-panel">
+      <div class="axis-panel-title">
+        <span>リアルタイム5軸スコア</span>
+        <span class="axis-score-total" id="axisTotal">0 / 100</span>
+      </div>
+      <div class="axis-bars">
+        <div class="axis-bar axis-listen">
+          <div class="axis-bar-label">傾聴</div>
+          <div class="axis-bar-track"><div class="axis-bar-fill" id="bar-listen"></div></div>
+          <div class="axis-bar-value" id="val-listen">0</div>
+        </div>
+        <div class="axis-bar axis-empathy">
+          <div class="axis-bar-label">共感</div>
+          <div class="axis-bar-track"><div class="axis-bar-fill" id="bar-empathy"></div></div>
+          <div class="axis-bar-value" id="val-empathy">0</div>
+        </div>
+        <div class="axis-bar axis-question">
+          <div class="axis-bar-label">質問</div>
+          <div class="axis-bar-track"><div class="axis-bar-fill" id="bar-question"></div></div>
+          <div class="axis-bar-value" id="val-question">0</div>
+        </div>
+        <div class="axis-bar axis-feedback">
+          <div class="axis-bar-label">FB</div>
+          <div class="axis-bar-track"><div class="axis-bar-fill" id="bar-feedback"></div></div>
+          <div class="axis-bar-value" id="val-feedback">0</div>
+        </div>
+        <div class="axis-bar axis-action">
+          <div class="axis-bar-label">アクション</div>
+          <div class="axis-bar-track"><div class="axis-bar-fill" id="bar-action"></div></div>
+          <div class="axis-bar-value" id="val-action">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === 結果画面 === -->
+<section class="result-wrap" id="resultWrap">
+  <div class="container">
+    <div class="result-hero">
+      <div class="result-rank" id="resultRank">S</div>
+      <div class="result-rank-label" id="resultRankLabel">EXECUTIVE COACH</div>
+      <div class="result-score-big"><span id="resultScore">0</span><span> / 100</span></div>
+      <p class="result-comment" id="resultComment"></p>
+    </div>
+
+    <div class="result-chart-card">
+      <div class="radar-wrap">
+        <svg class="radar-svg" viewBox="0 0 300 300" id="radarSvg"></svg>
+      </div>
+      <div class="radar-legend" id="radarLegend"></div>
+    </div>
+
+    <div class="turns-review">
+      <h3>ターン別振り返り</h3>
+      <div id="turnsReview"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="retry()">もう一度この1on1</button>
+      <button class="btn btn-secondary" onclick="restart()">別のシナリオ</button>
+      <button class="btn btn-secondary" onclick="shareX()">Xでシェア</button>
+    </div>
+
+    <div class="theory">
+      <h3>スコアの根拠となるコーチング理論</h3>
+      <ul>
+        <li><b>傾聴（Active Listening）</b>：相手の話を遮らず受け止める。マイクロソフトの「ディスカバリー・コンバセーション」等で重視される基礎スキル</li>
+        <li><b>共感（Empathy）</b>：感情を認めて言語化する。ダニエル・ゴールマンのEQ理論における「社会的認識」に該当</li>
+        <li><b>質問（Open Question）</b>：クローズドではなく5W1Hで深掘り。コーチングの基本スキル</li>
+        <li><b>フィードバック（SBIモデル）</b>：Situation-Behavior-Impactの3要素で具体的に伝える</li>
+        <li><b>アクション誘導（GROWモデル）</b>：Goal-Reality-Options-Will の最終段階「Will（意志）」を引き出す</li>
+      </ul>
+    </div>
+
+    <div class="ai-mode-box">
+      <div class="ai-mode-icon">✦</div>
+      <div>
+        <h4>AIモード（拡張機能）</h4>
+        <p>Claude APIキーがあれば、自由対話版も利用可能です。本ツールはデモ版として、APIキーなしで3シナリオを体験できるように設計しています。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === フッター === -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">1on1コーチングシミュレーター</div>
+      <p class="footer-desc">
+        健康経営・HRテック領域のポートフォリオとして制作。<br>
+        11年の現場マネジメント（約30名・継続率65%・部門黒字化）で培った1on1設計ノウハウを反映しています。
+      </p>
+    </div>
+    <div class="footer-col">
+      <h5>ABOUT</h5>
+      <ul>
+        <li>制作：岡田 光</li>
+        <li>資格：NSCA-CPT（2015）</li>
+        <li>職歴：パーソナル部門部長・社内MVP（2024）</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>PORTFOLIO</h5>
+      <ul>
+        <li><a href="ポートフォリオまとめ.html">まとめページに戻る</a></li>
+        <li><a href="健康経営AI診断ツールv5.html">健康経営AI診断</a></li>
+        <li><a href="健康経営キャラ診断v3.html">キャラ診断v3</a></li>
+        <li><a href="健康経営ROIシミュレーター.html">ROIシミュレーター</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="disclaimer">
+    <b>※本ツールは1on1コーチングの練習用デモです。</b>
+    実際のメンタルヘルス対応・ハラスメント事案・医療判断については、産業医・臨床心理士・人事労務の専門家にご相談ください。
+    本ツールの選択肢・フィードバックは一般的なコーチング理論に基づく例示であり、特定の診断・治療・雇用判断の代替とはなりません。
+    対話ログはブラウザ内にのみ保存され、外部送信されません。
+  </div>
+  <div class="credit">Portfolio © 2026 Hikari Okada — Built with vanilla JS</div>
+</footer>
+
+<script>
+/* ============================
+   シナリオデータ（3シナリオ×5ターン×3択）
+   各選択肢は 5軸 (listen/empathy/question/feedback/action) でスコアリング
+   ============================ */
+const SCENARIOS = [
+  {
+    id:'motivation',
+    tag:'SCENARIO 01',
+    tagClass:'s1',
+    title:'モチベ低下',
+    char:'田中 凌（2年目・営業）',
+    avatar:'😔',
+    desc:'半年前までエースだったのに、最近数字が落ちて表情も暗い。残業も増えている。',
+    context:'部下は <b>田中 凌</b>さん。入社2年目の営業。半年前は月間MVPだったが、直近3ヶ月は数字が下降。遅刻こそないが、顔色が優れず口数も減っている。今日の1on1は本人の希望で設定された。',
+    turns:[
+      {
+        sub:'（小声で）すみません、お時間いただいて…',
+        mood:'緊張気味',
+        choices:[
+          {text:'全然。最近どう？顔見れてよかった。話したいことあれば聞かせて',
+           reply:'（少しホッとした表情）ありがとうございます…',
+           nextMood:'落ち着いてきた',
+           score:{listen:6,empathy:6,question:4,feedback:2,action:2}, grade:'best',
+           tip:'<b>ラポール形成の基本</b>：まず相手の安心感を作る。業務の話から入らないのが正解'},
+          {text:'今月の数字、ちょっと厳しそうだね。何があった？',
+           reply:'…すみません、正直うまく回ってなくて',
+           nextMood:'さらに萎縮',
+           score:{listen:2,empathy:1,question:4,feedback:3,action:0}, grade:'mid',
+           tip:'質問はしているが、冒頭で数字の話は<b>追い詰める効果</b>。信頼構築を先にすべき'},
+          {text:'時間ないから手短にお願い。何の話？',
+           reply:'…あ、いえ、大したことじゃないです',
+           nextMood:'話すのを諦めた',
+           score:{listen:0,empathy:0,question:1,feedback:0,action:0}, grade:'ng',
+           tip:'<b>最悪の入り方</b>。部下は本音を閉じる。1on1の目的は「効率的に用件を済ます」ではない'}
+        ]
+      },
+      {
+        sub:'最近ちょっと…うまく回ってなくて。すみません',
+        mood:'少しずつ口を開く',
+        choices:[
+          {text:'「うまく回ってない」って、具体的にどんな感じ？',
+           reply:'…お客さんの対応が重なってて、夜も寝付けなくて',
+           nextMood:'核心に触れ始める',
+           score:{listen:4,empathy:4,question:8,feedback:2,action:2}, grade:'best',
+           tip:'<b>オープン質問</b>の教科書。相手の言葉をそのまま受けて深掘り。5W1Hで具体化を促す'},
+          {text:'数字のこと？それとも別のこと？',
+           reply:'…まあ、数字もですけど、それだけじゃなくて',
+           nextMood:'少し踏み込めた',
+           score:{listen:2,empathy:2,question:4,feedback:1,action:1}, grade:'mid',
+           tip:'2択の質問は<b>クローズド質問</b>。答えやすいが深まりにくい'},
+          {text:'なんで？去年はトップだったのに',
+           reply:'…すみません、期待に応えられず',
+           nextMood:'罪悪感が増した',
+           score:{listen:0,empathy:0,question:2,feedback:0,action:0}, grade:'ng',
+           tip:'<b>比較による追い詰め</b>。過去の実績を持ち出すと本人のプレッシャーを増やすだけ'}
+        ]
+      },
+      {
+        sub:'…お客さんの対応が重なって、夜も寝付けなくて。自分が悪いってのは分かってるんですけど…',
+        mood:'打ち明けた',
+        choices:[
+          {text:'眠れないのはキツいね。自分を責めなくていいよ。もう少し聞かせて、どんな状況？',
+           reply:'（少し表情緩む）…案件が4つ重なってて、1人じゃ追いつかない感じで',
+           nextMood:'安心して話し出す',
+           score:{listen:6,empathy:8,question:6,feedback:0,action:0}, grade:'best',
+           tip:'<b>感情の受容→さらに質問</b>の流れが理想。「自分を責めなくていい」で安全地帯を作る'},
+          {text:'眠れないのか、それは大変だね。睡眠時間どれくらい？',
+           reply:'4時間とかですかね、最近は',
+           nextMood:'事実を話し始める',
+           score:{listen:3,empathy:3,question:4,feedback:0,action:0}, grade:'mid',
+           tip:'事実確認は大事だが、先に<b>感情の言語化</b>をもう一歩やりたい'},
+          {text:'みんな同じだよ、気合で乗り越えよう',
+           reply:'…はい、すみません',
+           nextMood:'心を閉じた',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>感情の否定</b>。「みんな」で片付けると本人は相談できなくなる。最も避けるべき返し'}
+        ]
+      },
+      {
+        sub:'自分って、そもそも営業向いてないのかもって思っちゃうんです',
+        mood:'自己否定モード',
+        choices:[
+          {text:'そう感じるくらい追い詰められてるんだね。ただ、半年前の田中くんはお客さんから「この人に任せたい」って指名もらってた。そこに向いてる素質は間違いなくある',
+           reply:'（目を上げる）…そんなふうに見ててくれたんですね',
+           nextMood:'自己肯定感が少し戻る',
+           score:{listen:4,empathy:10,feedback:6,question:0,action:0}, grade:'best',
+           tip:'<b>感情受容→事実に基づくFB</b>（SBIモデル）。抽象的な励ましでなく具体的事実を伝える'},
+          {text:'向き不向きより、今の状態をどう整えるかだね',
+           reply:'…そうですね、立て直しが先ですよね',
+           nextMood:'切り替え気味',
+           score:{listen:2,empathy:3,feedback:3,question:2,action:0}, grade:'mid',
+           tip:'論点整理は正しいが、感情を一回受け止めてから切り替える方が届く'},
+          {text:'向いてないと思うならもっと勉強すべきだよ',
+           reply:'…はい、努力不足ですね',
+           nextMood:'自己否定が強化',
+           score:{listen:0,empathy:0,feedback:0,question:0,action:0}, grade:'ng',
+           tip:'<b>自己否定の上塗り</b>。本人が弱音を吐いた瞬間は励ましのタイミングであって叱責の場面ではない'}
+        ]
+      },
+      {
+        sub:'（少し表情柔らか）…話聞いてもらえて、ちょっとホッとしました',
+        mood:'少し回復',
+        choices:[
+          {text:'じゃあ来週までに、業務の中で一番キツい2つを洗い出してみない？一緒に優先度つけ直そう。あと、産業医の面談も受けられるから必要ならいつでも言って',
+           reply:'ありがとうございます。そうします',
+           nextMood:'前向き',
+           score:{listen:0,empathy:0,question:0,feedback:8,action:12}, grade:'best',
+           tip:'<b>具体的な次アクション＋セーフティネット提示</b>。GROWモデルの「Will」段階。専門家への接続も示す'},
+          {text:'とりあえず来週もまた話そう。何かあったらSlack送って',
+           reply:'…はい、ありがとうございます',
+           nextMood:'やや不安残り',
+           score:{listen:2,empathy:3,question:0,feedback:2,action:3}, grade:'mid',
+           tip:'継続の意思はあるが、<b>今日決まった一歩</b>がない。不安を残したまま終わる'},
+          {text:'まあ来月頑張ろう。気合入れていこう',
+           reply:'…はい、頑張ります',
+           nextMood:'何も変わらず',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>精神論で締める</b>のは最悪のクロージング。1on1前と何も変わらない'}
+        ]
+      }
+    ]
+  },
+  {
+    id:'workload',
+    tag:'SCENARIO 02',
+    tagClass:'s2',
+    title:'業務負荷の偏り',
+    char:'佐藤 美咲（3年目・CS）',
+    avatar:'😥',
+    desc:'残業が増え顔色が優れない。チームで業務が偏って本人が抱え込んでいる。「大丈夫」と言い続ける。',
+    context:'部下は <b>佐藤 美咲</b>さん。3年目のカスタマーサクセス。問い合わせ対応が急増し、最近は週60〜70時間稼働。本人は「大丈夫です」と言い続けるが、顔色が悪く頭痛を訴える場面も。チーム内で業務が佐藤さんに集中している。',
+    turns:[
+      {
+        sub:'おはようございます。何でしょう、急に呼ばれて…',
+        mood:'警戒気味',
+        choices:[
+          {text:'忙しいとこごめんね。最近顔見る機会減ってたから、ちょっと話したくて。困ってることない？',
+           reply:'あ、いえ大丈夫です！問い合わせがちょっと多めなだけで、こなせてます',
+           nextMood:'一応は応える',
+           score:{listen:6,empathy:6,question:4,feedback:2,action:2}, grade:'best',
+           tip:'<b>対等なトーン＋オープン質問</b>。「急に呼んだ」ことへの配慮を先に言うのが効く'},
+          {text:'残業、増えてるよね。どんな感じ？',
+           reply:'あー、まあ、こなせてはいます',
+           nextMood:'少し硬い',
+           score:{listen:3,empathy:3,question:4,feedback:0,action:0}, grade:'mid',
+           tip:'事実ベースだが、いきなり残業の話だと詰められてる感じが出やすい'},
+          {text:'最近遅くまで残ってるみたいだけど、効率悪くない？',
+           reply:'…申し訳ないです、頑張ります',
+           nextMood:'完全に防御',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>原因を本人のせいにする入り</b>。頑張って残業してる人に最もかけてはいけない言葉'}
+        ]
+      },
+      {
+        sub:'大丈夫です！問い合わせがちょっと多めなだけで、こなせてます',
+        mood:'強がり',
+        choices:[
+          {text:'「こなせてる」はありがたい。ちなみに週の稼働、具体的にどのくらい？',
+           reply:'…先週は70時間くらい、ですかね',
+           nextMood:'事実を出す',
+           score:{listen:4,empathy:4,question:8,feedback:2,action:2}, grade:'best',
+           tip:'<b>感謝の受容＋具体数値を引き出す質問</b>。「大丈夫」という言葉を鵜呑みにせず事実確認'},
+          {text:'そうか、無理してない？',
+           reply:'はい、大丈夫です',
+           nextMood:'壁が残る',
+           score:{listen:3,empathy:4,question:3,feedback:0,action:0}, grade:'mid',
+           tip:'優しい質問だがYes/No型。「大丈夫」で終わらせず、<b>具体化</b>を狙うべき'},
+          {text:'大丈夫なら良かった。それで、数字の件なんだけど',
+           reply:'（あ、聞いてもらえないんだ、という表情）',
+           nextMood:'完全に閉じる',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>「大丈夫」をそのまま受け入れるのは最悪</b>。部下の我慢を見逃すサイン'}
+        ]
+      },
+      {
+        sub:'…先週は70時間くらい、ですかね。でも他メンバーも忙しいの知ってるから、自分でやれる分は…',
+        mood:'優しさで抱え込む',
+        choices:[
+          {text:'70時間か…それはキツいね。他メンバーを気遣ってくれる優しさは伝わるよ。ただ、倒れたら本末転倒だから、抱え込んでる部分を一回見せてもらえる？',
+           reply:'…わかりました。正直、最近頭痛もひどくて',
+           nextMood:'本音を出す',
+           score:{listen:6,empathy:8,question:6,feedback:0,action:0}, grade:'best',
+           tip:'<b>数値の受容＋優しさを肯定＋リスクを言語化</b>。3点セットで本音が引き出せる'},
+          {text:'70時間は多いね。案件の割り振り見直そうか',
+           reply:'あ、ありがとうございます',
+           nextMood:'事実は進むが感情スルー',
+           score:{listen:3,empathy:3,question:2,feedback:0,action:2}, grade:'mid',
+           tip:'解決策に飛んでるが、本人の「抱え込みの優しさ」を受け止めていない'},
+          {text:'他の人に振れないの？それが仕事じゃない？',
+           reply:'…すみません、調整します',
+           nextMood:'罪悪感',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>抱え込みを「本人の怠慢」として扱う</b>最悪の返し。優しさが仇で返る'}
+        ]
+      },
+      {
+        sub:'…正直、最近頭痛がひどくて。でも、自分が投げ出すと他のメンバーに迷惑かけるので…',
+        mood:'罪悪感',
+        choices:[
+          {text:'頭痛が続いてるのか、それは無理できないサインだね。佐藤さんがチームを思ってくれてるのはよく分かる。でも、今の働き方は「頑張り」じゃなくて「抱え込み」になっちゃってるかも。一緒に負荷の見える化しよう',
+           reply:'…ありがとうございます。少し、相談していいですか',
+           nextMood:'心を開く',
+           score:{listen:4,empathy:10,feedback:6,question:0,action:0}, grade:'best',
+           tip:'<b>体調受容＋優しさ肯定＋リフレーミング</b>。「頑張り」を「抱え込み」と言い換えて本人の認知を変える'},
+          {text:'頭痛は休んだ方がいいよ。体が資本だから',
+           reply:'…はい、すみません',
+           nextMood:'表面的に応じる',
+           score:{listen:2,empathy:3,feedback:3,question:0,action:2}, grade:'mid',
+           tip:'正論だが浅い。なぜ休めないかの<b>構造（抱え込み）</b>に踏み込めていない'},
+          {text:'みんな頭痛くらいあるよ、大丈夫大丈夫',
+           reply:'…そう、ですよね',
+           nextMood:'完全に話す気が失せる',
+           score:{listen:0,empathy:0,feedback:0,question:0,action:0}, grade:'ng',
+           tip:'<b>体調訴えを軽視</b>。これ以降、部下は絶対に体調の話をしなくなる'}
+        ]
+      },
+      {
+        sub:'…ありがとうございます。少し、相談していいですか',
+        mood:'扉が開いた',
+        choices:[
+          {text:'もちろん。今週中に案件リスト一緒に整理して、再割り振り案作ろう。それと、体調続くなら産業医に繋ぐから言ってね。金曜15時、30分抑えとくよ',
+           reply:'（ホッとした表情）ありがとうございます',
+           nextMood:'前向き',
+           score:{listen:0,empathy:2,question:0,feedback:6,action:12}, grade:'best',
+           tip:'<b>日時確定＋専門家接続＋役割分担</b>。「あとでやる」ではなく今この場で次が決まる'},
+          {text:'じゃ、案件整理してSlackで送って',
+           reply:'…はい、わかりました',
+           nextMood:'また1人で抱える',
+           score:{listen:2,empathy:2,question:0,feedback:3,action:3}, grade:'mid',
+           tip:'せっかく扉が開いたのに、<b>また本人にタスクを投げる</b>のは抱え込み構造の継続'},
+          {text:'相談はいつでもどうぞ。体調気をつけてね',
+           reply:'…はい、ありがとうございました',
+           nextMood:'何も変わらず',
+           score:{listen:2,empathy:2,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>「いつでも」は「今じゃない」と同義</b>。1on1後も状況は何も変わらない'}
+        ]
+      }
+    ]
+  },
+  {
+    id:'career',
+    tag:'SCENARIO 03',
+    tagClass:'s3',
+    title:'キャリア停滞感',
+    char:'山本 健（5年目・エンジニア）',
+    avatar:'🤔',
+    desc:'中堅として安定稼働しているが、最近「このままでいいのか」と漏らす。キャリアの迷いを抱える。',
+    context:'部下は <b>山本 健</b>さん。5年目のエンジニア。業務は安定してこなすが、最近同期が他社で昇進したニュースに触発され「このままでいいのか」と漏らしている。直近の昇進ポストは埋まっており、本人もどこに向かうべきか迷っている。',
+    turns:[
+      {
+        sub:'お時間ありがとうございます。特に困ってることは…ないんですけど',
+        mood:'無難に入る',
+        choices:[
+          {text:'全然ネタなくても大丈夫。最近どう？仕事以外も含めて',
+           reply:'…そういえば最近、このままでいいのかなって思うことが増えて',
+           nextMood:'本音が漏れる',
+           score:{listen:6,empathy:6,question:4,feedback:2,action:2}, grade:'best',
+           tip:'<b>「ネタなくてもOK」という安心宣言</b>。仕事以外も範囲に入れると本音が出やすい'},
+          {text:'困ってないなら良かった。何か気になってることある？',
+           reply:'…うーん、強いて言えばキャリアですかね',
+           nextMood:'少し話し出す',
+           score:{listen:3,empathy:3,question:4,feedback:0,action:0}, grade:'mid',
+           tip:'質問形式としては悪くないが、「困ってないなら良かった」で<b>深掘りの機会を半分閉じている</b>'},
+          {text:'困ってないならあとはよろしく。じゃあ次の議題に',
+           reply:'…あ、はい',
+           nextMood:'話す気ゼロに',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>1on1の意味が消える</b>。「困ってない」は本音を出すきっかけを失っただけの可能性大'}
+        ]
+      },
+      {
+        sub:'…そういえば最近、このままでいいのかなって思うことが増えて',
+        mood:'本音が出かけた',
+        choices:[
+          {text:'「このままでいいのか」って、もう少し聞かせて。どんな時にそう感じる？',
+           reply:'同期が他社で課長になったって聞いて。自分はずっと同じことやってる気がして…',
+           nextMood:'核心へ',
+           score:{listen:4,empathy:4,question:8,feedback:2,action:2}, grade:'best',
+           tip:'<b>相手の言葉をオウム返し＋具体化</b>。最高レベルのオープン質問。感情を引き出す'},
+          {text:'キャリアの話？何か目指したいものある？',
+           reply:'いや、それが分からないんですよ',
+           nextMood:'迷いを口にする',
+           score:{listen:2,empathy:2,question:4,feedback:1,action:1}, grade:'mid',
+           tip:'結論を急がせる質問。<b>感情を先に受け止める</b>ステップを飛ばしている'},
+          {text:'まだ5年目じゃん、十分若いよ',
+           reply:'…まあ、そうなんですけど',
+           nextMood:'言葉を飲み込む',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>悩みの矮小化</b>。本人が勇気を出して口にしたことを「気にしすぎ」で片付けてはいけない'}
+        ]
+      },
+      {
+        sub:'同期が他社で課長になったって聞いて。自分はずっと同じことやってる気がして…',
+        mood:'停滞感が言語化された',
+        choices:[
+          {text:'同期の動きが気になる気持ち、分かるよ。ただ、「同じことやってる」って感じるのは、具体的に何が足りないと感じてる？',
+           reply:'…正直、新しいチャレンジがないんですよね。できることが増えてる実感もなくて',
+           nextMood:'核心にさらに踏み込む',
+           score:{listen:6,empathy:8,question:6,feedback:0,action:0}, grade:'best',
+           tip:'<b>感情を受容＋本人の言葉を再掘り</b>。「同じこと」を具体化させることで本質に近づく'},
+          {text:'同期と比べなくていいよ。山本くんのペースがある',
+           reply:'…そうですよね',
+           nextMood:'一応頷く',
+           score:{listen:2,empathy:4,question:2,feedback:2,action:0}, grade:'mid',
+           tip:'励ましとしては優しいが、<b>比較の悩みそのものを解消していない</b>'},
+          {text:'うちはうち、よそはよそだよ',
+           reply:'…はい',
+           nextMood:'会話終了モード',
+           score:{listen:0,empathy:0,question:0,feedback:0,action:0}, grade:'ng',
+           tip:'<b>思考停止の返し</b>。会社目線のセリフで本人視点のキャリア対話が消える'}
+        ]
+      },
+      {
+        sub:'…正直、新しいチャレンジがないんですよね。できることが増えてる実感もなくて',
+        mood:'課題が明確になった',
+        choices:[
+          {text:'チャレンジの不足を感じてるのは大事な気づきだね。実は山本くんが昨年やった◯◯プロジェクトの基盤設計、他チームからもかなり評価されてる。ただ本人が成長実感を得られないのはズレがあるから、次は手応えが見える役割を一緒に探そう',
+           reply:'…役割を一緒に探すって、考えてくれるんですね',
+           nextMood:'希望が見える',
+           score:{listen:4,empathy:6,feedback:10,question:0,action:0}, grade:'best',
+           tip:'<b>SBIモデルでの事実FB＋ズレの言語化＋共創宣言</b>。抽象的な励ましでなく具体事例で認める'},
+          {text:'新しい挑戦か。ちなみに何に興味ある？',
+           reply:'…正直、それも分からなくて',
+           nextMood:'また迷いに戻る',
+           score:{listen:2,empathy:2,feedback:2,question:4,action:0}, grade:'mid',
+           tip:'質問自体は悪くないが、<b>本人の現状を認める</b>ステップを挟んでいない'},
+          {text:'チャレンジは自分で作るもんだよ',
+           reply:'…はい、そうですよね',
+           nextMood:'内省が止まる',
+           score:{listen:0,empathy:0,feedback:0,question:0,action:0}, grade:'ng',
+           tip:'<b>自己責任論</b>。マネージャーがキャリア支援を放棄する発言。1on1の存在意義を否定'}
+        ]
+      },
+      {
+        sub:'…役割を一緒に探すって、考えてくれるんですね',
+        mood:'希望',
+        choices:[
+          {text:'もちろん。来週までに興味ある技術領域を3つ書き出しといてもらえる？その上で、アサイン再調整と、外部勉強会の支援も含めて動き方考えよう',
+           reply:'ありがとうございます。やってみます',
+           nextMood:'前向き',
+           score:{listen:0,empathy:2,question:4,feedback:4,action:10}, grade:'best',
+           tip:'<b>具体タスク＋期限＋支援範囲明示</b>。GROWのWill段階。会社ができる支援も同時に提示'},
+          {text:'じゃ、また来月話そう',
+           reply:'…はい、ありがとうございます',
+           nextMood:'やや不安',
+           score:{listen:2,empathy:2,question:0,feedback:2,action:2}, grade:'mid',
+           tip:'また来月、は<b>具体性のない先送り</b>。希望が見えた瞬間に具体アクション提示をすべき'},
+          {text:'期待してるよ、頑張って',
+           reply:'…はい、頑張ります',
+           nextMood:'1人で抱える',
+           score:{listen:1,empathy:2,question:0,feedback:1,action:0}, grade:'ng',
+           tip:'<b>精神論の投げっぱなし</b>。マネージャーの介入ゼロで本人任せにする最悪のクロージング'}
+        ]
+      }
+    ]
+  }
+];
+
+const AXES = [
+  {key:'listen',  label:'傾聴',       color:'#3dd9b8', desc:'相手の話を遮らず受け止める'},
+  {key:'empathy', label:'共感',       color:'#ff6b9d', desc:'感情を認めて言語化する'},
+  {key:'question',label:'質問',       color:'#00d4ff', desc:'オープン質問で深掘り'},
+  {key:'feedback',label:'フィードバック',color:'#ff9248',desc:'具体的事実で認める(SBI)'},
+  {key:'action',  label:'アクション',  color:'#a855f7', desc:'次の一歩を合意する'}
+];
+
+const RANKS = [
+  {min:90, rank:'S',   label:'EXECUTIVE COACH',    comment:'部下の本音を引き出し、次の一歩まで合意できる熟練コーチングの領域。1on1で組織を変えられるレベルです。'},
+  {min:75, rank:'A',   label:'SENIOR MANAGER',     comment:'傾聴と質問のバランスが良く、部下が心を開ける1on1ができています。締めのアクション提示をもう一段磨くとSに届きます。'},
+  {min:60, rank:'B',   label:'GENERAL MANAGER',    comment:'一般的な1on1レベル。事実確認はできていますが、感情の受容と具体的FBで差がつきます。'},
+  {min:40, rank:'C',   label:'TRAINEE',            comment:'部下の本音を引き出す前にアドバイスに飛びがち。まず「聞く・受け止める」を意識するとスコアが伸びます。'},
+  {min:0,  rank:'D',   label:'NEEDS REVIEW',       comment:'1on1の前提から見直す必要があります。「解決」より「関係構築」が目的だと再認識することから始めましょう。'}
+];
+
+/* ============================
+   State
+   ============================ */
+let state = {
+  scenarioIdx:null,
+  turnIdx:0,
+  scores:{listen:0,empathy:0,question:0,feedback:0,action:0},
+  history:[]
+};
+
+/* ============================
+   シナリオ一覧の描画
+   ============================ */
+function renderScenarios(){
+  const list = document.getElementById('scenarioList');
+  list.innerHTML = SCENARIOS.map((s,i)=>`
+    <button class="scenario-card" data-idx="${i}" role="button" tabindex="0" aria-label="${s.title}を選択">
+      <span class="scenario-tag ${s.tagClass}">${s.tag}</span>
+      <div class="scenario-title">${s.title}</div>
+      <div class="scenario-char">${s.char}</div>
+      <div class="scenario-desc">${s.desc}</div>
+      <div class="scenario-meta">
+        <span>⏱ 約5〜7分</span>
+        <span>🗨 5ターン</span>
+      </div>
+    </button>
+  `).join('');
+  list.querySelectorAll('.scenario-card').forEach(card=>{
+    card.addEventListener('click',()=>startScenario(parseInt(card.dataset.idx)));
+    card.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click();}
+    });
+  });
+}
+
+/* ============================
+   シナリオ開始
+   ============================ */
+function startScenario(idx){
+  state.scenarioIdx = idx;
+  state.turnIdx = 0;
+  state.scores = {listen:0,empathy:0,question:0,feedback:0,action:0};
+  state.history = [];
+  const s = SCENARIOS[idx];
+  document.getElementById('dlgAvatar').textContent = s.avatar;
+  document.getElementById('dlgName').textContent = s.char.split('（')[0];
+  document.getElementById('dlgRole').textContent = s.char;
+  document.getElementById('chatContext').innerHTML = s.context;
+  document.getElementById('chatLog').innerHTML = '';
+  updateAxisBars();
+  renderTurn();
+  document.getElementById('dialogWrap').classList.add('active');
+  document.getElementById('resultWrap').classList.remove('active');
+  document.getElementById('dialogWrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ============================
+   ターンの描画
+   ============================ */
+function renderTurn(){
+  const s = SCENARIOS[state.scenarioIdx];
+  const t = s.turns[state.turnIdx];
+  document.getElementById('progressText').textContent = `${state.turnIdx+1} / ${s.turns.length}`;
+  document.getElementById('progressFill').style.width = `${((state.turnIdx)/s.turns.length)*100}%`;
+  const chatLog = document.getElementById('chatLog');
+  const msg = document.createElement('div');
+  msg.className = 'chat-msg sub';
+  msg.innerHTML = `
+    <div class="chat-avatar-sm">${s.avatar}</div>
+    <div>
+      <div class="chat-bubble">${t.sub}</div>
+      <div class="chat-mood">${t.mood}</div>
+    </div>
+  `;
+  chatLog.appendChild(msg);
+  renderChoices(t);
+}
+
+function renderChoices(t){
+  const wrap = document.getElementById('choicesWrap');
+  wrap.innerHTML = `<div class="choice-label">▸ あなたの返答を選んでください</div>
+    <div class="choices" role="radiogroup" aria-label="応答の選択肢">
+      ${t.choices.map((c,i)=>`
+        <button class="choice" data-choice-idx="${i}" role="radio">
+          <span class="choice-key">${['A','B','C'][i]}</span>
+          <span>${c.text}</span>
+        </button>
+      `).join('')}
+    </div>`;
+  wrap.querySelectorAll('.choice').forEach(btn=>{
+    btn.addEventListener('click',()=>selectChoice(parseInt(btn.dataset.choiceIdx)));
+  });
+}
+
+/* ============================
+   選択肢選択
+   ============================ */
+function selectChoice(ci){
+  const s = SCENARIOS[state.scenarioIdx];
+  const t = s.turns[state.turnIdx];
+  const c = t.choices[ci];
+  // 自分の発言を描画
+  const chatLog = document.getElementById('chatLog');
+  const myMsg = document.createElement('div');
+  myMsg.className = 'chat-msg me';
+  myMsg.innerHTML = `
+    <div class="chat-avatar-sm">YOU</div>
+    <div><div class="chat-bubble">${c.text}</div></div>
+  `;
+  chatLog.appendChild(myMsg);
+  // 部下の返答を描画
+  setTimeout(()=>{
+    const replyMsg = document.createElement('div');
+    replyMsg.className = 'chat-msg sub';
+    replyMsg.innerHTML = `
+      <div class="chat-avatar-sm">${s.avatar}</div>
+      <div>
+        <div class="chat-bubble">${c.reply}</div>
+        <div class="chat-mood">${c.nextMood}</div>
+      </div>
+    `;
+    chatLog.appendChild(replyMsg);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  },500);
+  // スコア加算
+  Object.keys(c.score).forEach(k=>state.scores[k]+=c.score[k]);
+  state.history.push({turnIdx:state.turnIdx, choice:c, subSay:t.sub});
+  updateAxisBars();
+  // 選択肢を無効化（選択済み表示）
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    if(i===ci) b.classList.add('selected');
+    else b.style.opacity='.4';
+    b.style.pointerEvents='none';
+  });
+  // 次へ
+  state.turnIdx++;
+  setTimeout(()=>{
+    document.getElementById('choicesWrap').innerHTML = '';
+    if(state.turnIdx >= s.turns.length){
+      showResult();
+    } else {
+      renderTurn();
+      document.getElementById('chatLog').scrollTop = document.getElementById('chatLog').scrollHeight;
+    }
+  },1100);
+}
+
+/* ============================
+   5軸バー更新
+   ============================ */
+function updateAxisBars(){
+  const total = Object.values(state.scores).reduce((a,b)=>a+b,0);
+  document.getElementById('axisTotal').textContent = `${total} / 100`;
+  AXES.forEach(a=>{
+    const v = state.scores[a.key];
+    // 各軸max20として正規化
+    const pct = Math.min(v/20*100, 100);
+    document.getElementById(`bar-${a.key}`).style.width = pct + '%';
+    document.getElementById(`val-${a.key}`).textContent = v;
+  });
+  document.getElementById('progressFill').style.width = `${(state.turnIdx/5)*100}%`;
+}
+
+/* ============================
+   結果表示
+   ============================ */
+function showResult(){
+  const total = Object.values(state.scores).reduce((a,b)=>a+b,0);
+  const rank = RANKS.find(r=>total>=r.min);
+  document.getElementById('resultRank').textContent = rank.rank;
+  document.getElementById('resultRankLabel').textContent = rank.label;
+  document.getElementById('resultScore').textContent = total;
+  document.getElementById('resultComment').textContent = rank.comment;
+
+  renderRadar();
+  renderLegend(total);
+  renderTurnsReview();
+
+  document.getElementById('dialogWrap').classList.remove('active');
+  document.getElementById('resultWrap').classList.add('active');
+  document.getElementById('resultWrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ============================
+   レーダーチャート（SVG自前描画）
+   ============================ */
+function renderRadar(){
+  const svg = document.getElementById('radarSvg');
+  const cx=150, cy=150, r=100;
+  const n = AXES.length;
+  // 背景グリッド
+  let html = '';
+  [0.25,0.5,0.75,1].forEach(k=>{
+    const pts = AXES.map((_,i)=>{
+      const ang = -Math.PI/2 + (Math.PI*2/n)*i;
+      return (cx + r*k*Math.cos(ang)) + ',' + (cy + r*k*Math.sin(ang));
+    }).join(' ');
+    html += `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
+  });
+  // 軸線
+  AXES.forEach((_,i)=>{
+    const ang = -Math.PI/2 + (Math.PI*2/n)*i;
+    const x2 = cx + r*Math.cos(ang);
+    const y2 = cy + r*Math.sin(ang);
+    html += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`;
+  });
+  // データポリゴン
+  const pts = AXES.map((a,i)=>{
+    const ang = -Math.PI/2 + (Math.PI*2/n)*i;
+    const v = Math.min(state.scores[a.key]/20, 1);
+    return (cx + r*v*Math.cos(ang)) + ',' + (cy + r*v*Math.sin(ang));
+  }).join(' ');
+  html += `<polygon points="${pts}" fill="url(#radarGrad)" stroke="#3d7dff" stroke-width="2"/>`;
+  // 頂点ドット
+  AXES.forEach((a,i)=>{
+    const ang = -Math.PI/2 + (Math.PI*2/n)*i;
+    const v = Math.min(state.scores[a.key]/20, 1);
+    const x = cx + r*v*Math.cos(ang);
+    const y = cy + r*v*Math.sin(ang);
+    html += `<circle cx="${x}" cy="${y}" r="5" fill="${a.color}" stroke="#141826" stroke-width="2"/>`;
+  });
+  // ラベル
+  AXES.forEach((a,i)=>{
+    const ang = -Math.PI/2 + (Math.PI*2/n)*i;
+    const lx = cx + (r+22)*Math.cos(ang);
+    const ly = cy + (r+22)*Math.sin(ang);
+    html += `<text x="${lx}" y="${ly}" fill="${a.color}" font-size="13" font-weight="700" text-anchor="middle" dominant-baseline="middle" font-family="Noto Sans JP,sans-serif">${a.label}</text>`;
+  });
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="radarGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#3d7dff" stop-opacity=".4"/>
+        <stop offset="100%" stop-color="#00d4ff" stop-opacity=".2"/>
+      </linearGradient>
+    </defs>
+    ${html}
+  `;
+}
+
+function renderLegend(){
+  const el = document.getElementById('radarLegend');
+  el.innerHTML = AXES.map(a=>`
+    <div class="legend-item">
+      <div class="legend-color" style="background:${a.color}"></div>
+      <div class="legend-text">
+        <div class="legend-name">${a.label}</div>
+        <div class="legend-desc">${a.desc}</div>
+      </div>
+      <div class="legend-score">${state.scores[a.key]}<span style="font-size:12px;color:var(--text-dim)">/20</span></div>
+    </div>
+  `).join('');
+}
+
+/* ============================
+   ターン別振り返り
+   ============================ */
+function renderTurnsReview(){
+  const wrap = document.getElementById('turnsReview');
+  wrap.innerHTML = state.history.map((h,i)=>{
+    const gradeMap = {best:'理想', mid:'まずまず', ng:'要改善'};
+    return `
+      <div class="turn-item">
+        <div class="turn-item-header">
+          <span>TURN ${i+1}</span>
+          <span class="turn-grade ${h.choice.grade}">${gradeMap[h.choice.grade]}</span>
+        </div>
+        <div class="turn-chose"><b>あなたの選択：</b>${h.choice.text}</div>
+        <div class="turn-tip">${h.choice.tip}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============================
+   操作アクション
+   ============================ */
+function retry(){
+  startScenario(state.scenarioIdx);
+}
+function restart(){
+  document.getElementById('resultWrap').classList.remove('active');
+  document.getElementById('dialogWrap').classList.remove('active');
+  document.getElementById('scenarios').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function shareX(){
+  const total = Object.values(state.scores).reduce((a,b)=>a+b,0);
+  const rank = RANKS.find(r=>total>=r.min);
+  const s = SCENARIOS[state.scenarioIdx];
+  const text = `【1on1コーチングシミュレーター】\nシナリオ：${s.title}\nスコア：${total}/100（ランク${rank.rank} - ${rank.label}）\n\n部下の本音を引き出す1on1、あなたもやってみる？\n#1on1コーチング #健康経営`;
+  const url = window.location.href;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,'_blank');
+}
+
+/* 初期化 */
+renderScenarios();
+</script>
+</body>
+</html>

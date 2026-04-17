@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康経営スコアシート｜5カテゴリ25問の自己診断</title>
+<meta name="description" content="5カテゴリ・25問で自社の健康経営レベルを数値化。カテゴリ別スコア・レーダーチャート・優先度付き改善アドバイスまで自動生成。NSCA-CPT監修。">
+<meta property="og:title" content="健康経営スコアシート｜25問の自己診断">
+<meta property="og:description" content="経営コミットメント・制度・運動・メンタル・生活習慣の5軸で可視化。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📋%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #141826;
+  --bg-secondary: #1a1f30;
+  --bg-card: #1e2335;
+  --bg-card-hover: #282e45;
+  --border: #2e3654;
+  --border-active: #8cbfff;
+  --text-primary: #f2f5fc;
+  --text-secondary: #a3b0d4;
+  --text-muted: #6a7699;
+  --accent-blue: #8cbfff;
+  --accent-green: #65d483;
+  --accent-purple: #c38eff;
+  --accent-orange: #ffa86b;
+  --accent-gold: #f2c75c;
+  --accent-red: #f26b7c;
+  --accent-cyan: #65d483;
+  --gradient-blue: linear-gradient(135deg, #8cbfff, #c38eff);
+  --gradient-green: linear-gradient(135deg, #65d483, #8cbfff);
+  --gradient-purple: linear-gradient(135deg, #c38eff, #8cbfff);
+  --radius: 12px;
+  --radius-lg: 16px;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.mono { font-family: 'DM Mono', monospace; }
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 20% 15%, rgba(101,212,131,0.05) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 30%, rgba(140,191,255,0.05) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 90%, rgba(195,142,255,0.04) 0%, transparent 50%);
+  z-index: -1;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 998;
+}
+i[data-lucide] { width: 1em; height: 1em; stroke-width: 2; vertical-align: -0.125em; }
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  background: var(--gradient-blue);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.category {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s;
+}
+
+.category:hover {
+  border-color: var(--border-active);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.category-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.category-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(30, 34, 64, 0.5);
+}
+
+.question:last-child {
+  border-bottom: none;
+}
+
+.question-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  flex: 1;
+  padding-right: 16px;
+}
+
+.score-buttons {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.score-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Mono', monospace;
+}
+
+.score-btn:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.score-btn.active {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+}
+
+.score-btn.active.green { background: var(--accent-green); border-color: var(--accent-green); color: #141826; box-shadow: 0 0 12px rgba(101,212,131,0.3); }
+.score-btn.active.purple { background: var(--accent-purple); border-color: var(--accent-purple); color: #141826; box-shadow: 0 0 12px rgba(195,142,255,0.3); }
+.score-btn.active.orange { background: var(--accent-orange); border-color: var(--accent-orange); color: #141826; box-shadow: 0 0 12px rgba(255,168,107,0.3); }
+.score-btn.active.cyan { background: var(--accent-gold); border-color: var(--accent-gold); color: #141826; box-shadow: 0 0 12px rgba(242,199,92,0.3); }
+.score-btn.active { color: #141826; }
+
+.results-section {
+  display: none;
+  margin-top: 40px;
+}
+
+.results-section.visible {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.total-score {
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  margin-bottom: 24px;
+}
+
+.total-score .score-number {
+  font-size: 4rem;
+  font-weight: 900;
+  font-family: 'DM Mono', monospace;
+}
+
+.total-score .score-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.total-score .score-grade {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.chart-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-container canvas {
+  max-height: 350px;
+}
+
+.advice-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.advice-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.advice-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.priority-tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.priority-high { background: rgba(242,107,124,0.15); color: var(--accent-red); border: 1px solid rgba(242,107,124,0.3); }
+.priority-medium { background: rgba(255,168,107,0.15); color: var(--accent-orange); border: 1px solid rgba(255,168,107,0.3); }
+.priority-low { background: rgba(101,212,131,0.15); color: var(--accent-green); border: 1px solid rgba(101,212,131,0.3); }
+
+.calc-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--gradient-blue);
+  border: none;
+  border-radius: var(--radius);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: opacity 0.2s, transform 0.2s;
+  margin-top: 30px;
+}
+
+.calc-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.calc-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.category-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.bar-label {
+  width: 140px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+.bar-value {
+  width: 50px;
+  text-align: right;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* ===== NAV ===== */
+.nav {
+  padding: 0 0 16px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.nav-logo { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.nav-logo i[data-lucide] { color: var(--accent-blue); }
+.nav-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--accent-blue); background: rgba(140,191,255,0.1);
+  border: 1px solid rgba(140,191,255,0.3);
+  padding: 6px 12px; border-radius: 100px; letter-spacing: 1px;
+}
+.nav-badge i[data-lucide] { width: 12px; height: 12px; }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 40px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 36px; position: relative;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(140,191,255,0.1), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(195,142,255,0.08), transparent 45%);
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; text-align: center; max-width: 700px; margin: 0 auto; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text-secondary); background: var(--bg-card);
+  border: 1px solid var(--border); padding: 6px 14px;
+  border-radius: 100px; letter-spacing: 1.5px; margin-bottom: 20px;
+}
+.hero-title {
+  font-size: 38px; font-weight: 800; line-height: 1.2;
+  letter-spacing: -0.5px; margin-bottom: 16px;
+}
+.hero-title .gradient {
+  background: linear-gradient(120deg, var(--accent-blue), var(--accent-purple));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub {
+  font-size: 14px; color: var(--text-secondary); line-height: 1.8;
+}
+.hero-sub strong { color: var(--text-primary); font-weight: 600; }
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 48px; padding: 32px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-links {
+  display: flex; gap: 12px; justify-content: center; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.footer-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-secondary);
+  text-decoration: none; padding: 8px 16px;
+  border: 1px solid var(--border); border-radius: 100px;
+  transition: all 0.2s;
+}
+.footer-link:hover { color: var(--text-primary); border-color: var(--text-muted); background: var(--bg-card); }
+.footer-link i[data-lucide] { width: 14px; height: 14px; }
+.footer-creator {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 20px; margin-bottom: 16px;
+}
+.footer-creator-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--bg-primary); flex-shrink: 0;
+}
+.footer-creator-icon i[data-lucide] { width: 18px; height: 18px; }
+.footer-creator-text { text-align: left; font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+.footer-creator-text strong { color: var(--text-primary); font-weight: 600; display: block; font-size: 13px; }
+.footer-meta {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text-muted); letter-spacing: 1.5px;
+}
+
+/* a11y */
+button:focus-visible, a:focus-visible, select:focus-visible {
+  outline: 2px solid var(--text-primary); outline-offset: 3px; border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+  header h1 { font-size: 1.5rem; }
+  .hero-title { font-size: 28px; }
+  .hero-sub { font-size: 13px; }
+  .question { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .score-buttons { align-self: flex-end; }
+  .total-score .score-number { font-size: 3rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="clipboard-check"></i>HEALTH SCORECARD</div>
+    <div class="nav-badge"><i data-lucide="shield-check"></i>NSCA-CPT 監修</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><i data-lucide="sparkles" style="color:var(--accent-gold);"></i>  5 CATEGORIES × 25 QUESTIONS</div>
+      <h1 class="hero-title">
+        自社の健康経営レベルを、<br>
+        <span class="gradient">5分で数値化する。</span>
+      </h1>
+      <p class="hero-sub">
+        経営コミットメント・制度・運動・メンタル・生活習慣の<strong>5軸25問</strong>で回答すると、<br>
+        カテゴリ別スコア・レーダーチャート・<strong>優先度付き改善アドバイス</strong>を自動生成します。
+      </p>
+    </div>
+  </section>
+
+  <div id="questionnaire">
+    <!-- カテゴリ1: 経営層のコミットメント -->
+    <div class="category" data-category="commitment">
+      <div class="category-header">
+        <div class="category-icon" style="background: rgba(140,191,255,0.15); color: var(--accent-blue);">👔</div>
+        <div>
+          <div class="category-title">経営層のコミットメント</div>
+          <div class="category-subtitle">トップの本気度を測る</div>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">健康経営に関する全社方針を経営トップが明文化している</span>
+        <div class="score-buttons" data-q="q1">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">健康経営の推進に専任または兼任の担当者がいる</span>
+        <div class="score-buttons" data-q="q2">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">健康経営に関する予算が確保されている</span>
+        <div class="score-buttons" data-q="q3">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">経営会議で従業員の健康データが定期的に報告されている</span>
+        <div class="score-buttons" data-q="q4">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">健康経営優良法人の認定を取得している（または申請予定）</span>
+        <div class="score-buttons" data-q="q5">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- カテゴリ2: 制度・環境整備 -->
+    <div class="category" data-category="system">
+      <div class="category-header">
+        <div class="category-icon" style="background: rgba(101,212,131,0.15); color: var(--accent-green);">🏢</div>
+        <div>
+          <div class="category-title">制度・環境整備</div>
+          <div class="category-subtitle">働く環境のヘルシー度</div>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">定期健康診断の受診率が95%以上である</span>
+        <div class="score-buttons green" data-q="q6">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">ストレスチェックの結果を組織改善に活用している</span>
+        <div class="score-buttons green" data-q="q7">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">長時間労働への対策（残業上限・ノー残業デー等）がある</span>
+        <div class="score-buttons green" data-q="q8">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">有給休暇の取得率が70%以上である</span>
+        <div class="score-buttons green" data-q="q9">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">産業医・保健師と連携した健康管理体制がある</span>
+        <div class="score-buttons green" data-q="q10">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- カテゴリ3: 運動・フィジカル -->
+    <div class="category" data-category="physical">
+      <div class="category-header">
+        <div class="category-icon" style="background: rgba(255,168,107,0.15); color: var(--accent-orange);">💪</div>
+        <div>
+          <div class="category-title">運動・フィジカル</div>
+          <div class="category-subtitle">身体を動かす文化があるか</div>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">社内に運動促進の施策（部活動・ジム補助等）がある</span>
+        <div class="score-buttons orange" data-q="q11">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">定期的な運動習慣のある社員の割合を把握している</span>
+        <div class="score-buttons orange" data-q="q12">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">ウォーキングイベントや体力測定など社内イベントを実施している</span>
+        <div class="score-buttons orange" data-q="q13">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">デスクワーカー向けのストレッチ・姿勢改善プログラムがある</span>
+        <div class="score-buttons orange" data-q="q14">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">運動関連の施策に対する参加率を測定している</span>
+        <div class="score-buttons orange" data-q="q15">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- カテゴリ4: メンタルヘルス -->
+    <div class="category" data-category="mental">
+      <div class="category-header">
+        <div class="category-icon" style="background: rgba(195,142,255,0.15); color: var(--accent-purple);">🧠</div>
+        <div>
+          <div class="category-title">メンタルヘルス</div>
+          <div class="category-subtitle">心の健康を守る仕組み</div>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">従業員が気軽に相談できる窓口（EAP等）を設置している</span>
+        <div class="score-buttons purple" data-q="q16">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">管理職向けのメンタルヘルス研修を実施している</span>
+        <div class="score-buttons purple" data-q="q17">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">休職者の復帰支援プログラムがある</span>
+        <div class="score-buttons purple" data-q="q18">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">心理的安全性を高める取り組み（1on1・サーベイ等）がある</span>
+        <div class="score-buttons purple" data-q="q19">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">メンタル不調の早期発見のための仕組みがある</span>
+        <div class="score-buttons purple" data-q="q20">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- カテゴリ5: 食事・生活習慣 -->
+    <div class="category" data-category="lifestyle">
+      <div class="category-header">
+        <div class="category-icon" style="background: rgba(242,199,92,0.15); color: var(--accent-gold);">🥗</div>
+        <div>
+          <div class="category-title">食事・生活習慣</div>
+          <div class="category-subtitle">日常の健康リテラシー</div>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">社員食堂や自販機でヘルシーな選択肢を用意している</span>
+        <div class="score-buttons cyan" data-q="q21">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">禁煙の支援制度や喫煙率低下の目標がある</span>
+        <div class="score-buttons cyan" data-q="q22">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">栄養に関するセミナーや情報提供を行っている</span>
+        <div class="score-buttons cyan" data-q="q23">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">睡眠改善に関する取り組みや啓発がある</span>
+        <div class="score-buttons cyan" data-q="q24">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+      <div class="question">
+        <span class="question-text">健康リテラシー向上のための教育プログラムがある</span>
+        <div class="score-buttons cyan" data-q="q25">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" id="calcBtn" disabled onclick="calculateScore()">
+      スコアを算出する（全25問回答後に有効化）
+    </button>
+  </div>
+
+  <div class="results-section" id="results">
+    <div class="total-score" id="totalScoreCard">
+      <div class="score-number" id="totalScore">0</div>
+      <div class="score-label">/ 125点</div>
+      <div class="score-grade" id="scoreGrade"></div>
+    </div>
+
+    <div class="chart-container">
+      <h3 style="margin-bottom: 16px; font-size: 1rem;">カテゴリ別スコア</h3>
+      <div id="barChart">
+        <div class="category-score-bar">
+          <span class="bar-label">経営コミットメント</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-commitment" style="width:0; background: var(--gradient-blue);"></div></div>
+          <span class="bar-value" id="val-commitment">0</span>
+        </div>
+        <div class="category-score-bar">
+          <span class="bar-label">制度・環境整備</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-system" style="width:0; background: var(--gradient-green);"></div></div>
+          <span class="bar-value" id="val-system">0</span>
+        </div>
+        <div class="category-score-bar">
+          <span class="bar-label">運動・フィジカル</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-physical" style="width:0; background: linear-gradient(135deg, #ffa86b, #f2c75c);"></div></div>
+          <span class="bar-value" id="val-physical">0</span>
+        </div>
+        <div class="category-score-bar">
+          <span class="bar-label">メンタルヘルス</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-mental" style="width:0; background: var(--gradient-purple);"></div></div>
+          <span class="bar-value" id="val-mental">0</span>
+        </div>
+        <div class="category-score-bar">
+          <span class="bar-label">食事・生活習慣</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-lifestyle" style="width:0; background: linear-gradient(135deg, #f2c75c, #65d483);"></div></div>
+          <span class="bar-value" id="val-lifestyle">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="radarChart"></canvas>
+    </div>
+
+    <div id="adviceContainer"></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="ポートフォリオまとめ.html" class="footer-link"><i data-lucide="arrow-left"></i>ポートフォリオTOPへ戻る</a>
+      <a href="健康経営AI診断ツールv5.html" class="footer-link"><i data-lucide="brain-circuit"></i>AI診断ツール</a>
+      <a href="組織健康ダッシュボード.html" class="footer-link"><i data-lucide="layout-dashboard"></i>ダッシュボード</a>
+    </div>
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        健康経営・HRテック領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; SCORECARD v1</div>
+  </footer>
+</div>
+
+<script>
+lucide.createIcons();
+
+const answers = {};
+const totalQuestions = 25;
+const categories = {
+  commitment: { questions: ['q1','q2','q3','q4','q5'], label: '経営コミットメント' },
+  system:     { questions: ['q6','q7','q8','q9','q10'], label: '制度・環境整備' },
+  physical:   { questions: ['q11','q12','q13','q14','q15'], label: '運動・フィジカル' },
+  mental:     { questions: ['q16','q17','q18','q19','q20'], label: 'メンタルヘルス' },
+  lifestyle:  { questions: ['q21','q22','q23','q24','q25'], label: '食事・生活習慣' }
+};
+
+document.querySelectorAll('.score-buttons').forEach(group => {
+  const qId = group.dataset.q;
+  const colorClass = group.classList.contains('green') ? 'green' :
+                     group.classList.contains('purple') ? 'purple' :
+                     group.classList.contains('orange') ? 'orange' :
+                     group.classList.contains('cyan') ? 'cyan' : '';
+
+  group.querySelectorAll('.score-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.score-btn').forEach(b => b.classList.remove('active', 'green', 'purple', 'orange', 'cyan'));
+      btn.classList.add('active');
+      if (colorClass) btn.classList.add(colorClass);
+      answers[qId] = parseInt(btn.dataset.score);
+      checkComplete();
+    });
+  });
+});
+
+function checkComplete() {
+  const answered = Object.keys(answers).length;
+  const btn = document.getElementById('calcBtn');
+  btn.disabled = answered < totalQuestions;
+  btn.textContent = answered < totalQuestions
+    ? `スコアを算出する（残り ${totalQuestions - answered} 問）`
+    : 'スコアを算出する';
+}
+
+function calculateScore() {
+  const catScores = {};
+  let total = 0;
+
+  for (const [catKey, cat] of Object.entries(categories)) {
+    let sum = 0;
+    cat.questions.forEach(q => { sum += answers[q] || 0; });
+    catScores[catKey] = sum;
+    total += sum;
+  }
+
+  // Display total
+  const scoreEl = document.getElementById('totalScore');
+  scoreEl.textContent = total;
+
+  // Grade
+  const gradeEl = document.getElementById('scoreGrade');
+  let grade, gradeColor;
+  if (total >= 100) { grade = 'S ランク — 健康経営のトップランナー'; gradeColor = 'var(--accent-gold)'; }
+  else if (total >= 80) { grade = 'A ランク — 高い水準で実践中'; gradeColor = 'var(--accent-blue)'; }
+  else if (total >= 60) { grade = 'B ランク — 基盤はあるが改善余地あり'; gradeColor = 'var(--accent-green)'; }
+  else if (total >= 40) { grade = 'C ランク — 取り組み初期段階'; gradeColor = 'var(--accent-orange)'; }
+  else { grade = 'D ランク — まずは基盤づくりから'; gradeColor = 'var(--accent-red)'; }
+  gradeEl.textContent = grade;
+  gradeEl.style.color = gradeColor;
+  scoreEl.style.color = gradeColor;
+
+  // Bar chart
+  for (const [catKey, score] of Object.entries(catScores)) {
+    const pct = (score / 25) * 100;
+    document.getElementById(`bar-${catKey}`).style.width = pct + '%';
+    document.getElementById(`val-${catKey}`).textContent = score + '/25';
+  }
+
+  // Radar chart
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (window.radarChartInstance) window.radarChartInstance.destroy();
+  window.radarChartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: Object.values(categories).map(c => c.label),
+      datasets: [{
+        label: '御社のスコア',
+        data: Object.values(catScores),
+        backgroundColor: 'rgba(140, 191, 255, 0.15)',
+        borderColor: '#8cbfff',
+        borderWidth: 2,
+        pointBackgroundColor: '#8cbfff',
+        pointBorderColor: '#141826',
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 25,
+          ticks: { stepSize: 5, color: '#6a7699', backdropColor: 'transparent' },
+          grid: { color: 'rgba(46, 54, 84, 0.6)' },
+          pointLabels: { color: '#a3b0d4', font: { size: 12 } },
+          angleLines: { color: 'rgba(46, 54, 84, 0.6)' }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Advice
+  generateAdvice(catScores);
+
+  // Show results
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function generateAdvice(catScores) {
+  const container = document.getElementById('adviceContainer');
+  container.innerHTML = '<h3 style="margin-bottom: 16px; font-size: 1.1rem; font-weight: 700;">改善アドバイス</h3>';
+
+  const adviceMap = {
+    commitment: {
+      low: '経営トップが「健康経営宣言」を出すところから始めましょう。社内報や朝礼で一言触れるだけでも、組織の意識は変わります。',
+      mid: '健康経営推進委員会を設置し、KPIを設定しましょう。経産省の健康経営優良法人の認定申請も視野に入ります。',
+      high: '素晴らしいコミットメントです。次は外部発信（IR・採用ブランディング）に健康経営を組み込むフェーズです。'
+    },
+    system: {
+      low: 'まず健診受診率100%を目指しましょう。受診勧奨の仕組みと、受けやすい環境（就業時間内実施等）が効果的です。',
+      mid: 'ストレスチェックの集団分析結果を部門別に活用し、職場環境の改善につなげましょう。産業医との連携強化も重要です。',
+      high: '制度の充実度は申し分ありません。次はデータの統合管理（健診・残業・離職率の横断分析）でさらに精度を上げましょう。'
+    },
+    physical: {
+      low: 'まずは「歩数チャレンジ」など参加ハードルの低い施策から始めましょう。部署対抗にすると盛り上がりやすいです。',
+      mid: '運動習慣のある社員のデータを「見える化」しましょう。定期的な体力測定で変化を追えると、モチベーションが継続します。',
+      high: '運動文化が根付いています。次はパーソナルトレーナーとの連携や、オンラインフィットネスの導入で選択肢を広げましょう。'
+    },
+    mental: {
+      low: 'まず相談窓口（EAP）の設置と、その存在の周知から始めましょう。「使っても人事評価に影響しない」と明言することが大切です。',
+      mid: 'ラインケア研修（管理職向け）を定期実施しましょう。部下の変化に気づく力が、早期対応の鍵です。',
+      high: '予防から復職支援まで整っています。次はエンゲージメントサーベイと連動させ、組織全体のウェルビーイングを可視化しましょう。'
+    },
+    lifestyle: {
+      low: '社内自販機の飲料ラインナップの見直しや、禁煙デーの設定など、小さな「ナッジ」から始めましょう。',
+      mid: '栄養セミナーや睡眠改善プログラムの導入フェーズです。外部の管理栄養士・睡眠コンサルタントの活用も効果的です。',
+      high: '生活習慣への取り組みが充実しています。個人の行動変容データ（歩数・食事記録等）をアプリで集約し、PDCAを回しましょう。'
+    }
+  };
+
+  const sorted = Object.entries(catScores).sort((a, b) => a[1] - b[1]);
+
+  sorted.forEach(([catKey, score], i) => {
+    const cat = categories[catKey];
+    const level = score <= 10 ? 'low' : score <= 18 ? 'mid' : 'high';
+    const priority = i < 2 ? 'high' : i < 4 ? 'medium' : 'low';
+    const priorityLabel = priority === 'high' ? '優先度：高' : priority === 'medium' ? '優先度：中' : '優先度：低';
+    const emoji = priority === 'high' ? '🔴' : priority === 'medium' ? '🟡' : '🟢';
+
+    const card = document.createElement('div');
+    card.className = 'advice-card';
+    card.innerHTML = `
+      <h3>${emoji} ${cat.label} <span class="priority-tag priority-${priority}">${priorityLabel}</span></h3>
+      <p>${adviceMap[catKey][level]}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生活習慣インプルーバー｜AIサポートツール</title>
+<meta name="description" content="食事・運動・睡眠の3領域を、あなたのデータに合わせてAIが設計。NSCA-CPT保有・パーソナルトレーナー歴11年の知見を反映した、続けられる現実解を提案します。">
+<meta property="og:title" content="生活習慣インプルーバー｜食事・運動・睡眠 AI改善ツール">
+<meta property="og:description" content="NSCA-CPT監修。あなたのデータから「今日できる1歩」をAIが設計。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --meal-bg: rgba(101,212,131,0.1);
+  --meal-bd: rgba(101,212,131,0.25);
+  --train-c: #8cbfff;
+  --train-bg: rgba(140,191,255,0.1);
+  --train-bd: rgba(140,191,255,0.25);
+  --sleep-c: #c38eff;
+  --sleep-bg: rgba(195,142,255,0.1);
+  --sleep-bd: rgba(195,142,255,0.25);
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 999;
+}
+.wrap{max-width:740px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+
+i[data-lucide] {
+  width: 1em;
+  height: 1em;
+  stroke-width: 2;
+  vertical-align: -0.125em;
+}
+
+/* HEADER */
+.header{padding:24px 0 16px;display:flex;justify-content:space-between;align-items:center;}
+.header-title{font-size:15px;font-weight:700;color:var(--text); letter-spacing: 0.5px; display:flex; align-items:center; gap:8px;}
+.nav-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); background: rgba(242,199,92,0.1); border: 1px solid rgba(242,199,92,0.3); padding: 6px 12px; border-radius: 100px; letter-spacing: 1px; }
+.nav-badge::before { content: ''; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: pulse 2s infinite; }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 48px 0 56px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+  position: relative;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 20% 30%, rgba(101,212,131,0.08), transparent 45%),
+              radial-gradient(circle at 80% 20%, rgba(140,191,255,0.08), transparent 45%),
+              radial-gradient(circle at 50% 80%, rgba(195,142,255,0.08), transparent 45%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text2); background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 6px 14px; border-radius: 100px;
+  letter-spacing: 1.5px; margin-bottom: 24px;
+}
+.hero-title {
+  font-size: 40px; font-weight: 800; line-height: 1.2;
+  letter-spacing: -0.5px; margin-bottom: 20px;
+}
+.hero-title .gradient {
+  background: linear-gradient(120deg, var(--meal-c), var(--train-c), var(--sleep-c));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub {
+  font-size: 15px; color: var(--text2); line-height: 1.8;
+  margin-bottom: 32px; max-width: 560px;
+}
+.hero-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  margin-bottom: 32px;
+}
+.hero-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px 14px;
+}
+.hero-stat-num {
+  font-family: 'DM Mono', monospace; font-size: 22px;
+  font-weight: 500; line-height: 1; margin-bottom: 4px;
+}
+.hero-stat-label { font-size: 11px; color: var(--text3); letter-spacing: 1px; font-family: 'DM Mono', monospace; text-transform: uppercase; }
+.hero-stat:nth-child(1) .hero-stat-num { color: var(--meal-c); }
+.hero-stat:nth-child(2) .hero-stat-num { color: var(--train-c); }
+.hero-stat:nth-child(3) .hero-stat-num { color: var(--sleep-c); }
+.hero-supervisor {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 18px;
+}
+.hero-supervisor-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--train-c), var(--sleep-c));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--bg); flex-shrink: 0;
+}
+.hero-supervisor-icon i[data-lucide] { width: 20px; height: 20px; }
+.hero-supervisor-text { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.hero-supervisor-text strong { color: var(--text); font-weight: 600; }
+.hero-scroll {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text3); letter-spacing: 2px; margin-top: 28px;
+  animation: scroll-hint 2s ease-in-out infinite;
+}
+@keyframes scroll-hint {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:28px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 6px;border-radius:12px;cursor:pointer;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);font-size:13px;font-weight:600;color:var(--text3);user-select:none;border:1px solid transparent;}
+.tab:hover{color:var(--text2);}
+.tab i[data-lucide] { width: 16px; height: 16px; }
+.tab.active-meal{background:var(--meal-bg);color:var(--meal-c);border-color:var(--meal-bd);}
+.tab.active-train{background:var(--train-bg);color:var(--train-c);border-color:var(--train-bd);}
+.tab.active-sleep{background:var(--sleep-bg);color:var(--sleep-c);border-color:var(--sleep-bd);}
+
+.panel{display:none;}
+.panel.active{display:block;animation:fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.card-title small{font-size:11px;color:var(--text3);font-weight:400;font-family:'DM Mono',monospace;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+label{font-size:11px;color:var(--text3);letter-spacing:1.5px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+input[type=number],input[type=text],select{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);
+  font-family:inherit;width:100%;appearance:none;transition:border-color 0.2s, box-shadow 0.2s;
+}
+input:focus,select:focus{outline:none; box-shadow: 0 0 0 3px rgba(255,255,255,0.05);}
+.panel-meal input:focus,.panel-meal select:focus{border-color:var(--meal-c);}
+.panel-train input:focus,.panel-train select:focus{border-color:var(--train-c);}
+.panel-sleep input:focus,.panel-sleep select:focus{border-color:var(--sleep-c);}
+input::placeholder{color:var(--text3);}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5682' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:32px;}
+
+.tag-group{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:8px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.2s;user-select:none;}
+.tag:hover{border-color:var(--border2); color:var(--text);}
+.tag i[data-lucide]{width:14px; height:14px; opacity:0.7;}
+.tag.sel i[data-lucide]{opacity:1;}
+.tag-check{width:14px;height:14px;border-radius:4px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;transition:all 0.2s;}
+.panel-meal .tag.sel{background:var(--meal-bg);border-color:var(--meal-c);color:var(--meal-c);}
+.panel-meal .tag.sel .tag-check{background:var(--meal-c);border-color:var(--meal-c);}
+.panel-meal .tag.sel .tag-check::after{content:'✓';color:var(--bg);}
+.panel-meal .tag-single.sel{background:var(--meal-bg);border-color:var(--meal-c);color:var(--meal-c);}
+.panel-train .tag.sel{background:var(--train-bg);border-color:var(--train-c);color:var(--train-c);}
+.panel-train .tag.sel .tag-check{background:var(--train-c);border-color:var(--train-c);}
+.panel-train .tag.sel .tag-check::after{content:'✓';color:var(--bg);}
+.panel-train .tag-single.sel{background:var(--train-bg);border-color:var(--train-c);color:var(--train-c);}
+.panel-sleep .tag.sel{background:var(--sleep-bg);border-color:var(--sleep-c);color:var(--sleep-c);}
+.panel-sleep .tag.sel .tag-check{background:var(--sleep-c);border-color:var(--sleep-c);}
+.panel-sleep .tag.sel .tag-check::after{content:'✓';color:var(--bg);}
+.panel-sleep .tag-single.sel{background:var(--sleep-bg);border-color:var(--sleep-c);color:var(--sleep-c);}
+
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.slider-val{font-size:14px;font-weight:600;min-width:32px;text-align:right;font-family:'DM Mono',monospace;}
+.panel-meal .slider-val{color:var(--meal-c);}
+.panel-train .slider-val{color:var(--train-c);}
+.panel-sleep .slider-val{color:var(--sleep-c);}
+input[type=range]{flex:1;height:4px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer;border:none;padding:0;appearance:none;}
+input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;cursor:pointer;appearance:none;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--text3);}
+.panel-meal input[type=range]::-webkit-slider-thumb{background:var(--meal-c);box-shadow:0 0 0 1px var(--meal-c);}
+.panel-train input[type=range]::-webkit-slider-thumb{background:var(--train-c);box-shadow:0 0 0 1px var(--train-c);}
+.panel-sleep input[type=range]::-webkit-slider-thumb{background:var(--sleep-c);box-shadow:0 0 0 1px var(--sleep-c);}
+
+.pfc-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+.pfc-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;}
+.pfc-letter{font-size:10px;letter-spacing:2px;margin-bottom:4px;font-family:'DM Mono',monospace;}
+.pfc-num{font-size:22px;font-weight:500;line-height:1;margin-bottom:2px;font-family:'DM Mono',monospace;}
+.pfc-unit{font-size:10px;color:var(--text3);}
+.pfc-bar{height:4px;border-radius:2px;margin-top:8px;transition:width 0.4s ease;}
+.pfc-p .pfc-letter,.pfc-p .pfc-num{color:var(--train-c);} .pfc-p .pfc-bar{background:var(--train-c);}
+.pfc-f .pfc-letter,.pfc-f .pfc-num{color:var(--gold);} .pfc-f .pfc-bar{background:var(--gold);}
+.pfc-c .pfc-letter,.pfc-c .pfc-num{color:var(--orange);} .pfc-c .pfc-bar{background:var(--orange);}
+
+.cal-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+.cal-label{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;}
+.cal-num{font-size:28px;font-weight:500;color:var(--meal-c);font-family:'DM Mono',monospace;}
+.cal-unit{font-size:11px;color:var(--text3);}
+
+.body-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.body-part{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 8px;cursor:pointer;transition:all 0.2s;user-select:none;text-align:center;min-height:80px;}
+.body-part:hover{border-color:var(--border2);}
+.body-part.sel{background:var(--train-bg);border-color:var(--train-c);}
+.body-part-icon { color: var(--text3); transition: color 0.2s; }
+.body-part-icon i[data-lucide] { width: 26px; height: 26px; stroke-width: 1.5; }
+.body-part.sel .body-part-icon { color: var(--train-c); }
+.body-part-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:1px;}
+.body-part.sel .body-part-label{color:var(--train-c);}
+
+.level-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.level-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px 8px;text-align:center;cursor:pointer;transition:all 0.2s;user-select:none;}
+.level-card:hover{border-color:var(--border2);}
+.level-card.sel{background:var(--train-bg);border-color:var(--train-c);}
+.level-icon { margin-bottom: 10px; color: var(--text3); transition: color 0.2s; }
+.level-icon i[data-lucide] { width: 30px; height: 30px; stroke-width: 1.5; }
+.level-card.sel .level-icon { color: var(--train-c); }
+.level-name{font-size:15px;color:var(--text);font-weight:700;margin-bottom:4px;letter-spacing:1px;}
+.level-desc{font-size:11px;color:var(--text3);}
+.level-card.sel .level-name{color:var(--train-c);}
+
+.sleep-metric{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
+.sleep-metric-label{font-size:11px;color:var(--text3);letter-spacing:1px;margin-bottom:10px;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;text-transform:uppercase;}
+.sleep-metric-val{color:var(--sleep-c);font-weight:600;font-size:14px;}
+
+.btn-gen{display:flex;align-items:center;justify-content:center;gap:10px;border:none;padding:16px 28px;border-radius:100px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);width:100%;margin-top:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.25);}
+.btn-gen i[data-lucide] { width: 18px; height: 18px; }
+.panel-meal .btn-gen{background:var(--meal-c);color:#050a06;}
+.panel-train .btn-gen{background:var(--train-c);color:#050810;}
+.panel-sleep .btn-gen{background:var(--sleep-c);color:#08050f;}
+.btn-gen:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-sec{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--text2);border:1px solid var(--border2);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all 0.2s;margin-top:12px;}
+.btn-sec:hover{color:var(--text);border-color:var(--text3);background:var(--surface2);}
+
+.error-msg {color:var(--red); font-size:13px; font-weight:600; text-align:center; margin:12px 0; display:none; background:rgba(242,107,124,0.1); padding:10px; border-radius:8px;}
+
+.result-box{background:var(--surface);border-radius:20px;padding:28px;margin-top:24px;display:none;}
+.result-box.vis{display:block;animation:fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);}
+.panel-meal .result-box{border:1px solid var(--meal-bd); box-shadow:0 8px 32px rgba(101,212,131,0.05);}
+.panel-train .result-box{border:1px solid var(--train-bd); box-shadow:0 8px 32px rgba(140,191,255,0.05);}
+.panel-sleep .result-box{border:1px solid var(--sleep-bd); box-shadow:0 8px 32px rgba(195,142,255,0.05);}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.result-title{font-size:18px;font-weight:700;}
+.result-badge{font-size:10px;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:100px;letter-spacing:1px;display:flex;align-items:center;gap:4px;}
+.panel-meal .result-badge{color:var(--meal-c);background:var(--meal-bg);border:1px solid var(--meal-bd);}
+.panel-train .result-badge{color:var(--train-c);background:var(--train-bg);border:1px solid var(--train-bd);}
+.panel-sleep .result-badge{color:var(--sleep-c);background:var(--sleep-bg);border:1px solid var(--sleep-bd);}
+.result-content{font-size:14px;color:var(--text2);line-height:1.9;font-weight:400;}
+.result-content h3{font-size:13px;font-weight:700;margin:24px 0 10px;letter-spacing:1.5px;border-bottom: 1px solid var(--border2); padding-bottom:6px;text-transform:uppercase;}
+.result-content h3:first-child{margin-top:0;}
+.panel-meal .result-content h3{color:var(--meal-c);border-color:var(--meal-bd);}
+.panel-train .result-content h3{color:var(--train-c);border-color:var(--train-bd);}
+.panel-sleep .result-content h3{color:var(--sleep-c);border-color:var(--sleep-bd);}
+.result-content ul{padding-left:18px;margin-bottom:12px;}
+.result-content li{margin-bottom:6px;}
+.result-content strong{color:var(--text);font-weight:600;}
+.result-content table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0; border-radius:8px; overflow:hidden;}
+.result-content th,.result-content td{padding:10px 14px;border:1px solid var(--border);text-align:left;}
+.result-content th{background:var(--surface2);color:var(--text3);font-size:11px;letter-spacing:1px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+
+.supp-box{background:rgba(242,199,92,0.05);border:1px solid rgba(242,199,92,0.2);border-radius:12px;padding:16px 20px;margin-top:20px;display:none;}
+.supp-title{font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px;}
+.supp-content{font-size:13px;color:var(--text2);line-height:1.8;}
+.supp-content strong{color:var(--gold);font-weight:600;}
+.supp-disclaimer{font-size:11px;color:rgba(242,199,92,0.6);margin-top:10px;line-height:1.6;}
+
+.loading{display:none;flex-direction:column;align-items:center;gap:12px;padding:48px 0;}
+.loading.vis{display:flex;}
+.loading-text{font-size:13px;color:var(--text2);letter-spacing:1px;font-weight:500;}
+.loading-dots::after { content: ''; animation: dots 1.5s infinite steps(4, end); }
+@keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; } }
+
+.loading-meal-wrap { font-size: 44px; display: flex; gap: 8px; align-items: flex-end; justify-content: center; height: 60px; margin-bottom: 8px; }
+.penguin-eat { line-height: 1; animation: penguin-bounce 0.5s infinite alternate; transform-origin: bottom center; }
+.fish-eat { line-height: 1; font-size: 32px; animation: fish-move 1.5s infinite; opacity: 0; }
+@keyframes penguin-bounce { 0% { transform: scaleY(0.9) translateY(4px); } 100% { transform: scaleY(1.05) translateY(0); } }
+@keyframes fish-move { 0% { transform: translateX(30px) translateY(5px); opacity: 0; } 20% { opacity: 1; } 60% { transform: translateX(0px) translateY(5px); opacity: 1; } 61% { opacity: 0; } 100% { opacity: 0; transform: translateX(0); } }
+
+.loading-train-wrap { font-size: 48px; display: flex; align-items: center; justify-content: center; height: 60px; margin-bottom: 8px; }
+.dumbbell-lift { line-height: 1; animation: lift-heavy 1.2s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes lift-heavy { 0%, 100% { transform: translateY(8px) scaleY(0.9); } 50% { transform: translateY(-12px) scaleY(1.05); } }
+
+.loading-sleep-wrap { font-size: 44px; display: flex; align-items: flex-end; justify-content: center; height: 60px; position: relative; margin-bottom: 8px; }
+.face-sleep { line-height: 1; animation: sleep-breathe 2.5s infinite alternate; transform-origin: bottom center; }
+.zzz-1, .zzz-2, .zzz-3 { position: absolute; font-size: 16px; color: var(--sleep-c); font-family: 'DM Mono', monospace; font-weight: 700; opacity: 0; }
+.zzz-1 { right: -15px; top: 15px; animation: floatZ 3s infinite 0s; }
+.zzz-2 { right: -25px; top: -5px; animation: floatZ 3s infinite 1s; }
+.zzz-3 { right: -35px; top: -20px; animation: floatZ 3s infinite 2s; }
+@keyframes sleep-breathe { 0% { transform: scale(1); filter: brightness(0.9); } 100% { transform: scale(1.05); filter: brightness(1.1); } }
+@keyframes floatZ { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.8; } 100% { transform: translateY(-30px) scale(1.5); opacity: 0; } }
+
+.body-group-title { font-size: 11px; color: var(--text3); font-weight: 700; margin: 16px 0 8px; border-bottom: 1px dashed var(--border2); padding-bottom: 6px; letter-spacing: 1px; }
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 64px; padding: 32px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-creator {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 20px; margin-bottom: 16px;
+}
+.footer-creator-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--meal-c), var(--train-c));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--bg); flex-shrink: 0;
+}
+.footer-creator-icon i[data-lucide] { width: 18px; height: 18px; }
+.footer-creator-text { text-align: left; font-size: 12px; color: var(--text2); line-height: 1.6; }
+.footer-creator-text strong { color: var(--text); font-weight: 600; display: block; font-size: 13px; }
+.footer-meta {
+  font-size: 11px; color: var(--text3);
+  font-family: 'DM Mono', monospace; letter-spacing: 1.5px;
+}
+.footer-meta a { color: var(--text2); text-decoration: none; border-bottom: 1px dotted var(--text3); transition: color 0.2s; }
+.footer-meta a:hover { color: var(--text); }
+
+.cursor{display:inline-block;width:2px;height:1em;background:var(--text2);margin-left:2px;animation:blink 0.8s infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+
+/* a11y: keyboard focus */
+[role="button"]:focus-visible, button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+@media(max-width:540px){
+  .wrap{padding:0 16px 60px;}
+  .hero{padding:32px 0 40px;}
+  .hero-title{font-size:30px;}
+  .hero-sub{font-size:14px;}
+  .hero-stats{gap:8px;}
+  .hero-stat{padding:12px 8px;}
+  .hero-stat-num{font-size:18px;}
+  .form-row{grid-template-columns:1fr;}
+  .body-grid{grid-template-columns:repeat(2,1fr);}
+  .pfc-row{grid-template-columns:repeat(3,1fr);}
+  .tabs .tab{font-size:11px;padding:10px 4px;}
+  .card{padding:16px;}
+  .footer{padding:24px 0;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-title"><i data-lucide="activity" style="color:var(--train-c);"></i>生活習慣インプルーバー</div>
+    <div class="nav-badge">AI 生成 (Gemini API)</div>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag"><i data-lucide="sparkles" style="color:var(--gold);"></i> POWERED BY GEMINI</div>
+      <h1 class="hero-title">
+        理論より、<br>
+        <span class="gradient">今日できる1歩。</span>
+      </h1>
+      <p class="hero-sub">
+        食事・運動・睡眠の3領域を、あなたのデータに合わせてAIが設計。<br>
+        「続けられる現実解」だけを、食材・種目・時刻まで具体的に提案します。
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">30<span style="font-size:14px;">秒</span></div>
+          <div class="hero-stat-label">入力 to 結果</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">AI</div>
+          <div class="hero-stat-label">個別に設計</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">¥0</div>
+          <div class="hero-stat-label">完全無料</div>
+        </div>
+      </div>
+      <div class="hero-supervisor">
+        <div class="hero-supervisor-icon"><i data-lucide="shield-check"></i></div>
+        <div class="hero-supervisor-text">
+          <strong>NSCA-CPT 保有トレーナー監修</strong><br>
+          現場で11年積んだ「続けられる処方」をAIに反映
+        </div>
+      </div>
+      <div class="hero-scroll">▼ SCROLL TO START</div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active-meal" id="tab-meal" onclick="switchTab('meal')"><i data-lucide="utensils"></i>食事プラン</div>
+    <div class="tab" id="tab-train" onclick="switchTab('train')"><i data-lucide="dumbbell"></i>トレーニング</div>
+    <div class="tab" id="tab-sleep" onclick="switchTab('sleep')"><i data-lucide="moon"></i>睡眠改善</div>
+  </div>
+
+  <!-- ===== MEAL ===== -->
+  <div class="panel panel-meal active" id="panel-meal">
+    <div class="card">
+      <div class="card-title">基本情報</div>
+      <div class="form-row">
+        <div class="form-group"><label>性別</label>
+          <select id="m-gender"><option value="male">男性</option><option value="female">女性</option></select></div>
+        <div class="form-group"><label>年齢</label><input type="number" id="m-age" placeholder="35" min="18" max="70"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>身長 (cm)</label><input type="number" id="m-height" placeholder="170"></div>
+        <div class="form-group"><label>体重 (kg)</label><input type="number" id="m-weight" placeholder="68"></div>
+      </div>
+      <div class="form-group">
+        <label>活動レベル</label>
+        <select id="m-activity">
+          <option value="sedentary">座り仕事中心（ほぼ運動なし）</option>
+          <option value="light">軽い運動（週1〜2回）</option>
+          <option value="moderate" selected>中程度（週3〜4回）</option>
+          <option value="active">活動的（週5〜6回）</option>
+        </select>
+      </div>
+      <div class="cal-box">
+        <div><div class="cal-label">推定必要カロリー / 日</div><div style="font-size:10px;color:var(--text3);margin-top:2px">数値入力で自動計算</div></div>
+        <div style="text-align:right"><div class="cal-num" id="m-calorie">—</div><div class="cal-unit">kcal</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">食事の目標 <small>1つ選択</small></div>
+      <div class="tag-group" id="m-goal-tags">
+        <div class="tag tag-single" onclick="selSingle(this,'m-goal','diet')"><div class="tag-check"></div><i data-lucide="trending-down"></i>体重を減らす</div>
+        <div class="tag tag-single" onclick="selSingle(this,'m-goal','muscle')"><div class="tag-check"></div><i data-lucide="dumbbell"></i>筋肉をつける</div>
+        <div class="tag tag-single" onclick="selSingle(this,'m-goal','maintain')"><div class="tag-check"></div><i data-lucide="scale"></i>体重を維持する</div>
+        <div class="tag tag-single" onclick="selSingle(this,'m-goal','energy')"><div class="tag-check"></div><i data-lucide="zap"></i>仕事パフォーマンス向上</div>
+        <div class="tag tag-single" onclick="selSingle(this,'m-goal','health')"><div class="tag-check"></div><i data-lucide="shield-check"></i>生活習慣病予防</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">スタイル・制限 <small>複数可</small></div>
+      <div class="tag-group" id="m-style-tags">
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="utensils"></i>和食中心</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="clock"></i>時短・手軽</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="leaf"></i>糖質控えめ</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="beef"></i>高タンパク重視</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="circle-slash"></i>卵アレルギー</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="circle-slash"></i>乳製品除外</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="circle-slash"></i>小麦除外</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="circle-slash"></i>肉類除外</div>
+      </div>
+      <div class="pfc-row">
+        <div class="pfc-box pfc-p"><div class="pfc-letter">PROTEIN</div><div class="pfc-num" id="m-pfc-p">—</div><div class="pfc-unit">g/日</div><div class="pfc-bar" id="m-bar-p" style="width:60%"></div></div>
+        <div class="pfc-box pfc-f"><div class="pfc-letter">FAT</div><div class="pfc-num" id="m-pfc-f">—</div><div class="pfc-unit">g/日</div><div class="pfc-bar" id="m-bar-f" style="width:30%"></div></div>
+        <div class="pfc-box pfc-c"><div class="pfc-letter">CARBS</div><div class="pfc-num" id="m-pfc-c">—</div><div class="pfc-unit">g/日</div><div class="pfc-bar" id="m-bar-c" style="width:50%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">1日の食費目安</div>
+      <div class="slider-row">
+        <span style="font-size:10px;color:var(--text3)">安め</span>
+        <input type="range" id="m-budget" min="500" max="3000" step="100" value="1200" oninput="document.getElementById('m-budget-val').textContent='¥'+parseInt(this.value).toLocaleString()">
+        <span class="slider-val" id="m-budget-val">¥1,200</span>
+        <span style="font-size:10px;color:var(--text3)">高め</span>
+      </div>
+    </div>
+
+    <div id="m-error" class="error-msg" role="alert" aria-live="polite"></div>
+    <button class="btn-gen" onclick="generateMeal()"><i data-lucide="sparkles"></i> 食事プランを生成する</button>
+    <div class="loading" id="m-loading">
+      <div class="loading-meal-wrap">
+        <div class="penguin-eat">🐧</div>
+        <div class="fish-eat">🐟</div>
+      </div>
+      <div class="loading-text">ペンギンが献立をパクパク考えています<span class="loading-dots"></span></div>
+    </div>
+
+    <div class="result-box" id="m-result">
+      <div class="result-header"><div class="result-title">あなたの食事プラン</div><div class="result-badge"><i data-lucide="cpu"></i> AI Generated</div></div>
+      <div class="result-content" id="m-result-content"></div>
+      <div class="supp-box" id="m-supp-box">
+        <div class="supp-title"><i data-lucide="pill"></i>栄養・サプリメント参考情報</div>
+        <div class="supp-content" id="m-supp-content"></div>
+        <div class="supp-disclaimer">※参考目的の一般情報です。医薬品ではありません。持病・服薬のある方は医師にご相談ください。</div>
+      </div>
+      <button class="btn-sec" onclick="generateMeal()"><i data-lucide="refresh-cw"></i> 別のプランを生成</button>
+    </div>
+  </div>
+
+  <!-- ===== TRAIN ===== -->
+  <div class="panel panel-train" id="panel-train">
+    <div class="card">
+      <div class="card-title">鍛えたい部位 <small>複数可</small></div>
+
+      <div class="body-group-title">上半身（フロント・バック）</div>
+      <div class="body-grid">
+        <div class="body-part" onclick="togglePart(this,'chest')"><div class="body-part-icon"><i data-lucide="target"></i></div><div class="body-part-label">胸</div></div>
+        <div class="body-part" onclick="togglePart(this,'back')"><div class="body-part-icon"><i data-lucide="layers"></i></div><div class="body-part-label">背中</div></div>
+        <div class="body-part" onclick="togglePart(this,'shoulder')"><div class="body-part-icon"><i data-lucide="arrow-up-from-line"></i></div><div class="body-part-label">肩</div></div>
+        <div class="body-part" onclick="togglePart(this,'arm')"><div class="body-part-icon"><i data-lucide="activity"></i></div><div class="body-part-label">腕</div></div>
+      </div>
+
+      <div class="body-group-title">体幹・下半身・全身</div>
+      <div class="body-grid">
+        <div class="body-part" onclick="togglePart(this,'core')"><div class="body-part-icon"><i data-lucide="disc"></i></div><div class="body-part-label">お腹</div></div>
+        <div class="body-part" onclick="togglePart(this,'leg')"><div class="body-part-icon"><i data-lucide="footprints"></i></div><div class="body-part-label">脚</div></div>
+        <div class="body-part" onclick="togglePart(this,'glute')"><div class="body-part-icon"><i data-lucide="circle-dashed"></i></div><div class="body-part-label">臀部</div></div>
+        <div class="body-part" onclick="togglePart(this,'full')"><div class="body-part-icon"><i data-lucide="users"></i></div><div class="body-part-label">全身</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">レベル <small>1つ選択</small></div>
+      <div class="level-grid">
+        <div class="level-card" onclick="selLevel(this,'beginner')"><div class="level-icon"><i data-lucide="sprout"></i></div><div class="level-name">初級</div><div class="level-desc">久しぶり・運動不足</div></div>
+        <div class="level-card sel" onclick="selLevel(this,'intermediate')"><div class="level-icon"><i data-lucide="flame"></i></div><div class="level-name">中級</div><div class="level-desc">月数回〜週2回程度</div></div>
+      </div>
+      <div style="font-size:11px; color:var(--text3); text-align:center; margin-top:14px;">
+        <i data-lucide="info" style="width:12px;height:12px;vertical-align:-2px;margin-right:2px;"></i>週4回以上の本格的なトレーニングをご希望の方は、個別にご連絡ください。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">目的 <small>1つ選択</small></div>
+      <div class="tag-group" id="t-purpose-tags">
+        <div class="tag tag-single sel" onclick="selSingle(this,'t-purpose','strength')"><div class="tag-check"></div><i data-lucide="dumbbell"></i>筋力アップ</div>
+        <div class="tag tag-single" onclick="selSingle(this,'t-purpose','fat')"><div class="tag-check"></div><i data-lucide="flame"></i>脂肪燃焼</div>
+        <div class="tag tag-single" onclick="selSingle(this,'t-purpose','endurance')"><div class="tag-check"></div><i data-lucide="timer"></i>持久力</div>
+        <div class="tag tag-single" onclick="selSingle(this,'t-purpose','posture')"><div class="tag-check"></div><i data-lucide="user"></i>姿勢改善</div>
+        <div class="tag tag-single" onclick="selSingle(this,'t-purpose','stress')"><div class="tag-check"></div><i data-lucide="wind"></i>ストレス発散</div>
+        <div class="tag tag-single" onclick="selSingle(this,'t-purpose','stretch')"><div class="tag-check"></div><i data-lucide="move"></i>柔軟性</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">条件</div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="form-group"><label>場所</label>
+          <select id="t-location"><option value="home" selected>自宅</option><option value="office">オフィス</option><option value="gym">ジム</option><option value="outdoor">屋外</option></select></div>
+        <div class="form-group"><label>器具</label>
+          <select id="t-equip"><option value="none" selected>器具なし（自重）</option><option value="dumbbell">ダンベル</option><option value="band">チューブ・バンド</option><option value="machine">マシン全般</option></select></div>
+      </div>
+      <label style="display:block;margin-bottom:6px">使える時間</label>
+      <div class="slider-row">
+        <span style="font-size:10px;color:var(--text3)">10分</span>
+        <input type="range" id="t-time" min="10" max="90" step="5" value="30" oninput="document.getElementById('t-time-val').textContent=this.value+'分'">
+        <span class="slider-val" id="t-time-val">30分</span>
+        <span style="font-size:10px;color:var(--text3)">90分</span>
+      </div>
+    </div>
+
+    <div id="t-error" class="error-msg" role="alert" aria-live="polite"></div>
+    <button class="btn-gen" onclick="generateTrain()"><i data-lucide="sparkles"></i>トレーニングメニューを生成</button>
+    <div class="loading" id="t-loading">
+      <div class="loading-train-wrap"><div class="dumbbell-lift">🏋️</div></div>
+      <div class="loading-text">AIが筋肉を追い込むメニューを設計中<span class="loading-dots"></span></div>
+    </div>
+
+    <div class="result-box" id="t-result">
+      <div class="result-header"><div class="result-title">今日のトレーニング</div><div class="result-badge"><i data-lucide="cpu"></i> AI Generated</div></div>
+      <div class="result-content" id="t-result-content"></div>
+      <button class="btn-sec" onclick="generateTrain()"><i data-lucide="refresh-cw"></i> 別のメニューを生成</button>
+    </div>
+  </div>
+
+  <!-- ===== SLEEP ===== -->
+  <div class="panel panel-sleep" id="panel-sleep">
+    <div class="card">
+      <div class="card-title">現在の睡眠状況</div>
+      <div class="form-row">
+        <div class="form-group"><label>平均睡眠時間</label>
+          <select id="s-hours"><option value="4">4時間未満</option><option value="5">5時間前後</option><option value="6" selected>6時間前後</option><option value="7">7時間前後</option><option value="8">8時間以上</option></select></div>
+        <div class="form-group"><label>起床時間</label>
+          <select id="s-wakeup"><option value="5">5時台</option><option value="6">6時台</option><option value="7" selected>7時台</option><option value="8">8時台</option><option value="9">9時以降</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>就寝時間</label>
+          <select id="s-bedtime"><option value="22">22時台</option><option value="23">23時台</option><option value="0" selected>0時台</option><option value="1">1時台</option><option value="2">2時以降</option></select></div>
+        <div class="form-group"><label>仕事スタイル</label>
+          <select id="s-work"><option value="office" selected>オフィス勤務</option><option value="remote">リモートワーク</option><option value="shift">シフト・夜勤あり</option><option value="travel">出張・移動多め</option></select></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">睡眠の悩み <small>複数可</small></div>
+      <div class="tag-group" id="s-issue-tags">
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="moon"></i>なかなか寝付けない</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="eye"></i>途中で目が覚める</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="sun-dim"></i>朝起きられない</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="coffee"></i>日中眠い・集中できない</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="cloud"></i>夢をよく見る・浅い</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="wind"></i>ストレスで眠れない</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="smartphone"></i>スマホを見てしまう</div>
+        <div class="tag" onclick="toggleTag(this)"><div class="tag-check"></div><i data-lucide="thermometer"></i>寝室が暑い・寒い</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">睡眠の質スコア <small>自己評価 0〜10</small></div>
+      <div class="sleep-metric"><div class="sleep-metric-label">入眠のしやすさ <span class="sleep-metric-val" id="sv-onset">5</span></div><input type="range" id="s-onset" min="0" max="10" value="5" oninput="document.getElementById('sv-onset').textContent=this.value"></div>
+      <div class="sleep-metric"><div class="sleep-metric-label">睡眠の深さ <span class="sleep-metric-val" id="sv-depth">5</span></div><input type="range" id="s-depth" min="0" max="10" value="5" oninput="document.getElementById('sv-depth').textContent=this.value"></div>
+      <div class="sleep-metric"><div class="sleep-metric-label">目覚めのすっきり感 <span class="sleep-metric-val" id="sv-refresh">5</span></div><input type="range" id="s-refresh" min="0" max="10" value="5" oninput="document.getElementById('sv-refresh').textContent=this.value"></div>
+      <div class="sleep-metric" style="margin-bottom:0"><div class="sleep-metric-label">日中のパフォーマンス <span class="sleep-metric-val" id="sv-perf">5</span></div><input type="range" id="s-perf" min="0" max="10" value="5" oninput="document.getElementById('sv-perf').textContent=this.value"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">目標 <small>1つ選択</small></div>
+      <div class="tag-group" id="s-goal-tags">
+        <div class="tag tag-single" onclick="selSingle(this,'s-goal','quality')"><div class="tag-check"></div><i data-lucide="star"></i>睡眠の質を上げたい</div>
+        <div class="tag tag-single" onclick="selSingle(this,'s-goal','hours')"><div class="tag-check"></div><i data-lucide="clock"></i>睡眠時間を確保したい</div>
+        <div class="tag tag-single" onclick="selSingle(this,'s-goal','wakeup')"><div class="tag-check"></div><i data-lucide="sun"></i>朝スッキリ起きたい</div>
+        <div class="tag tag-single" onclick="selSingle(this,'s-goal','daytime')"><div class="tag-check"></div><i data-lucide="zap"></i>日中パフォーマンスを上げたい</div>
+        <div class="tag tag-single" onclick="selSingle(this,'s-goal','stress')"><div class="tag-check"></div><i data-lucide="heart"></i>ストレスによる不眠を改善したい</div>
+      </div>
+    </div>
+
+    <div id="s-error" class="error-msg" role="alert" aria-live="polite"></div>
+    <button class="btn-gen" onclick="generateSleep()"><i data-lucide="sparkles"></i>睡眠改善プランを生成</button>
+    <div class="loading" id="s-loading">
+      <div class="loading-sleep-wrap">
+        <div class="face-sleep">😴</div>
+        <div class="zzz-1">Z</div>
+        <div class="zzz-2">z</div>
+        <div class="zzz-3">z</div>
+      </div>
+      <div class="loading-text">AIが最適な睡眠サイクルを夢見ています<span class="loading-dots"></span></div>
+    </div>
+
+    <div class="result-box" id="s-result">
+      <div class="result-header"><div class="result-title">あなたの睡眠改善プラン</div><div class="result-badge"><i data-lucide="cpu"></i> AI Generated</div></div>
+      <div class="result-content" id="s-result-content"></div>
+      <div class="supp-box" id="s-supp-box">
+        <div class="supp-title"><i data-lucide="pill"></i>睡眠サポート栄養・サプリメント参考情報</div>
+        <div class="supp-content" id="s-supp-content"></div>
+        <div class="supp-disclaimer">※参考目的の一般情報です。医薬品ではありません。持病・服薬のある方は医師にご相談ください。</div>
+      </div>
+      <button class="btn-sec" onclick="generateSleep()"><i data-lucide="refresh-cw"></i> 別のプランを生成</button>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        健康経営・HRテック領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">
+      © 2026 OKADA HIKARI &nbsp;·&nbsp; BUILT WITH GEMINI API
+    </div>
+  </footer>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+// ===== A11Y: onclick要素にrole/tabindex付与 + キーボード対応 =====
+document.querySelectorAll('[onclick]').forEach(el => {
+  if (el.tagName !== 'BUTTON') {
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+  }
+});
+document.querySelectorAll('.card-title').forEach(el => {
+  el.setAttribute('role', 'heading');
+  el.setAttribute('aria-level', '2');
+});
+document.querySelectorAll('.result-title').forEach(el => {
+  el.setAttribute('role', 'heading');
+  el.setAttribute('aria-level', '2');
+});
+document.addEventListener('keydown', function(e) {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.hasAttribute('onclick') && e.target.tagName !== 'BUTTON') {
+    e.preventDefault();
+    e.target.click();
+  }
+});
+
+document.addEventListener('input', function(e) {
+  if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
+    const originalValue = e.target.value;
+    const halfWidthValue = originalValue.replace(/[０-９]/g, function(s) {
+      return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+    });
+    if (originalValue !== halfWidthValue) e.target.value = halfWidthValue;
+  }
+});
+
+let mGoal='', tParts=new Set(), tLevel='intermediate', tPurpose='strength', sGoal='';
+
+function switchTab(t) {
+  ['meal','train','sleep'].forEach(x => {
+    document.getElementById('panel-'+x).classList.remove('active');
+    document.getElementById('tab-'+x).className='tab';
+  });
+  document.getElementById('panel-'+t).classList.add('active');
+  document.getElementById('tab-'+t).className='tab active-'+t;
+}
+
+function toggleTag(el) { el.classList.toggle('sel'); }
+
+function selSingle(el, key, val) {
+  el.closest('.tag-group').querySelectorAll('.tag-single').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+  if(key==='m-goal'){mGoal=val;updatePFC();}
+  if(key==='t-purpose') tPurpose=val;
+  if(key==='s-goal') sGoal=val;
+}
+
+function togglePart(el, val) {
+  el.classList.toggle('sel');
+  if(el.classList.contains('sel')) tParts.add(val); else tParts.delete(val);
+}
+
+function selLevel(el, val) {
+  document.querySelectorAll('.level-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); tLevel=val;
+}
+
+function calcCalories() {
+  const g=document.getElementById('m-gender').value;
+  const a=parseFloat(document.getElementById('m-age').value);
+  const h=parseFloat(document.getElementById('m-height').value);
+  const w=parseFloat(document.getElementById('m-weight').value);
+  const act=document.getElementById('m-activity').value;
+  if(!a||!h||!w){document.getElementById('m-calorie').textContent='—';return 0;}
+  let bmr=g==='male'?88.362+13.397*w+4.799*h-5.677*a:447.593+9.247*w+3.098*h-4.330*a;
+  const mults={sedentary:1.2,light:1.375,moderate:1.55,active:1.725};
+  const cal=Math.round(bmr*(mults[act]||1.55));
+  document.getElementById('m-calorie').textContent=cal.toLocaleString();
+  return cal;
+}
+
+function updatePFC() {
+  const cal=calcCalories(); if(!cal) return;
+  let pR=0.25,fR=0.25,cR=0.50;
+  if(mGoal==='diet'){pR=0.30;fR=0.25;cR=0.45;}
+  if(mGoal==='muscle'){pR=0.35;fR=0.25;cR=0.40;}
+  if(mGoal==='energy'){pR=0.25;fR=0.20;cR=0.55;}
+  const styles=[...document.querySelectorAll('#m-style-tags .tag.sel')].map(t=>t.textContent.trim());
+  if(styles.some(s=>s.includes('糖質'))){pR+=0.05;cR-=0.05;}
+  if(styles.some(s=>s.includes('高タンパク'))){pR+=0.05;fR-=0.05;}
+  document.getElementById('m-pfc-p').textContent=Math.round(cal*pR/4);
+  document.getElementById('m-pfc-f').textContent=Math.round(cal*fR/9);
+  document.getElementById('m-pfc-c').textContent=Math.round(cal*cR/4);
+  document.getElementById('m-bar-p').style.width=(pR*200)+'%';
+  document.getElementById('m-bar-f').style.width=(fR*200)+'%';
+  document.getElementById('m-bar-c').style.width=(cR*100)+'%';
+}
+
+['m-gender','m-age','m-height','m-weight','m-activity'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',updatePFC);
+  document.getElementById(id).addEventListener('input',updatePFC);
+});
+
+function showError(prefix, msg) {
+  const el = document.getElementById(prefix + '-error');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+function hideError(prefix) {
+  document.getElementById(prefix + '-error').style.display = 'none';
+}
+
+async function fetchWithRetry(url, options, maxRetries = 5) {
+  const delays = [1000, 2000, 4000, 8000, 16000];
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, delays[i]));
+    }
+  }
+}
+
+async function streamResult(prompt, contentId, loadingId, resultBoxId, suppBoxId, suppContentId) {
+  const el = document.getElementById(contentId);
+  const loading = document.getElementById(loadingId);
+  const resultBox = document.getElementById(resultBoxId);
+
+  loading.classList.add('vis');
+  resultBox.classList.remove('vis');
+  if (suppBoxId) document.getElementById(suppBoxId).style.display = 'none';
+
+  try {
+    const apiKey = "";
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+    const data = await fetchWithRetry(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+
+    const fullText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!fullText) throw new Error("AIからの応答が空でした。");
+
+    loading.classList.remove('vis');
+    resultBox.classList.add('vis');
+
+    const parts = fullText.split('---SUPPLEMENT_SPLIT---');
+    const main = parts[0].replace(/## .*サプリメント[\s\S]*$/, '');
+    el.innerHTML = mdToHtml(main);
+
+    if (suppBoxId && parts[1]?.trim()) {
+      document.getElementById(suppContentId).innerHTML = mdToHtml(parts[1].trim());
+      document.getElementById(suppBoxId).style.display = 'block';
+    }
+  } catch(e) {
+    loading.classList.remove('vis');
+    resultBox.classList.add('vis');
+    el.innerHTML = `<p style="color:var(--red)">エラーが発生しました。プランの生成に失敗しました。</p>`;
+  }
+}
+
+function mdToHtml(md) {
+  if(!md) return '';
+  return md
+    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^\|(.+)\|$/gm, row => {
+      const cells=row.split('|').filter((_,i,a)=>i>0&&i<a.length-1);
+      return '<tr>'+cells.map(c=>`<td>${c.trim()}</td>`).join('')+'</tr>';
+    })
+    .replace(/(<tr>.*<\/tr>\n?)+/g, t => {
+      const rows=t.trim().split('\n').filter(r=>!r.match(/^<tr>(<td>-+<\/td>)+<\/tr>$/));
+      if(!rows.length) return '';
+      const header=rows[0].replace(/<td>/g,'<th>').replace(/<\/td>/g,'<\/th>');
+      const body=rows.slice(1).join('\n');
+      return `<table><thead>${header}</thead><tbody>${body}</tbody></table>`;
+    })
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
+    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n/g,'<br>');
+}
+
+// ==================================================================
+// 共通プロンプト接頭辞（トレーナー監修の人格・判断基準）
+// ==================================================================
+const TRAINER_PERSONA = `あなたは「NSCA-CPT保有・パーソナルトレーナー歴11年・継続率65%を実現した現場家」として回答する専門家AIです。
+以下のスタンスを絶対に守ってください：
+
+【禁止】
+- 「リラックスしましょう」「バランスよく食べましょう」など誰でも言える曖昧アドバイス
+- 完璧を求める提案（100点を狙って0点になる人を11年見てきた）
+- 理論の羅列（読者が疲れて閉じる）
+- 「〜する必要があります」という命令口調（行動変容が止まる）
+
+【必ず守る】
+- 行動変容の原則：①認知を1つ変える → ②小さな成功体験 → ③習慣化、の順で設計
+- 食材・種目・時刻・量・温度など「数字」で指示する
+- 各提案に「▶なぜ：」で根拠を1行で添える（納得してもらえないと続かない）
+- 「8割で続ける」を基本方針にする（ストイックな10割より、緩い8割が勝つ）
+- 忙しいビジネスパーソンの"できない理由"を先回りして潰す`;
+
+// ===== GENERATE MEAL =====
+async function generateMeal() {
+  hideError('m');
+  const age=document.getElementById('m-age').value;
+  const h=document.getElementById('m-height').value;
+  const w=document.getElementById('m-weight').value;
+  if(!age||!h||!w){ showError('m', '年齢・身長・体重を入力してください'); return;}
+  if(!mGoal){ showError('m', '食事の目標を選んでください'); return;}
+
+  const cal=document.getElementById('m-calorie').textContent;
+  const gender=document.getElementById('m-gender').value==='male'?'男性':'女性';
+  const act=document.getElementById('m-activity').options[document.getElementById('m-activity').selectedIndex].text;
+  const budget=document.getElementById('m-budget').value;
+  const styles=[...document.querySelectorAll('#m-style-tags .tag.sel')].map(t=>t.textContent.trim().replace('✓','')).join('・')||'指定なし';
+  const goalMap={diet:'体重を減らす',muscle:'筋肉をつける',maintain:'体重を維持する',energy:'仕事パフォーマンス向上',health:'生活習慣病予防'};
+  const p=document.getElementById('m-pfc-p').textContent;
+  const f=document.getElementById('m-pfc-f').textContent;
+  const c=document.getElementById('m-pfc-c').textContent;
+  const today = new Date().toLocaleDateString('ja-JP');
+
+  const prompt=`${TRAINER_PERSONA}
+
+【今回のテーマ】食事設計。解剖学・栄養学の知見を使い、食材名・量・理由をセットで提示。
+
+【重要設定】
+- 本日の日付は ${today} です。季節の旬の食材を積極的に使ってください。
+- 生成のたびに献立のバリエーションを変えてください（飽きさせない）。
+- コンビニ・スーパーで普通に買える食材だけを使う（ホールフーズ前提にしない）。
+
+【対象者】性別:${gender} 年齢:${age}歳 身長:${h}cm 体重:${w}kg 活動:${act}
+推定必要カロリー:${cal}kcal 目標PFC → P:${p}g F:${f}g C:${c}g
+目標:${goalMap[mGoal]} スタイル:${styles} 食費:¥${parseInt(budget).toLocaleString()}/日
+
+## この人への食事戦略
+データから最重要な改善ポイントを2文で。数字で具体的に。続けられる設計思想を1行添える。
+
+## 週間食事プラン（月〜金）
+| 曜日 | 朝食 | 昼食 | 夕食 |
+|------|------|------|------|
+食材名＋量の目安。コンビニ・社食利用OK。
+
+## 朝食パターン3選（5分以内）
+**パターンA「名前」** 約〇kcal / P〇g
+- 食材と量
+- ▶なぜ：理由
+
+**パターンB「名前」**（同形式）
+**パターンC「名前」**（同形式）
+
+## ランチパターン3選
+コンビニ・社食・弁当それぞれ。商品名or食材名＋量＋kcal＋▶なぜ。
+
+## 夕食パターン3選（15分以内）
+**パターンA「名前」** 約〇kcal
+- 食材と量、調理手順2行
+- ▶なぜ：理由
+
+## 挫折しないための「抜け道ルール」
+完璧にやれない日の逃げ道を3つ。「こう崩してもOK」を先に示す。
+
+## 今週から実践（優先度順）
+1. 何を → ▶なぜ → タイミング
+2. 何を → ▶なぜ → タイミング
+3. 何を → ▶なぜ → タイミング
+
+## 栄養・サプリメント参考情報
+目標に関連する栄養素3〜4種類。**栄養素名** — 〇〇に関連する栄養素として知られています。食事からは〇〇で摂取できます。不足時はサプリを検討する人がいます。
+※断言しない。持病・服薬のある方は医師に相談。
+
+---SUPPLEMENT_SPLIT---
+（栄養・サプリメント参考情報セクションの内容のみを再掲）`;
+
+  await streamResult(prompt,'m-result-content','m-loading','m-result','m-supp-box','m-supp-content');
+  document.getElementById('m-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ===== GENERATE TRAIN =====
+async function generateTrain() {
+  hideError('t');
+  if(tParts.size===0){ showError('t', '鍛えたい部位を1つ以上選んでください'); return;}
+
+  const partNames={chest:'胸・大胸筋',back:'背中・広背筋',shoulder:'肩',arm:'腕',core:'お腹・体幹・腹筋',leg:'脚',glute:'臀部',full:'全身'};
+  const levelMap={beginner:'初級（運動不足・久しぶり）',intermediate:'中級（月数回〜週2回程度運動）'};
+  const purposeMap={strength:'筋力アップ',fat:'脂肪燃焼',endurance:'持久力向上',posture:'姿勢改善・肩こり解消',stress:'ストレス発散',stretch:'柔軟性向上'};
+  const locMap={home:'自宅',office:'オフィス',gym:'ジム',outdoor:'屋外'};
+  const equipMap={none:'器具なし（自重）',dumbbell:'ダンベル',band:'チューブ・バンド',machine:'マシン全般'};
+
+  const prompt=`${TRAINER_PERSONA}
+
+【今回のテーマ】トレーニング設計。NSCA-CPTの安全基準＋解剖学的な正しい順序で組む。
+
+【絶対ルール（現場11年の経験則）】
+- 種目選定の優先順位：①痛みが出ない > ②適切な可動域が取れる > ③負荷がかけられる
+- ウォームアップは省略不可（怪我の90%は準備不足由来）
+- 初心者に複雑な種目（ブルガリアンスクワット等）は出さない。できない人が8割。
+- 「フォームのポイント」は最重要1点に絞る（欲張ると全部できなくなる）
+
+【重要設定】
+- 生成のたびに種目の組み合わせ・順番・アプローチを変えてください（新鮮さ重視）。
+
+【条件】
+部位:${[...tParts].map(p=>partNames[p]).join('・')}
+レベル:${levelMap[tLevel]} 目的:${purposeMap[tPurpose]}
+時間:${document.getElementById('t-time').value}分以内 場所:${locMap[document.getElementById('t-location').value]} 器具:${equipMap[document.getElementById('t-equip').value]}
+
+## メニュー設計意図
+なぜこの組み立てか2文で。セット数・総ボリューム・解剖学的な狙いを含める。
+
+## ウォームアップ（3〜5分）
+**種目名** × 回数or時間 → ▶目的：理由（血流up・関節可動域・神経系覚醒など）
+
+## メインセット
+各種目について：
+**種目名**
+- セット数：〇セット × 〇回（または時間）
+- インターバル：〇秒
+- フォームの最重要1点：（これだけ守れば他はOKの優先順位で）
+- よくあるミス：1点（11年の現場で見てきたパターン）
+- ▶なぜこの種目：目的との紐付け
+
+## クールダウン（3〜5分）
+**部位名ストレッチ** × 〇秒 → ▶効果：〇〇
+
+## 3週間プログレッション
+1週目・2週目・3週目の負荷変化を1行ずつ。無理ない伸ばし方。
+
+## 挫折しないための逃げ道
+「全部できない日」の最低限メニュー（2種目だけ版）を提示。
+
+## 安全ルール
+このレベル・部位特有の注意点を2〜3点。痛み出たら即中止の条件含む。`;
+
+  await streamResult(prompt,'t-result-content','t-loading','t-result',null,null);
+  document.getElementById('t-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ===== GENERATE SLEEP =====
+async function generateSleep() {
+  hideError('s');
+  if(!sGoal){ showError('s', '睡眠改善の目標を選んでください'); return;}
+
+  const hours=document.getElementById('s-hours').options[document.getElementById('s-hours').selectedIndex].text;
+  const wakeup=document.getElementById('s-wakeup').options[document.getElementById('s-wakeup').selectedIndex].text;
+  const bedtime=document.getElementById('s-bedtime').options[document.getElementById('s-bedtime').selectedIndex].text;
+  const work=document.getElementById('s-work').options[document.getElementById('s-work').selectedIndex].text;
+  const issues=[...document.querySelectorAll('#s-issue-tags .tag.sel')].map(t=>t.textContent.trim().replace('✓','')).join('・')||'特になし';
+  const goalMap={quality:'睡眠の質を上げたい',hours:'睡眠時間を確保したい',wakeup:'朝スッキリ起きたい',daytime:'日中パフォーマンスを上げたい',stress:'ストレスによる不眠を改善したい'};
+
+  const prompt=`${TRAINER_PERSONA}
+
+【今回のテーマ】睡眠改善。睡眠科学＋産業保健の視点で、「今夜から変えられる」行動だけを提示。
+
+【絶対に使わないワード】
+- 「リラックスしましょう」「ぐっすり眠りましょう」「規則正しく」
+- 上記は11年のカウンセリングで何百回と聞いた「効かない言葉」。時間・温度・手順・理由で語る。
+
+【重要設定】
+- 生成のたびに異なる角度でのアプローチや新ルーティンを提案してください。
+
+【データ】睡眠:${hours} 就寝:${bedtime}ごろ 起床:${wakeup}ごろ 仕事:${work}
+悩み:${issues}
+スコア — 入眠:${document.getElementById('s-onset').value}/10 深さ:${document.getElementById('s-depth').value}/10 目覚め:${document.getElementById('s-refresh').value}/10 日中:${document.getElementById('s-perf').value}/10
+目標:${goalMap[sGoal]}
+
+## 睡眠課題の核心
+スコアと悩みから最優先課題を1〜2文で。睡眠科学的な根拠も1行で。
+
+## 今夜からの就寝前ルーティン（時刻付き）
+就寝時刻から逆算したタイムライン形式で5〜7項目：
+- 就寝〇時間前（〇時）：具体的な行動 → ▶なぜ：科学的根拠
+
+## 明日の朝ルーティン（時刻付き）
+起床時刻基準で3〜4項目。光・体温・食事のタイミングを含める：
+- 起床後〇分（〇時）：具体的な行動 → ▶効果：〇〇
+
+## 今週中に変える睡眠環境（優先度順）
+1. 〇〇を〇〇にする → 推奨値：〇〇 → ▶なぜ：〇〇
+温度・光・音・寝具・スマホの置き場所など。
+
+## 日中にやる「睡眠の仕込み」
+時刻・所要時間つきで3〜4項目。昼寝・カフェイン・運動タイミングを含める。
+
+## 挫折しないための「8割ルール」
+完璧にできない日の最低限版（これだけやればOK）を3項目。
+
+## 睡眠サポート栄養・サプリメント参考情報
+悩みと目標に関連する成分3〜4種類。**成分名** — 睡眠の〇〇に関連する成分として知られています。食事からは〇〇で摂取できます。摂取タイミングの目安：〇〇。
+※断言しない。持病・服薬のある方は医師に相談。
+
+---SUPPLEMENT_SPLIT---
+（栄養・サプリメント参考情報セクションの内容のみを再掲）`;
+
+  await streamResult(prompt,'s-result-content','s-loading','s-result','s-supp-box','s-supp-content');
+  document.getElementById('s-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

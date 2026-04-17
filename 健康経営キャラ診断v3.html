@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康経営キャラ診断 v3｜組織の動物タイプを診断</title>
+<meta name="description" content="8問の二択で、組織の健康経営スタイルを8タイプの動物キャラで診断。創業神話・有名企業例・成長ロードマップ・希少性表示・全8タイプ図鑑まで。SNS画像DL（正方形/Stories）&Xシェア対応。NSCA-CPT監修。">
+<meta property="og:title" content="健康経営キャラ診断｜あなたの組織はどの動物？">
+<meta property="og:description" content="8問で分かる、組織の健康経営キャラ。8タイプの動物で可視化。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦁%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --train-c: #8cbfff;
+  --sleep-c: #c38eff;
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+  --pink: #ff92c4;
+  --type-color: #ff92c4;
+  --type-color-rgb: 255,146,196;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:999;}
+.wrap{max-width:740px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
+
+/* NAV */
+.nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;}
+.nav-logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.nav-logo i[data-lucide]{color:var(--pink);}
+.nav-badge{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--train-c);background:rgba(140,191,255,0.1);border:1px solid rgba(140,191,255,0.3);padding:6px 12px;border-radius:100px;letter-spacing:1px;}
+.nav-badge i[data-lucide]{width:12px;height:12px;}
+
+/* HERO */
+.hero{padding:44px 0 48px;border-bottom:1px solid var(--border);margin-bottom:36px;position:relative;text-align:center;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,146,196,0.1),transparent 45%),radial-gradient(circle at 70% 70%,rgba(195,142,255,0.08),transparent 45%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:6px 14px;border-radius:100px;letter-spacing:1.5px;margin-bottom:20px;}
+.hero-animals{display:flex;gap:14px;justify-content:center;margin-bottom:20px;font-size:40px;line-height:1;}
+.hero-animals span{display:inline-block;animation:bounce 2.4s ease-in-out infinite;}
+.hero-animals span:nth-child(1){animation-delay:0s;}
+.hero-animals span:nth-child(2){animation-delay:0.3s;}
+.hero-animals span:nth-child(3){animation-delay:0.6s;}
+.hero-animals span:nth-child(4){animation-delay:0.9s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.hero-title{font-size:36px;font-weight:800;line-height:1.2;letter-spacing:-0.5px;margin-bottom:16px;}
+.hero-title .gradient{background:linear-gradient(120deg,var(--pink),var(--sleep-c),var(--train-c));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.8;max-width:520px;margin:0 auto 20px;}
+.hero-sub strong{color:var(--text);}
+.hero-share-hint{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1.5px;}
+
+/* PROGRESS */
+.progress{display:flex;gap:6px;margin-bottom:24px;}
+.progress-dot{flex:1;height:4px;background:var(--surface2);border-radius:2px;transition:all 0.3s;}
+.progress-dot.done{background:var(--pink);}
+.progress-dot.active{background:var(--sleep-c);box-shadow:0 0 12px rgba(195,142,255,0.4);}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+.q-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:2px;margin-bottom:10px;}
+.q-text{font-size:17px;font-weight:700;line-height:1.6;margin-bottom:24px;}
+
+/* CHOICE */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.choice{background:var(--surface2);border:2px solid var(--border);border-radius:16px;padding:22px 16px;cursor:pointer;transition:all 0.2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:140px;justify-content:center;}
+.choice:hover{border-color:var(--border2);transform:translateY(-2px);}
+.choice.selected{border-color:var(--pink);background:rgba(255,146,196,0.1);box-shadow:0 0 24px rgba(255,146,196,0.2);}
+.choice-emoji{font-size:32px;line-height:1;}
+.choice-label{font-size:13px;font-weight:700;line-height:1.5;}
+.choice-sub{font-size:11px;color:var(--text3);line-height:1.6;font-family:'DM Mono',monospace;}
+
+/* NAV BUTTONS */
+.q-nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;padding:12px 24px;border-radius:100px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.2s;}
+.btn-prev{background:transparent;color:var(--text2);border:1px solid var(--border2);}
+.btn-prev:hover:not(:disabled){color:var(--text);border-color:var(--text3);background:var(--surface2);}
+.btn-prev:disabled{opacity:0.3;cursor:not-allowed;}
+.btn-next{background:var(--pink);color:var(--bg);margin-left:auto;}
+.btn-next:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,146,196,0.25);}
+.btn-next:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.btn i[data-lucide]{width:16px;height:16px;}
+
+/* RESULT */
+.result{display:none;animation:fadeUp 0.6s cubic-bezier(0.4,0,0.2,1);}
+.result.vis{display:block;}
+
+/* CHARACTER HERO */
+.char-hero{position:relative;background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid rgba(var(--type-color-rgb),0.5);border-radius:28px;padding:52px 24px 36px;text-align:center;overflow:hidden;margin-bottom:20px;box-shadow:0 12px 48px rgba(var(--type-color-rgb),0.25);}
+.char-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,rgba(var(--type-color-rgb),0.28),transparent 50%),radial-gradient(circle at 80% 80%,rgba(var(--type-color-rgb),0.18),transparent 50%);pointer-events:none;}
+.char-hero::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white' opacity='0.25'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3Ccircle cx='60' cy='40' r='1.5'/%3E%3Ccircle cx='120' cy='25' r='0.8'/%3E%3Ccircle cx='180' cy='60' r='1.2'/%3E%3Ccircle cx='30' cy='100' r='0.7'/%3E%3Ccircle cx='170' cy='140' r='1'/%3E%3Ccircle cx='80' cy='170' r='1.2'/%3E%3Ccircle cx='130' cy='185' r='0.9'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none;opacity:0.7;}
+.char-inner{position:relative;z-index:2;}
+.char-code{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--type-color);letter-spacing:3px;padding:5px 16px;border:1px solid rgba(var(--type-color-rgb),0.4);border-radius:100px;background:rgba(var(--type-color-rgb),0.08);margin-bottom:20px;}
+.char-code i[data-lucide]{width:12px;height:12px;}
+
+/* Rarity */
+.rarity-badge{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--type-color);background:rgba(var(--type-color-rgb),0.12);border:1px solid rgba(var(--type-color-rgb),0.35);padding:5px 14px;border-radius:100px;letter-spacing:1.5px;margin-left:8px;}
+.rarity-badge i[data-lucide]{width:12px;height:12px;}
+
+/* キャラステージ */
+.char-stage{position:relative;width:280px;height:280px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;}
+.char-svg-bg{position:absolute;inset:0;pointer-events:none;}
+.char-svg-bg .ring{fill:none;stroke:var(--type-color);stroke-width:1;opacity:0.4;animation:ringRotate 30s linear infinite;transform-origin:center;}
+.char-svg-bg .ring-2{stroke-dasharray:3 6;opacity:0.3;animation:ringRotate 45s linear infinite reverse;}
+.char-svg-bg .ray{stroke:var(--type-color);stroke-width:1.5;opacity:0.35;stroke-linecap:round;}
+.char-svg-bg .spark{fill:var(--type-color);opacity:0.6;animation:sparkle 2s ease-in-out infinite;}
+.char-svg-bg .spark.s2{animation-delay:0.4s;}
+.char-svg-bg .spark.s3{animation-delay:0.8s;}
+.char-svg-bg .spark.s4{animation-delay:1.2s;}
+
+/* タイプ別エンブレム (SVG シンボル) */
+.char-symbol{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;pointer-events:none;}
+.char-symbol svg{width:240px;height:240px;stroke:var(--type-color);fill:none;stroke-width:2;opacity:0.18;animation:symbolPulse 4s ease-in-out infinite;}
+@keyframes symbolPulse{0%,100%{opacity:0.18;transform:scale(1);}50%{opacity:0.28;transform:scale(1.05);}}
+@keyframes ringRotate{to{transform:rotate(360deg);}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0.5);}50%{opacity:1;transform:scale(1.4);}}
+
+.char-aura{position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle,rgba(var(--type-color-rgb),0.5),rgba(var(--type-color-rgb),0.08) 60%,transparent 80%);filter:blur(18px);animation:auraShift 4s ease-in-out infinite;}
+@keyframes auraShift{0%,100%{transform:scale(1);opacity:0.9;}50%{transform:scale(1.08);opacity:1;}}
+
+.char-main{position:relative;font-size:140px;line-height:1;z-index:3;animation:charFloat 3s ease-in-out infinite;filter:drop-shadow(0 10px 28px rgba(var(--type-color-rgb),0.45));}
+@keyframes charFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
+
+.char-item{position:absolute;font-size:32px;line-height:1;z-index:2;animation:itemOrbit 6s ease-in-out infinite;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));}
+.char-item.i1{top:6%;left:8%;animation-delay:0s;}
+.char-item.i2{top:8%;right:8%;animation-delay:-2s;}
+.char-item.i3{bottom:10%;left:12%;animation-delay:-4s;}
+.char-item.i4{bottom:12%;right:12%;animation-delay:-1s;font-size:26px;}
+@keyframes itemOrbit{0%,100%{transform:translate(0,0) rotate(0deg);opacity:0.9;}25%{transform:translate(8px,-5px) rotate(8deg);opacity:1;}50%{transform:translate(-4px,6px) rotate(-6deg);opacity:0.8;}75%{transform:translate(5px,8px) rotate(4deg);opacity:1;}}
+
+.char-catch{display:inline-block;background:var(--type-color);color:#141826;font-size:13px;font-weight:900;padding:7px 20px;border-radius:100px;letter-spacing:3px;margin-bottom:14px;box-shadow:0 4px 16px rgba(var(--type-color-rgb),0.4);text-transform:uppercase;}
+.char-catch-jp{font-size:15px;letter-spacing:2px;text-transform:none;}
+.char-name{font-size:36px;font-weight:900;margin-bottom:12px;letter-spacing:-0.5px;line-height:1.2;}
+.char-tagline{font-size:13px;color:var(--text2);line-height:1.9;max-width:500px;margin:0 auto;}
+.char-tagline strong{color:var(--text);font-weight:600;}
+
+/* シェア */
+.share-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:24px;position:relative;z-index:2;}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:100px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border2);background:var(--surface);color:var(--text);text-decoration:none;}
+.share-btn:hover{transform:translateY(-2px);border-color:var(--type-color);box-shadow:0 4px 16px rgba(var(--type-color-rgb),0.2);}
+.share-btn.primary{background:var(--type-color);color:#141826;border-color:var(--type-color);}
+.share-btn.primary:hover{box-shadow:0 6px 20px rgba(var(--type-color-rgb),0.4);}
+.share-btn i[data-lucide]{width:14px;height:14px;}
+
+/* AXIS */
+.axis-chart{display:grid;gap:14px;}
+.axis-row{display:grid;grid-template-columns:90px 1fr 90px;gap:10px;align-items:center;}
+.axis-label{font-size:11px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:1px;}
+.axis-label.left{text-align:right;color:var(--train-c);}
+.axis-label.right{text-align:left;color:var(--pink);}
+.axis-bar{position:relative;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.axis-fill{position:absolute;top:0;bottom:0;border-radius:4px;transition:all 0.8s cubic-bezier(0.4,0,0.2,1);}
+.axis-tag{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px;padding-left:100px;}
+
+/* SECTION */
+.result-section-title{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.result-section-title i[data-lucide]{width:16px;height:16px;color:var(--type-color);}
+.result-section-title small{font-size:11px;font-weight:400;color:var(--text3);margin-left:4px;font-family:'DM Mono',monospace;letter-spacing:1px;}
+
+/* 創業神話 */
+.myth-card{background:linear-gradient(135deg,rgba(var(--type-color-rgb),0.08),rgba(var(--type-color-rgb),0.02));border:1px solid rgba(var(--type-color-rgb),0.25);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;}
+.myth-card::before{content:'"';position:absolute;top:-10px;left:16px;font-family:Georgia,serif;font-size:80px;color:rgba(var(--type-color-rgb),0.2);line-height:1;}
+.myth-text{font-size:14px;color:var(--text);line-height:1.9;font-style:italic;font-weight:500;padding-left:30px;}
+.myth-text strong{color:var(--type-color);font-weight:700;font-style:normal;}
+
+/* 有名企業 */
+.famous-list{display:grid;gap:10px;}
+.famous-item{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--text);line-height:1.6;}
+.famous-emoji{font-size:22px;flex-shrink:0;}
+.famous-desc{font-size:11px;color:var(--text3);margin-top:3px;}
+
+/* ロードマップ */
+.roadmap{display:grid;gap:14px;}
+.roadmap-step{position:relative;padding:18px 18px 18px 56px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;}
+.roadmap-step::before{content:attr(data-stage);position:absolute;left:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(var(--type-color-rgb),0.15);color:var(--type-color);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:-0.5px;}
+.roadmap-step.active{border-color:var(--type-color);box-shadow:0 0 20px rgba(var(--type-color-rgb),0.15);}
+.roadmap-step.active::before{background:var(--type-color);color:#141826;}
+.roadmap-label{font-size:11px;color:var(--text3);letter-spacing:1.5px;font-family:'DM Mono',monospace;text-transform:uppercase;margin-bottom:4px;}
+.roadmap-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.roadmap-desc{font-size:12px;color:var(--text2);line-height:1.8;}
+
+/* あるある */
+.aruaru-list{list-style:none;padding:0;display:grid;gap:10px;}
+.aruaru-list li{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--text);line-height:1.7;display:flex;align-items:flex-start;gap:10px;}
+.aruaru-emoji{font-size:20px;flex-shrink:0;line-height:1.5;}
+
+/* BULLETS */
+.bullet-list{list-style:none;padding:0;}
+.bullet-list li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;font-size:13px;color:var(--text2);line-height:1.7;}
+.bullet-list li::before{content:'';width:6px;height:6px;border-radius:50%;margin-top:9px;flex-shrink:0;}
+.bullet-list.plus li::before{background:var(--meal-c);}
+.bullet-list.minus li::before{background:var(--orange);}
+.bullet-list li strong{color:var(--text);font-weight:600;}
+
+/* MEASURES */
+.measure-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
+.measure-card:last-child{margin-bottom:0;}
+.measure-rank{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:rgba(var(--type-color-rgb),0.15);color:var(--type-color);font-family:'DM Mono',monospace;font-weight:700;font-size:11px;margin-right:8px;}
+.measure-name{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;}
+.measure-desc{font-size:12px;color:var(--text2);line-height:1.7;}
+
+/* COMPAT */
+.compat{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.compat-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.compat-label{font-size:10px;letter-spacing:2px;font-family:'DM Mono',monospace;text-transform:uppercase;margin-bottom:8px;}
+.compat-label.good{color:var(--meal-c);}
+.compat-label.bad{color:var(--orange);}
+.compat-type{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.compat-name{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.6;}
+
+/* 図鑑 */
+.zukan-intro{font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.7;}
+.zukan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.zukan-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.zukan-card:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+.zukan-card.current{border-color:var(--type-color);background:linear-gradient(135deg,rgba(var(--type-color-rgb),0.12),rgba(var(--type-color-rgb),0.03));box-shadow:0 0 24px rgba(var(--type-color-rgb),0.25);}
+.zukan-card.current::after{content:'YOU';position:absolute;top:4px;right:4px;font-family:'DM Mono',monospace;font-size:9px;color:var(--type-color);background:rgba(var(--type-color-rgb),0.15);padding:2px 6px;border-radius:6px;font-weight:700;letter-spacing:1px;}
+.zukan-emoji{font-size:36px;line-height:1;margin-bottom:8px;}
+.zukan-code{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;margin-bottom:4px;font-weight:600;}
+.zukan-catch{font-size:10px;font-weight:700;margin-bottom:2px;}
+.zukan-name{font-size:10px;color:var(--text3);}
+.zukan-pct{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:4px;}
+
+/* 分布グラフ */
+.dist-graph{display:grid;gap:6px;margin-top:8px;}
+.dist-row{display:grid;grid-template-columns:60px 1fr 50px;align-items:center;gap:10px;font-size:11px;}
+.dist-name{color:var(--text2);font-weight:600;}
+.dist-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.dist-fill{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
+.dist-val{font-family:'DM Mono',monospace;color:var(--text3);text-align:right;}
+
+/* BTN RESTART */
+.btn-restart{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text2);border:1px solid var(--border2);padding:12px 24px;border-radius:100px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:all 0.2s;margin-top:12px;text-decoration:none;}
+.btn-restart:hover{color:var(--text);border-color:var(--text3);background:var(--surface);}
+.btn-restart i[data-lucide]{width:14px;height:14px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--surface);border:1px solid var(--meal-c);border-radius:100px;padding:10px 20px;font-size:13px;font-weight:600;color:var(--meal-c);box-shadow:0 8px 32px rgba(101,212,131,0.2);z-index:1000;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* FOOTER */
+.footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--border);text-align:center;}
+.footer-links{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.footer-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);text-decoration:none;padding:8px 16px;border:1px solid var(--border);border-radius:100px;transition:all 0.2s;}
+.footer-link:hover{color:var(--text);border-color:var(--text3);background:var(--surface);}
+.footer-link i[data-lucide]{width:14px;height:14px;}
+.footer-creator{display:inline-flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:16px;}
+.footer-creator-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--sleep-c));display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0;}
+.footer-creator-icon i[data-lucide]{width:18px;height:18px;}
+.footer-creator-text{text-align:left;font-size:12px;color:var(--text2);line-height:1.6;}
+.footer-creator-text strong{color:var(--text);font-weight:600;display:block;font-size:13px;}
+.footer-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1.5px;}
+
+[role="button"]:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:8px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+@media(max-width:540px){
+  .wrap{padding:0 16px 60px;}
+  .hero{padding:32px 0 40px;}
+  .hero-title{font-size:26px;}
+  .hero-animals{font-size:32px;gap:10px;}
+  .card{padding:20px 16px;}
+  .q-text{font-size:15px;}
+  .char-hero{padding:40px 16px 28px;}
+  .char-stage{width:220px;height:220px;}
+  .char-main{font-size:110px;}
+  .char-item{font-size:24px;}
+  .char-name{font-size:28px;}
+  .char-symbol svg{width:180px;height:180px;}
+  .axis-row{grid-template-columns:70px 1fr 70px;}
+  .axis-tag{padding-left:80px;}
+  .compat{grid-template-columns:1fr;}
+  .zukan-grid{grid-template-columns:repeat(2,1fr);}
+}
+
+#shareCanvas,#storiesCanvas{position:fixed;left:-9999px;top:-9999px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="sparkles"></i>ORG PERSONALITY TEST</div>
+    <div class="nav-badge"><i data-lucide="shield-check"></i>NSCA-CPT 監修</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><i data-lucide="sparkles" style="color:var(--gold);"></i>  8 TYPES × 8 QUESTIONS</div>
+      <div class="hero-animals"><span>🦁</span><span>🐘</span><span>🐬</span><span>🦔</span></div>
+      <h1 class="hero-title">
+        あなたの組織は、<br>
+        <span class="gradient">どの動物？</span>
+      </h1>
+      <p class="hero-sub">
+        <strong>8問の二択</strong>で、組織の健康経営スタイルを<strong>8タイプの動物キャラ</strong>で診断。<br>
+        創業神話・有名企業例・成長ロードマップまで。結果は画像保存＆Xシェア対応。
+      </p>
+      <div class="hero-share-hint">▼ START</div>
+    </div>
+  </section>
+
+  <section id="qSection">
+    <div class="progress" id="progress"></div>
+    <div class="card" id="questionCard"></div>
+    <div class="q-nav">
+      <button class="btn btn-prev" id="btnPrev" onclick="prevQ()" disabled><i data-lucide="arrow-left"></i>前へ</button>
+      <button class="btn btn-next" id="btnNext" onclick="nextQ()" disabled>次へ<i data-lucide="arrow-right"></i></button>
+    </div>
+  </section>
+
+  <section class="result" id="resultSection">
+    <div class="char-hero" id="charHero">
+      <svg class="char-svg-bg" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring" cx="140" cy="140" r="130" stroke-dasharray="4 6"/>
+        <circle class="ring ring-2" cx="140" cy="140" r="116"/>
+        <g class="rays">
+          <line class="ray" x1="140" y1="8" x2="140" y2="22"/>
+          <line class="ray" x1="140" y1="258" x2="140" y2="272"/>
+          <line class="ray" x1="8" y1="140" x2="22" y2="140"/>
+          <line class="ray" x1="258" y1="140" x2="272" y2="140"/>
+          <line class="ray" x1="40" y1="40" x2="50" y2="50"/>
+          <line class="ray" x1="230" y1="40" x2="240" y2="50"/>
+          <line class="ray" x1="40" y1="240" x2="50" y2="230"/>
+          <line class="ray" x1="230" y1="240" x2="240" y2="230"/>
+        </g>
+        <circle class="spark" cx="40" cy="60" r="2"/>
+        <circle class="spark s2" cx="240" cy="80" r="2.5"/>
+        <circle class="spark s3" cx="60" cy="230" r="1.8"/>
+        <circle class="spark s4" cx="230" cy="220" r="2.2"/>
+      </svg>
+      <!-- タイプ別エンブレム (動的挿入) -->
+      <div class="char-symbol" id="charSymbol"></div>
+      <div class="char-inner">
+        <div>
+          <span class="char-code" id="typeCode"><i data-lucide="gem"></i><span>— — —</span></span>
+          <span class="rarity-badge" id="rarityBadge"><i data-lucide="users"></i><span id="rarityText">— %</span></span>
+        </div>
+        <div class="char-stage">
+          <div class="char-aura"></div>
+          <div class="char-main" id="typeEmoji">🦁</div>
+          <div class="char-item i1" id="typeItem1">👑</div>
+          <div class="char-item i2" id="typeItem2">⚔️</div>
+          <div class="char-item i3" id="typeItem3">✨</div>
+          <div class="char-item i4" id="typeItem4">⭐</div>
+        </div>
+        <div class="char-catch char-catch-jp" id="typeCatch">—</div>
+        <h2 class="char-name" id="typeName">—</h2>
+        <p class="char-tagline" id="typeTagline">—</p>
+
+        <div class="share-actions">
+          <button class="share-btn primary" onclick="shareX()"><i data-lucide="twitter"></i>Xでシェア</button>
+          <button class="share-btn" onclick="downloadImage()"><i data-lucide="download"></i>正方形画像</button>
+          <button class="share-btn" onclick="downloadStories()"><i data-lucide="smartphone"></i>Stories用</button>
+          <button class="share-btn" onclick="copyLink()"><i data-lucide="link"></i>リンク</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="book-open"></i>創業神話 <small>// ORIGIN STORY</small></div>
+      <div class="myth-card">
+        <div class="myth-text" id="typeMyth">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="sliders-horizontal"></i>3軸スコア <small>// AXIS</small></div>
+      <div class="axis-chart" id="axisChart"></div>
+      <div class="axis-tag" id="axisTag" style="margin-top:10px;color:var(--text3);font-size:11px;font-family:'DM Mono',monospace;"></div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="message-circle-heart"></i>あるある <small>// COMMON SCENES</small></div>
+      <ul class="aruaru-list" id="aruaruList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="building-2"></i>このタイプの代表例 <small>// BENCHMARK</small></div>
+      <div class="famous-list" id="famousList"></div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="git-branch"></i>成長ロードマップ <small>// GROWTH PATH</small></div>
+      <div class="roadmap" id="roadmapList"></div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title" style="color:var(--meal-c);"><i data-lucide="check-circle" style="color:var(--meal-c);"></i>強み <small style="color:var(--meal-c);opacity:0.7;">// STRENGTHS</small></div>
+      <ul class="bullet-list plus" id="strengthList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title" style="color:var(--orange);"><i data-lucide="alert-triangle" style="color:var(--orange);"></i>弱み <small style="color:var(--orange);opacity:0.7;">// BLIND SPOTS</small></div>
+      <ul class="bullet-list minus" id="weaknessList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="target"></i>おすすめ施策 TOP 3 <small>// ACTION</small></div>
+      <div id="measureList"></div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="heart"></i>相性 <small>// COMPATIBILITY</small></div>
+      <div class="compat">
+        <div class="compat-card">
+          <div class="compat-label good">★ 相性が良い</div>
+          <div class="compat-type" id="compatGood">—</div>
+          <div class="compat-name" id="compatGoodReason">—</div>
+        </div>
+        <div class="compat-card">
+          <div class="compat-label bad">△ 学ぶと伸びる</div>
+          <div class="compat-type" id="compatBad">—</div>
+          <div class="compat-name" id="compatBadReason">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="result-section-title"><i data-lucide="library-big"></i>全8タイプ図鑑 <small>// EXPLORE ALL</small></div>
+      <p class="zukan-intro">他のタイプもチェック。タップで切り替え、視点を変えて組織を見てみてください。下に分布グラフも表示。</p>
+      <div class="zukan-grid" id="zukanGrid"></div>
+      <div class="dist-graph" id="distGraph" style="margin-top:20px;"></div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn-restart" onclick="restart()"><i data-lucide="refresh-cw"></i>もう一度診断する</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"><i data-lucide="check-circle"></i><span id="toastText">コピーしました</span></div>
+  <canvas id="shareCanvas" width="1080" height="1080"></canvas>
+  <canvas id="storiesCanvas" width="1080" height="1920"></canvas>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="ポートフォリオまとめ.html" class="footer-link"><i data-lucide="arrow-left"></i>ポートフォリオTOPへ戻る</a>
+      <a href="健康経営AI診断ツールv5.html" class="footer-link"><i data-lucide="brain-circuit"></i>AI診断ツール</a>
+      <a href="健康経営スコアシート.html" class="footer-link"><i data-lucide="clipboard-check"></i>スコアシート</a>
+    </div>
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        健康経営・HRテック領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; CHARACTER DIAGNOSIS v3</div>
+  </footer>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+// ===== QUESTIONS (8問・中立低減) =====
+const questions = [
+  // TB軸 (3問)
+  { q:'新しい健康施策を始めるとき、あなたの組織は？', axis:'TB',
+    choices:[{emoji:'👑',label:'経営が方針を決めて展開',sub:'TOP-DOWN',value:'T'},{emoji:'🌱',label:'現場の声から自然に立ち上がる',sub:'BOTTOM-UP',value:'B'}]},
+  { q:'大事な判断を下すとき、拠り所にするのは？', axis:'TB',
+    choices:[{emoji:'📊',label:'データと経営の戦略',sub:'STRATEGY',value:'T'},{emoji:'👥',label:'現場の実感と合意形成',sub:'CONSENSUS',value:'B'}]},
+  { q:'健康施策が失敗したとき、誰が最初に動く？', axis:'TB',
+    choices:[{emoji:'🏛️',label:'経営陣が責任と方針を明言',sub:'ACCOUNTABILITY',value:'T'},{emoji:'🔄',label:'現場の振り返りから再設計',sub:'RETROSPECT',value:'B'}]},
+  // SC軸 (3問)
+  { q:'組織の健康を支えているものは？', axis:'SC',
+    choices:[{emoji:'📋',label:'ルール・規程・制度',sub:'SYSTEM',value:'S'},{emoji:'🤝',label:'雰囲気・人間関係・暗黙知',sub:'CULTURE',value:'C'}]},
+  { q:'新しい取り組みを浸透させる方法は？', axis:'SC',
+    choices:[{emoji:'📝',label:'文書化・マニュアル・研修',sub:'DOCUMENTED',value:'S'},{emoji:'💬',label:'日常会話・行動で伝える',sub:'LIVED',value:'C'}]},
+  { q:'健康経営の"成功"として誇らしく思うのは？', axis:'SC',
+    choices:[{emoji:'🏆',label:'認定・バッジ・文書化された実績',sub:'CERTIFIED',value:'S'},{emoji:'💭',label:'「あの時救われた」という個人の声',sub:'STORIES',value:'C'}]},
+  // PR軸 (2問)
+  { q:'健康への投資、重視しているのは？', axis:'PR',
+    choices:[{emoji:'🛡️',label:'不調を未然に防ぐ仕組み',sub:'PREVENT',value:'P'},{emoji:'🚑',label:'不調者への手厚いケア',sub:'RESPOND',value:'R'}]},
+  { q:'健康経営で成果が出たと感じる瞬間は？', axis:'PR',
+    choices:[{emoji:'📈',label:'健診結果の全社改善',sub:'METRICS UP',value:'P'},{emoji:'💚',label:'休職者の復帰・定着',sub:'CARE WIN',value:'R'}]}
+];
+
+// ===== SVG SYMBOLS (タイプ別エンブレム) =====
+const symbols = {
+  TSP: `<svg viewBox="0 0 200 200"><!-- 王冠 -->
+    <path d="M 40 120 L 40 80 L 70 100 L 100 60 L 130 100 L 160 80 L 160 120 Z" stroke-linejoin="round"/>
+    <path d="M 40 130 L 160 130" stroke-width="3"/>
+    <circle cx="70" cy="100" r="4" fill="currentColor"/>
+    <circle cx="100" cy="60" r="5" fill="currentColor"/>
+    <circle cx="130" cy="100" r="4" fill="currentColor"/>
+  </svg>`,
+  TSR: `<svg viewBox="0 0 200 200"><!-- 蓮の葉 -->
+    <path d="M 100 40 Q 130 70 130 110 Q 130 150 100 170 Q 70 150 70 110 Q 70 70 100 40 Z"/>
+    <path d="M 100 40 L 100 170" stroke-dasharray="4 6"/>
+    <path d="M 85 90 Q 100 100 115 90"/>
+    <path d="M 80 130 Q 100 140 120 130"/>
+  </svg>`,
+  TCP: `<svg viewBox="0 0 200 200"><!-- 炎 -->
+    <path d="M 100 40 Q 120 70 115 100 Q 130 95 130 120 Q 130 155 100 170 Q 70 155 70 120 Q 70 95 85 100 Q 80 70 100 40 Z"/>
+    <path d="M 100 80 Q 108 105 105 130 Q 100 145 95 130 Q 92 105 100 80 Z" fill="currentColor" opacity="0.4"/>
+  </svg>`,
+  TCR: `<svg viewBox="0 0 200 200"><!-- ハート -->
+    <path d="M 100 170 Q 40 130 40 90 Q 40 60 70 60 Q 90 60 100 80 Q 110 60 130 60 Q 160 60 160 90 Q 160 130 100 170 Z"/>
+    <path d="M 75 90 Q 100 110 125 90" opacity="0.6"/>
+  </svg>`,
+  BSP: `<svg viewBox="0 0 200 200"><!-- ハニカム -->
+    <polygon points="100,40 140,65 140,115 100,140 60,115 60,65"/>
+    <polygon points="100,70 120,82 120,108 100,120 80,108 80,82" opacity="0.5"/>
+    <path d="M 30 100 L 60 85" /><path d="M 30 100 L 60 115"/>
+    <path d="M 170 100 L 140 85"/><path d="M 170 100 L 140 115"/>
+  </svg>`,
+  BSR: `<svg viewBox="0 0 200 200"><!-- 盾 -->
+    <path d="M 100 40 L 160 60 L 160 110 Q 160 150 100 170 Q 40 150 40 110 L 40 60 Z"/>
+    <path d="M 100 70 L 100 140" stroke-dasharray="4 4"/>
+    <path d="M 65 100 L 135 100" stroke-dasharray="4 4"/>
+    <circle cx="100" cy="100" r="12" opacity="0.5"/>
+  </svg>`,
+  BCP: `<svg viewBox="0 0 200 200"><!-- 波 -->
+    <path d="M 20 80 Q 50 60 80 80 T 140 80 T 200 80" fill="none"/>
+    <path d="M 20 110 Q 50 90 80 110 T 140 110 T 200 110" fill="none" opacity="0.7"/>
+    <path d="M 20 140 Q 50 120 80 140 T 140 140 T 200 140" fill="none" opacity="0.4"/>
+  </svg>`,
+  BCR: `<svg viewBox="0 0 200 200"><!-- 月 -->
+    <path d="M 130 40 Q 90 40 90 100 Q 90 160 130 160 Q 80 160 70 100 Q 80 40 130 40 Z"/>
+    <circle cx="150" cy="70" r="3" fill="currentColor"/>
+    <circle cx="40" cy="120" r="2" fill="currentColor"/>
+    <circle cx="160" cy="140" r="2.5" fill="currentColor"/>
+    <circle cx="50" cy="60" r="2" fill="currentColor"/>
+  </svg>`
+};
+
+// ===== TYPES =====
+const types = {
+  TSP: { emoji:'🦁', items:['👑','⚔️','✨','🏆'], name:'ライオン型', catch:'規律の王者',
+    color:'#f2c75c', colorRgb:'242,199,92',
+    tagline:'<strong>鉄の規律で組織を守る健康経営のキング。</strong> 経営層の強い意志で制度を整え、不調を未然に防ぐ。健康経営銘柄・大手優良法人に多い王道タイプ。',
+    myth:'太古、混沌とした草原に最初の<strong>規律</strong>をもたらしたのは一頭の獅子だった。彼は「群れの全員が同じ朝日を見る」ことを掟とし、健診の儀を制度化した。以来、王の血筋は"守ることで勝つ"戦略を貫いている。',
+    famous:[{e:'🏢',name:'大手総合商社・重工',desc:'制度が隅々まで整った、規律の国'},{e:'🏦',name:'メガバンク・生保',desc:'健康経営銘柄の常連。数字で語る王国'},{e:'🏛️',name:'官公庁・公共機関',desc:'ルールが文化。王道の安心感'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'王国が揺らぎ始めた夜明け',desc:'制度は揃っているが現場の温度感とのズレを感じる時期。数字は上がれど、笑顔が減った気もする。'},{stage:'NEXT',label:'進化型',title:'複眼を持つ賢王',desc:'現場サーベイで"制度の使われ方"を可視化。数字だけでなく"体感の改善"も追う複眼思考を獲得。',active:true},{stage:'IDEAL',label:'理想',title:'規律と温かさの両立',desc:'経営の戦略と現場の実感が共鳴する"戦略的伴走型"。規律と温かさを両立した健康経営の旗手となる。'}],
+    aruaru:[{e:'📊',t:'朝礼で健診受診率の数字が毎週読み上げられる'},{e:'👔',t:'社長が年頭所感で「健康経営大賞を取る」と宣言した'},{e:'📧',t:'ストレスチェック未受検者に総務からリマインド地獄が届く'}],
+    strengths:['<strong>制度の整備力</strong>が抜群。健診100%・残業管理・ストレスチェックが一気通貫','経営層のコミットメントが強く、<strong>予算と人員が確保</strong>されやすい','健康経営銘柄・優良法人の<strong>認定取得に強い</strong>'],
+    weaknesses:['現場の"生の声"が届きにくい。<strong>制度があっても使われない罠</strong>','ルール重視で柔軟性が弱い。<strong>例外ケースに対応が遅れる</strong>','「やらされ感」を生みやすく、エンゲージメント低下のリスク'],
+    measures:[{name:'現場サーベイの経営会議反映',desc:'四半期ごとにパルスサーベイを実施。経営会議で「制度が機能しているか」を数字で確認し、制度の空転を防ぐ。'},{name:'健康アンバサダー制度',desc:'各部門から1名選出。トップダウン施策と現場の"通訳"役を置き、制度と実態のギャップを埋める。'},{name:'ストーリーテリング導入',desc:'数字だけでなく「この施策で救われた人の話」を社内報で定期発信。制度に血を通わせる。'}],
+    good:'BCP', goodR:'コミューン型の"現場感"が戦略の血となる', bad:'BCR', badR:'お互いケア文化から"続く仕組み化"を学べる' },
+  TSR: { emoji:'🐘', items:['🎋','🤲','💧','📚'], name:'エレファント型', catch:'慈悲の古老',
+    color:'#8cbfff', colorRgb:'140,191,255',
+    tagline:'<strong>長い記憶で社員を守る、頼れる古老。</strong> 経営主導で制度を整えつつ、不調者への手厚いフォローに力を入れる。伝統的大手・公的機関・金融に多い。',
+    myth:'群れが何世代も生きるうちに、古老の象は<strong>すべての仲間の声と涙</strong>を記憶した。彼は「倒れた者を決して置いていかない」という掟を刻み、復職の道を誰にも拓いた。忘れないこと、それが最強の守りだった。',
+    famous:[{e:'🏭',name:'伝統的製造大手',desc:'長い歴史が育てた、救済の仕組み'},{e:'🏥',name:'大病院・製薬大手',desc:'産業医と経営が一体の"家族型"'},{e:'🚂',name:'鉄道・インフラ',desc:'長期雇用の哲学が制度に宿る'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'記憶が重くなりすぎた日々',desc:'対応型に偏り、先手が打てない。個別対応の美徳が属人化の罠に変わる瀬戸際。'},{stage:'NEXT',label:'進化型',title:'予防の先を見通す長老',desc:'健診・ストレスの予防KPIを可視化。ラインケア研修で"倒れる前に察する"眼を組織に配る。',active:true},{stage:'IDEAL',label:'理想',title:'記憶と予知の賢老',desc:'過去の記憶と未来の予測が両輪で回る。"誰も取り残さない"が予防から復帰までつながる、真の長寿組織。'}],
+    aruaru:[{e:'🧓',t:'産業医が20年同じ先生で、社員の家族構成まで把握している'},{e:'📚',t:'「復職プログラム」の社内ガイドブックが分厚い'},{e:'☕',t:'メンタル不調者には必ず役員クラスが個別面談する'}],
+    strengths:['<strong>休職・復職サポート</strong>が充実。EAP・産業医連携が機能する','経営層が個別事案にもコミット。<strong>信頼感が厚い</strong>','長期視点で社員を見守る<strong>家族経営的な安心感</strong>'],
+    weaknesses:['<strong>予防より対応</strong>に偏る。問題が顕在化してから動く癖','対応が個別対応すぎて<strong>仕組み化されない</strong>。属人化のリスク','若手世代には「重すぎる」と感じられることも'],
+    measures:[{name:'予防系KPIのダッシュボード化',desc:'健診受診率・ストレス軽症者率などの"予防指標"を月次で可視化。対応型から予防型へ軸足を広げる。'},{name:'ラインケア研修の義務化',desc:'管理職に年2回。部下の不調を早期発見する目を養い、休職に至る前に介入できる体制へ。'},{name:'復職者の成功事例集',desc:'手厚い対応で復職した事例を匿名化して共有。制度の真の価値を可視化し、利用への心理的ハードルを下げる。'}],
+    good:'BSP', goodR:'コミュニティ型の予防志向から学べる', bad:'TSP', badR:'ライオン型の予防設計力が補完になる' },
+  TCP: { emoji:'🦊', items:['🔥','🌟','💡','🗝️'], name:'フォックス型', catch:'信念の狐火',
+    color:'#ffa86b', colorRgb:'255,168,107',
+    tagline:'<strong>経営者の哲学が燃える、信念の狐火。</strong> トップの価値観が健康文化を作り、予防的な仕組みも自然に育つ。オーナー企業・中堅企業・カリスマ経営の組織に多い。',
+    myth:'一匹の狐が、森の奥で<strong>永遠に消えない青い炎</strong>を見つけた。「人が幸せでなければ組織は燃えない」その信念を胸に、彼は自らの尾に火を灯して走り続けた。その青い光が、今も信念ある経営者の目に宿っている。',
+    famous:[{e:'🌱',name:'オーナー創業のヘルスケア企業',desc:'創業者の健康観が全社に染みている'},{e:'🍱',name:'こだわり系の食品・飲食',desc:'"食"と"健康"が経営哲学と一体化'},{e:'🏋️',name:'RIZAP系のウェルネス企業',desc:'創業者の体験がプロダクトの中核'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'炎は強いが灯し手が一人',desc:'経営者の哲学は鮮烈だが、属人的。次世代やスケールに不安が残る。'},{stage:'NEXT',label:'進化型',title:'炎を継ぐ組織',desc:'健康経営の"原典"を文書化。KPIを設定して数字でも語れるように。文化に骨組みが入る。',active:true},{stage:'IDEAL',label:'理想',title:'永続する信念の組織',desc:'創業者が去っても消えない青い炎。哲学＋数字＋仕組みが三位一体で、時代を超えて燃え続ける。'}],
+    aruaru:[{e:'📖',t:'社長の著書 or note に健康観がびっしり書いてある'},{e:'🏃',t:'社長自身がフルマラソン走っていて社員も巻き込まれる'},{e:'🍵',t:'「うちは健康第一」と飲み会で社長が毎回言う'}],
+    strengths:['<strong>経営者の健康哲学</strong>が強く、施策に一貫性がある','形式ばらず<strong>自然な健康文化</strong>が根付いている','制度の柔軟性が高く、<strong>時代に合わせて進化</strong>しやすい'],
+    weaknesses:['<strong>経営者依存</strong>。トップが変わると文化が揺らぐ','文化は濃いが<strong>数値管理が弱い</strong>。効果が測りにくい','明文化されていないため、<strong>新入社員に浸透しにくい</strong>'],
+    measures:[{name:'健康経営の"原典"文書化プロジェクト',desc:'経営者の哲学・意図を「健康経営宣言書」として文書化。属人性をチームの資産に変える。'},{name:'KPIダッシュボードの導入',desc:'健診・ストレス・有給取得率を可視化。文化の強さを数字でも見せられるようにする。'},{name:'オンボーディングに健康文化セッション',desc:'新入社員向けに"うちの健康経営"を1時間かけて伝える。文化を次世代に確実に引き継ぐ。'}],
+    good:'BSR', goodR:'労組的な制度化力で経営者依存を緩和', bad:'TSP', badR:'数値管理と制度設計が弱点の補強に' },
+  TCR: { emoji:'🐻', items:['🏠','🍯','💝','🎁'], name:'ベア型', catch:'抱擁の家長',
+    color:'#f26b7c', colorRgb:'242,107,124',
+    tagline:'<strong>みんなを抱きしめる、大きな家長。</strong> 経営者がメンバーを家族のように守り、不調者には直接手を差し伸べる。同族企業・小規模組織の王道。',
+    myth:'森で一番大きな熊は、毎年春に<strong>全員を自分の洞窟に招き</strong>、蜂蜜を分け合った。彼は「家族でない者はいない」と信じた。その抱擁の深さが、冬の寒さから組織を守り続けている。',
+    famous:[{e:'👨‍👩‍👧',name:'同族経営の老舗',desc:'数世代続く"家族経営"の真髄'},{e:'🏢',name:'中小企業のオーナー',desc:'社長室の扉が常に開いている'},{e:'🍙',name:'街の人気店チェーン',desc:'創業者の人柄が文化そのもの'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'抱きしめる腕が疲れる季節',desc:'経営者が全員のケアを担い、ボトルネック化。愛情が重荷に変わる手前。'},{stage:'NEXT',label:'進化型',title:'分身を育てる家長',desc:'健康経営チームを組成して"抱擁"を分散。外部EAPで公私の境界を引き直す。',active:true},{stage:'IDEAL',label:'理想',title:'家族以上、組織未満の温もり',desc:'家長の温もりが仕組みに宿り、誰もが"守られている"と感じる。温度を保ったままスケールできる家族。'}],
+    aruaru:[{e:'🎂',t:'社員の誕生日を社長が全員覚えている'},{e:'🍱',t:'社長の奥さんが社員にお弁当を差し入れする'},{e:'📞',t:'不調者には社長が直接電話で体調を聞く'}],
+    strengths:['<strong>一人ひとりへの目配り</strong>が細かい。離職率が低い','経営者との距離が近く<strong>心理的安全性が高い</strong>','不調者への初動が早く<strong>重症化しにくい</strong>'],
+    weaknesses:['<strong>経営者の負荷が極大</strong>。ボトルネック化しやすい','"家族っぽさ"が圧になる人もいる。<strong>公私の境界が曖昧</strong>','組織拡大時に<strong>同じ濃度が保てない</strong>'],
+    measures:[{name:'健康経営チームの組成',desc:'経営者の"分身"となる2〜3名のチームを組成。ケア機能を分散化し、経営者の疲弊を防ぐ。'},{name:'外部EAPの導入',desc:'社内に相談しづらいケースの逃げ道に。公私の境界を明確にし、より深い問題解決を可能にする。'},{name:'予防型指標のモニタリング',desc:'"対応"に追われる構造から脱出。健診・ストレスチェックを"予防のトリガー"として活用。'}],
+    good:'BCP', goodR:'コミューン型の分散ケア構造から学べる', bad:'TSP', badR:'ライオン型の仕組み化で経営者依存を解消' },
+  BSP: { emoji:'🐝', items:['⚙️','💪','🍀','🗂️'], name:'ビー型', catch:'結束の職人',
+    color:'#65d483', colorRgb:'101,212,131',
+    tagline:'<strong>仲間と紡ぐ、結束の職人集団。</strong> 有志から始まった取り組みが制度として根付き、予防的な健康施策が育つ。成熟したIT・HR系・メガベンチャーに多い。',
+    myth:'一匹の蜂から始まった小さな動き。「仲間の健康は自分が作る」その想いが群れに伝染し、気づけば<strong>六角形の仕組み</strong>が花畑一面を覆っていた。命令なく、誰もが自分の持ち場を守る。それが最強の巣。',
+    famous:[{e:'💻',name:'メガベンチャー・成熟SaaS',desc:'有志主導が制度化した進化系'},{e:'🎨',name:'HR系・組織開発企業',desc:'現場の知恵が全社に伝染する組織'},{e:'🏃',name:'運動文化があるIT系',desc:'ランニング部が健康委員会に昇格'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'花畑は広がるが巣は一つだけ',desc:'有志の活動は活発だが、経営と切断されて予算がつきにくい。キーマン離脱への脆さも。'},{stage:'NEXT',label:'進化型',title:'女王蜂を立てる巣',desc:'経営への月次レポート、後継者育成で仕組みを二重化。"現場の善意"を"経営資産"に変える。',active:true},{stage:'IDEAL',label:'理想',title:'自走する巣のネットワーク',desc:'経営のビジョンと現場の動きが共鳴し、複数の巣が連携する。有志文化＋経営バックアップの理想形。'}],
+    aruaru:[{e:'💬',t:'Slackに #health チャンネルがあり議論が活発'},{e:'📈',t:'有志の運動会が年々制度化していく'},{e:'🏃',t:'「ランニング部」が労安委員会化する不思議な経路'}],
+    strengths:['<strong>現場起点のオーナーシップ</strong>。制度の定着率が高い','有志委員会や労安委員会が活発で<strong>自己改善力</strong>がある','予防型アプローチが<strong>データドリブン</strong>で合理的'],
+    weaknesses:['<strong>経営の巻き込み</strong>が弱く、予算がつきにくい','施策が散発的になりがち。<strong>全社的な統合ビジョン</strong>が不足','有志頼みのため、<strong>キーマン離脱で崩れる</strong>リスク'],
+    measures:[{name:'経営への月次レポート',desc:'数字と成果をまとめて経営会議に上げる。"現場の善意"を"経営の投資対象"に変える。'},{name:'健康経営ビジョンの策定',desc:'有志の取り組みを統合する上位ビジョンを全社ワークショップで策定。点を線にする。'},{name:'後継者育成プログラム',desc:'活動している有志の役割を2〜3名で分担する体制へ。キーマン依存を回避する。'}],
+    good:'TSR', goodR:'経営コミットメントの強さから予算獲得を学べる', bad:'TCR', badR:'ベア型の一体感・巻き込み力を吸収したい' },
+  BSR: { emoji:'🐢', items:['🛡️','⚓','🏛️','📜'], name:'タートル型', catch:'不動の守護者',
+    color:'#c38eff', colorRgb:'195,142,255',
+    tagline:'<strong>時を超えて守り続ける、不動の守護者。</strong> 労組や労安委員会が起点で制度が整い、不調者ケアも手厚い。歴史ある製造業・インフラ・公的機関に多い。',
+    myth:'海の底で、亀は<strong>100年の年輪</strong>を甲羅に刻んできた。どんな嵐も、彼を動かすことはできなかった。「急ぐな。だが、誰も失うな」その不動の姿勢が、世代をまたぐ信頼を生む。',
+    famous:[{e:'🚆',name:'JR・NTT系インフラ',desc:'労使協調と100年続く制度の象徴'},{e:'🏭',name:'重工・素材メーカー',desc:'労安委員会が30年動き続ける'},{e:'🏛️',name:'公的機関・独法',desc:'遵法の鑑。安定の守護者'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'甲羅が重くなる時代',desc:'守りは万全。ただし新しい波に乗り遅れ、若手や多様性時代との距離が広がる。'},{stage:'NEXT',label:'進化型',title:'背中に新芽を育てる亀',desc:'ヘルステックを小さく試験導入。多様性配慮と予防KPIを穏やかに追加。',active:true},{stage:'IDEAL',label:'理想',title:'古さと新しさの守護者',desc:'100年の守りを保ちながら、次の100年に必要な新芽を甲羅の上で育てる。伝統と進化が同居する組織。'}],
+    aruaru:[{e:'📜',t:'労安委員会の議事録が30年分保存されている'},{e:'⏰',t:'勤務間インターバル制度が法改正前から存在'},{e:'🎖️',t:'長期勤続表彰が豪華で社員の目標になっている'}],
+    strengths:['<strong>労使協調</strong>で制度の信頼性が高い','休職・復職支援が<strong>法令遵守レベルで万全</strong>','<strong>長期勤続前提</strong>の安心感ある職場'],
+    weaknesses:['<strong>守りすぎ</strong>で新施策の導入が遅い','予防型・先進的な取り組みに<strong>消極的</strong>','若手・多様性時代の<strong>柔軟性に欠ける</strong>'],
+    measures:[{name:'ヘルステック導入の試験運用',desc:'小さく始めるパイロット方式で、1部門から健康アプリ等を試験導入。慎重さを保ちつつ進化する。'},{name:'多様性配慮の健康施策',desc:'女性特有の健康課題、LGBTQ+配慮、育児介護両立支援を制度に組み込む。時代に合った守りに。'},{name:'予防型KPIの追加',desc:'健診・ストレス軽症者率を経営指標に追加。対応偏重の体質を穏やかに変えていく。'}],
+    good:'BCP', goodR:'コミューン型の柔軟性と挑戦精神から学べる', bad:'BSP', badR:'同じボトムアップ型の攻め姿勢が刺激に' },
+  BCP: { emoji:'🐬', items:['🌊','🌟','🎨','🧘'], name:'ドルフィン型', catch:'自由の先駆者',
+    color:'#65d483', colorRgb:'101,212,131',
+    tagline:'<strong>波に乗る、自由の先駆者。</strong> 現場文化が強く、予防的な健康意識が高い。スタートアップ・フラット組織・D2C企業の理想形。',
+    myth:'大海原を群れで泳ぎながら、一頭のイルカは叫んだ。「命令はいらない。<strong>互いの背中を見て泳げ</strong>」。群れは笑い、踊り、跳ねた。誰も溺れなかった。それがフラットな組織の原点。',
+    famous:[{e:'🚀',name:'スタートアップ・D2C',desc:'フラットで健康意識の高い自走組織'},{e:'💡',name:'先進IT・AI企業',desc:'セルフケアリテラシーが最先端'},{e:'🌿',name:'ウェルネス系ベンチャー',desc:'健康が当たり前の文化として実装'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'波が速すぎて時々疲れる',desc:'自由と健康意識は高いが、経営の制度的バックアップが薄い。急成長で文化が希薄化する兆し。'},{stage:'NEXT',label:'進化型',title:'舵を持つ群れ',desc:'CHOを置いて経営にコミット、優良法人申請で可視化。"休む文化"を経営メッセージとして明文化。',active:true},{stage:'IDEAL',label:'理想',title:'自由と制度が踊る組織',desc:'フラットな現場文化に経営の制度が融合。自由と構造の二重らせんで、業界の新しい健康経営を牽引する。'}],
+    aruaru:[{e:'🧘',t:'社内でヨガやマインドフルネスが自発的に行われる'},{e:'🥑',t:'「今日のランチ栄養スコア」を Slack で共有する文化'},{e:'⌚',t:'全員 Apple Watch or Oura Ring を身につけている'}],
+    strengths:['<strong>心理的安全性が高く</strong>、健康の話題をオープンに話せる','セルフケアリテラシーが高く<strong>予防意識が自然</strong>','施策が<strong>現場感覚と合致</strong>し、定着率が高い'],
+    weaknesses:['<strong>制度・予算の確保</strong>が弱い。経営の後ろ盾が薄い','急成長時に<strong>文化が希薄化</strong>しやすい','"助け合い"が美徳化すると<strong>不調者が声を上げにくい</strong>'],
+    measures:[{name:'CHO（Chief Health Officer）設置',desc:'経営層に健康経営責任者を置く。現場文化の強みに経営のコミットメントを掛け合わせる。'},{name:'健康経営優良法人の申請',desc:'現場の取り組みを外部認定で可視化。採用ブランディングにも活用できる。'},{name:'「休む」文化の明文化',desc:'助け合い文化の盲点を埋める。「休むことは推奨」を経営からメッセージ発信し、声を上げやすくする。'}],
+    good:'TSP', goodR:'ライオン型の制度設計力と予算獲得を学べる', bad:'TCR', badR:'ベア型の個別ケアの深さが補完になる' },
+  BCR: { emoji:'🦔', items:['🌙','🫂','🕊️','💫'], name:'ハリネズミ型', catch:'静かなる護衛',
+    color:'#ff92c4', colorRgb:'255,146,196',
+    tagline:'<strong>寄り添い合う、静かなる護衛。</strong> 仲間同士のケア文化が強く、不調者への即応性が高い。少人数のクリエイティブ系・リモート文化の組織に多い。',
+    myth:'月夜の森で、ハリネズミたちは互いに寄り添って眠る。誰も命令しないが、<strong>誰かが冷えると必ず気づく者がいる</strong>。その静かな気配りが、最も深い守りになる。小さな棘は、外ではなく内を守るためにある。',
+    famous:[{e:'🎨',name:'少人数クリエイティブ系',desc:'濃い関係性で支え合う組織'},{e:'💻',name:'リモート主体の小規模SaaS',desc:'距離があるからこそ気遣いが濃い'},{e:'✍️',name:'フリーランス的な共同体',desc:'互いの状況を察する文化'}],
+    roadmap:[{stage:'NOW',label:'現状',title:'月夜の森で、一部の棘が重い',desc:'助け合いは美しい。だが感情的負担が一部に集中し、新参者には壁になることも。'},{stage:'NEXT',label:'進化型',title:'記録する森',desc:'ケア活動を匿名ログで記録、外部産業医を定期面談に。文化を"組織の知"として残す。',active:true},{stage:'IDEAL',label:'理想',title:'守護の制度と温度の両立',desc:'温かさを失わないまま制度化。誰もが棘になりすぎず、誰もが守られる。濃くて開かれた森が完成する。'}],
+    aruaru:[{e:'📱',t:'誰かが休むと「大丈夫？」のDMが複数人から飛んでくる'},{e:'🏝️',t:'有給取得率が「相対的に高い」と皆が言う'},{e:'💭',t:'会議前にお互いの体調を聞く習慣がある'}],
+    strengths:['<strong>メンバー同士の気づき</strong>が早く、不調を見逃さない','業務負荷の調整が<strong>柔軟</strong>。助け合い文化が濃い','心理的な<strong>距離の近さ</strong>が安心感を生む'],
+    weaknesses:['<strong>制度化・可視化が苦手</strong>。外部に説明しづらい','濃すぎる人間関係が<strong>新参者に壁</strong>になる','感情的負担が一部メンバーに集中しやすい'],
+    measures:[{name:'ケア活動の記録化',desc:'誰が誰を支えたか、どんな不調があったかを匿名ログで記録。文化を"組織の知"に変える。'},{name:'外部産業医の定期面談',desc:'社内の濃い関係性では話せないことの受け皿として、外部専門家の活用を制度化する。'},{name:'予防KPIの導入',desc:'"対応"に終始せず、健診・ストレスチェックを予防のトリガーに。仲間が倒れる前に気づく仕組みを作る。'}],
+    good:'TSP', goodR:'ライオン型の仕組み化と予防設計から学べる', bad:'BSP', badR:'ビー型の制度化力が濃い文化を補強' }
+};
+
+const typeOrder = ['TSP','TSR','TCP','TCR','BSP','BSR','BCP','BCR'];
+
+// ベース分布（推定・健康経営優良法人認定分布＋ビジネス実感値）
+const baseStats = { TSP:18, TSR:14, TCP:10, TCR:12, BSP:12, BSR:10, BCP:16, BCR:8 };
+const STATS_KEY = 'org-char-diag-v3-stats';
+
+function getStats() {
+  const local = JSON.parse(localStorage.getItem(STATS_KEY) || '{}');
+  const merged = {...baseStats};
+  Object.keys(local).forEach(k => { merged[k] = (merged[k]||0) + (local[k]||0); });
+  return merged;
+}
+function incrementStat(code) {
+  const local = JSON.parse(localStorage.getItem(STATS_KEY) || '{}');
+  local[code] = (local[code]||0) + 1;
+  localStorage.setItem(STATS_KEY, JSON.stringify(local));
+}
+function getPercent(code) {
+  const stats = getStats();
+  const total = Object.values(stats).reduce((a,b)=>a+b, 0);
+  return total > 0 ? Math.round((stats[code]||0) / total * 100) : 0;
+}
+
+// ===== STATE =====
+let currentQ = 0;
+const answers = {};
+let currentType = null;
+let userType = null;
+
+// ===== RENDER =====
+function renderProgress() {
+  const p = document.getElementById('progress');
+  p.innerHTML = questions.map((_, i) => {
+    let cls = '';
+    if (i < currentQ) cls = 'done';
+    if (i === currentQ) cls = 'active';
+    return `<div class="progress-dot ${cls}"></div>`;
+  }).join('');
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const card = document.getElementById('questionCard');
+  card.innerHTML = `
+    <div class="q-num">Q${currentQ + 1} / ${questions.length}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="choices">
+      ${q.choices.map((c) => `
+        <div class="choice ${answers[currentQ] === c.value ? 'selected' : ''}" role="button" tabindex="0" onclick="selectChoice('${c.value}')">
+          <div class="choice-emoji">${c.emoji}</div>
+          <div class="choice-label">${c.label}</div>
+          <div class="choice-sub">${c.sub}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  lucide.createIcons();
+  updateNavButtons();
+}
+
+function selectChoice(value) {
+  answers[currentQ] = value;
+  renderQuestion();
+  if (currentQ < questions.length - 1) {
+    setTimeout(() => nextQ(), 350);
+  } else {
+    updateNavButtons();
+  }
+}
+
+function updateNavButtons() {
+  document.getElementById('btnPrev').disabled = currentQ === 0;
+  const btnNext = document.getElementById('btnNext');
+  if (currentQ === questions.length - 1) {
+    btnNext.innerHTML = '診断結果を見る<i data-lucide="sparkles"></i>';
+    btnNext.disabled = !answers[currentQ];
+  } else {
+    btnNext.innerHTML = '次へ<i data-lucide="arrow-right"></i>';
+    btnNext.disabled = !answers[currentQ];
+  }
+  lucide.createIcons();
+}
+
+function nextQ() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderProgress();
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+function prevQ() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderProgress();
+    renderQuestion();
+  }
+}
+
+// ===== RESULT =====
+function showResult() {
+  const scoreT = [0,1,2].filter(i => answers[i]==='T').length; // max 3
+  const scoreS = [3,4,5].filter(i => answers[i]==='S').length; // max 3
+  const scoreP = [6,7].filter(i => answers[i]==='P').length;   // max 2
+  const t1 = scoreT >= 2 ? 'T' : 'B';
+  const t2 = scoreS >= 2 ? 'S' : 'C';
+  const t3 = scoreP >= 1 ? 'P' : 'R';
+  const code = t1 + t2 + t3;
+  userType = { code, scoreT, scoreS, scoreP };
+  incrementStat(code);
+  renderType(code);
+  document.getElementById('qSection').style.display = 'none';
+  document.getElementById('resultSection').classList.add('vis');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function renderType(code) {
+  const type = types[code];
+  currentType = { code, ...type };
+  document.documentElement.style.setProperty('--type-color', type.color);
+  document.documentElement.style.setProperty('--type-color-rgb', type.colorRgb);
+
+  document.getElementById('typeCode').querySelector('span').textContent = code.split('').join(' · ');
+  document.getElementById('typeEmoji').textContent = type.emoji;
+  document.getElementById('typeItem1').textContent = type.items[0];
+  document.getElementById('typeItem2').textContent = type.items[1];
+  document.getElementById('typeItem3').textContent = type.items[2];
+  document.getElementById('typeItem4').textContent = type.items[3] || '';
+  document.getElementById('typeCatch').textContent = type.catch;
+  document.getElementById('typeName').textContent = type.name;
+  document.getElementById('typeTagline').innerHTML = type.tagline;
+  document.getElementById('typeMyth').innerHTML = type.myth;
+
+  // SVGエンブレム
+  document.getElementById('charSymbol').innerHTML = symbols[code];
+
+  // 希少性
+  const pct = getPercent(code);
+  document.getElementById('rarityText').textContent = `${pct}% — ${getRarityLabel(pct)}`;
+
+  // 軸（ユーザー自身）
+  if (userType) {
+    renderAxisChart(userType.scoreT, userType.scoreS, userType.scoreP);
+    document.getElementById('axisTag').textContent = getAxisNarrative(userType.scoreT, userType.scoreS, userType.scoreP);
+  }
+
+  // あるある
+  document.getElementById('aruaruList').innerHTML = type.aruaru.map(a => `<li><span class="aruaru-emoji">${a.e}</span><span>${a.t}</span></li>`).join('');
+  // 有名企業
+  document.getElementById('famousList').innerHTML = type.famous.map(f => `<div class="famous-item"><span class="famous-emoji">${f.e}</span><div><div>${f.name}</div><div class="famous-desc">${f.desc}</div></div></div>`).join('');
+  // ロードマップ
+  document.getElementById('roadmapList').innerHTML = type.roadmap.map(r => `<div class="roadmap-step ${r.active?'active':''}" data-stage="${r.stage}"><div class="roadmap-label">${r.label}</div><div class="roadmap-title">${r.title}</div><div class="roadmap-desc">${r.desc}</div></div>`).join('');
+  // 強み弱み
+  document.getElementById('strengthList').innerHTML = type.strengths.map(s => `<li>${s}</li>`).join('');
+  document.getElementById('weaknessList').innerHTML = type.weaknesses.map(s => `<li>${s}</li>`).join('');
+  // 施策
+  document.getElementById('measureList').innerHTML = type.measures.map((m, i) => `<div class="measure-card"><div class="measure-name"><span class="measure-rank">${i+1}</span>${m.name}</div><div class="measure-desc">${m.desc}</div></div>`).join('');
+  // 相性
+  const good = types[type.good], bad = types[type.bad];
+  document.getElementById('compatGood').innerHTML = `${good.emoji} ${good.name}（${good.catch}）`;
+  document.getElementById('compatGoodReason').textContent = type.goodR;
+  document.getElementById('compatBad').innerHTML = `${bad.emoji} ${bad.name}（${bad.catch}）`;
+  document.getElementById('compatBadReason').textContent = type.badR;
+
+  // 図鑑・分布
+  renderZukan(code);
+  renderDistribution();
+
+  lucide.createIcons();
+  generateShareImage();
+  generateStoriesImage();
+}
+
+function getRarityLabel(pct) {
+  if (pct >= 20) return 'COMMON（多数派）';
+  if (pct >= 15) return 'STANDARD（一般的）';
+  if (pct >= 10) return 'UNCOMMON（やや希少）';
+  if (pct >= 7) return 'RARE（希少）';
+  return 'EPIC（かなりレア）';
+}
+
+function getAxisNarrative(t, s, p) {
+  const tText = t === 3 ? '完全トップダウン型' : t === 2 ? 'トップダウン寄り' : t === 1 ? 'ボトムアップ寄り' : '完全ボトムアップ型';
+  const sText = s === 3 ? '完全制度型' : s === 2 ? '制度寄り' : s === 1 ? '文化寄り' : '完全文化型';
+  const pText = p === 2 ? '完全予防型' : p === 1 ? '予防と対応の両立型' : '完全対応型';
+  return `▶ ${tText} / ${sText} / ${pText}`;
+}
+
+function renderAxisChart(t, s, p) {
+  const container = document.getElementById('axisChart');
+  const axes = [
+    { left:'TOP-DOWN', right:'BOTTOM-UP', score:t, max:3 },
+    { left:'SYSTEM', right:'CULTURE', score:s, max:3 },
+    { left:'PREVENT', right:'RESPOND', score:p, max:2 }
+  ];
+  container.innerHTML = axes.map(a => {
+    const leftPct = a.score / a.max * 50;
+    const rightPct = (a.max - a.score) / a.max * 50;
+    const isLeft = a.score > a.max/2;
+    const isRight = a.score < a.max/2;
+    const fill = isLeft
+      ? `width:${leftPct}%; right:50%; background:linear-gradient(90deg, transparent, var(--train-c));`
+      : isRight
+        ? `width:${rightPct}%; left:50%; background:linear-gradient(90deg, var(--pink), transparent);`
+        : `width:4px; left:calc(50% - 2px); background:var(--gold);`;
+    return `<div class="axis-row"><div class="axis-label left">${a.left}</div><div class="axis-bar"><div class="axis-fill" style="${fill}"></div></div><div class="axis-label right">${a.right}</div></div>`;
+  }).join('');
+}
+
+function renderZukan(currentCode) {
+  const grid = document.getElementById('zukanGrid');
+  const userCode = userType ? userType.code : currentCode;
+  grid.innerHTML = typeOrder.map(code => {
+    const t = types[code];
+    const isCurrent = code === userCode;
+    const pct = getPercent(code);
+    return `<div class="zukan-card ${isCurrent?'current':''}" role="button" tabindex="0" onclick="switchType('${code}')" style="${code === currentCode && !isCurrent ? 'border-color:'+t.color+';' : ''}">
+      <div class="zukan-emoji">${t.emoji}</div>
+      <div class="zukan-code" style="color:${t.color}">${code}</div>
+      <div class="zukan-catch">${t.catch}</div>
+      <div class="zukan-name">${t.name}</div>
+      <div class="zukan-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDistribution() {
+  const g = document.getElementById('distGraph');
+  const stats = getStats();
+  const total = Object.values(stats).reduce((a,b)=>a+b, 0);
+  const sorted = typeOrder.map(code => ({code, pct: Math.round((stats[code]||0)/total*100)})).sort((a,b)=>b.pct-a.pct);
+  g.innerHTML = sorted.map(row => {
+    const t = types[row.code];
+    return `<div class="dist-row"><span class="dist-name">${t.emoji} ${row.code}</span><div class="dist-bar"><div class="dist-fill" style="width:${row.pct*3}%;background:${t.color};"></div></div><span class="dist-val">${row.pct}%</span></div>`;
+  }).join('');
+}
+
+function switchType(code) {
+  renderType(code);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ===== SHARE =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function shareX() {
+  if (!currentType) return;
+  const pct = getPercent(currentType.code);
+  const text = `うちの組織は【${currentType.emoji} ${currentType.name}（${currentType.catch}）】でした！\n全体の${pct}%タイプ。\n\n#健康経営キャラ診断 #組織診断`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+}
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => showToast('リンクをコピーしました'));
+}
+
+// ===== CANVAS: SQUARE (1080x1080) =====
+function generateShareImage() {
+  if (!currentType) return;
+  drawCanvas(document.getElementById('shareCanvas'), 1080, 1080, 'square');
+}
+// ===== CANVAS: STORIES (1080x1920) =====
+function generateStoriesImage() {
+  if (!currentType) return;
+  drawCanvas(document.getElementById('storiesCanvas'), 1080, 1920, 'stories');
+}
+
+function drawCanvas(canvas, W, H, mode) {
+  const ctx = canvas.getContext('2d');
+  const t = currentType;
+
+  // 背景
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#141826');
+  grad.addColorStop(1, '#1e2335');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // オーラ
+  const centerY = mode === 'stories' ? H * 0.4 : H * 0.42;
+  const aura = ctx.createRadialGradient(W/2, centerY, 100, W/2, centerY, 550);
+  aura.addColorStop(0, `rgba(${t.colorRgb},0.40)`);
+  aura.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = aura;
+  ctx.fillRect(0, 0, W, H);
+
+  // 装飾リング
+  ctx.strokeStyle = `rgba(${t.colorRgb},0.55)`;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 10]);
+  ctx.beginPath();
+  ctx.arc(W/2, centerY, 340, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.strokeStyle = `rgba(${t.colorRgb},0.3)`;
+  ctx.lineWidth = 1;
+  ctx.arc(W/2, centerY, 390, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+
+  // タイプコード（上部）
+  const topY = mode === 'stories' ? 220 : 160;
+  ctx.fillStyle = t.color;
+  ctx.font = '600 32px "DM Mono", monospace';
+  ctx.fillText(t.code.split('').join(' · '), W/2, topY);
+
+  // 希少性バッジ
+  const pct = getPercent(t.code);
+  const rarityText = `${pct}%  ·  ${getRarityLabel(pct)}`;
+  ctx.font = '500 22px "DM Mono", monospace';
+  ctx.fillStyle = `rgba(${t.colorRgb},0.9)`;
+  ctx.fillText(rarityText, W/2, topY + 40);
+
+  // メインキャラ
+  ctx.font = '300px sans-serif';
+  ctx.fillText(t.emoji, W/2, centerY + 100);
+
+  // 装飾アイテム
+  ctx.font = '72px sans-serif';
+  ctx.fillText(t.items[0], W/2 - 260, centerY - 60);
+  ctx.fillText(t.items[1], W/2 + 260, centerY - 60);
+  ctx.fillText(t.items[2], W/2 - 260, centerY + 180);
+  if (t.items[3]) ctx.fillText(t.items[3], W/2 + 260, centerY + 180);
+
+  // キャッチピル
+  const pillY = centerY + 300;
+  ctx.font = '900 44px "Noto Sans JP", sans-serif';
+  const cm = ctx.measureText(t.catch);
+  const pillW = cm.width + 80;
+  const pillH = 78;
+  ctx.fillStyle = t.color;
+  roundRect(ctx, W/2 - pillW/2, pillY, pillW, pillH, 40);
+  ctx.fill();
+  ctx.fillStyle = '#141826';
+  ctx.fillText(t.catch, W/2, pillY + 56);
+
+  // タイプ名
+  ctx.fillStyle = '#f2f5fc';
+  ctx.font = '900 78px "Noto Sans JP", sans-serif';
+  ctx.fillText(t.name, W/2, pillY + 170);
+
+  // Storiesにはタグライン短縮表示
+  if (mode === 'stories') {
+    ctx.fillStyle = '#a3b0d4';
+    ctx.font = '500 28px "Noto Sans JP", sans-serif';
+    const shortTag = t.tagline.replace(/<[^>]+>/g, '').substring(0, 34) + '…';
+    ctx.fillText(shortTag, W/2, pillY + 230);
+  }
+
+  // ハッシュタグ
+  ctx.fillStyle = '#a3b0d4';
+  ctx.font = '500 30px "Noto Sans JP", sans-serif';
+  const hashY = mode === 'stories' ? H - 180 : H - 120;
+  ctx.fillText('#健康経営キャラ診断', W/2, hashY);
+
+  // クレジット
+  ctx.fillStyle = '#6a7699';
+  ctx.font = '500 22px "DM Mono", monospace';
+  ctx.fillText('NSCA-CPT 監修  ·  岡田 光 (Okada Hikari)', W/2, hashY + 50);
+  ctx.fillText('Health Mgmt Character Test v3', W/2, hashY + 85);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function downloadImage() {
+  if (!currentType) return;
+  const link = document.createElement('a');
+  link.download = `健康経営キャラ診断_${currentType.code}_${currentType.name}.png`;
+  link.href = document.getElementById('shareCanvas').toDataURL('image/png');
+  link.click();
+  showToast('正方形画像を保存しました');
+}
+function downloadStories() {
+  if (!currentType) return;
+  const link = document.createElement('a');
+  link.download = `健康経営キャラ診断_${currentType.code}_Stories.png`;
+  link.href = document.getElementById('storiesCanvas').toDataURL('image/png');
+  link.click();
+  showToast('Stories用画像を保存しました');
+}
+
+function restart() {
+  currentQ = 0;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  currentType = null;
+  userType = null;
+  document.getElementById('resultSection').classList.remove('vis');
+  document.getElementById('qSection').style.display = 'block';
+  document.documentElement.style.setProperty('--type-color', '#ff92c4');
+  document.documentElement.style.setProperty('--type-color-rgb', '255,146,196');
+  renderProgress();
+  renderQuestion();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.hasAttribute('onclick') && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+    e.preventDefault();
+    e.target.click();
+  }
+});
+
+renderProgress();
+renderQuestion();
+</script>
+</body>
+</html>

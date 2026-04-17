@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康経営ROIシミュレーター｜投資対効果を即算出</title>
+<meta name="description" content="従業員数・平均給与・離職率・健診データから、健康経営投資のROIを5年シミュレーション。離職削減・医療費削減・生産性向上の3軸で金額算出。NSCA-CPT監修。">
+<meta property="og:title" content="健康経営ROIシミュレーター｜投資対効果を即算出">
+<meta property="og:description" content="投資1円を何円にするか。経営者・CFOに数字で会話できる健康経営の投資対効果ツール。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💰%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --train-c: #8cbfff;
+  --sleep-c: #c38eff;
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:999;}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
+
+/* NAV */
+.nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;}
+.nav-logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.nav-logo i[data-lucide]{color:var(--gold);}
+.nav-badge{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--train-c);background:rgba(140,191,255,0.1);border:1px solid rgba(140,191,255,0.3);padding:6px 12px;border-radius:100px;letter-spacing:1px;}
+.nav-badge i[data-lucide]{width:12px;height:12px;}
+
+/* HERO */
+.hero{padding:48px 0 56px;border-bottom:1px solid var(--border);margin-bottom:40px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(242,199,92,0.1),transparent 45%),radial-gradient(circle at 80% 20%,rgba(101,212,131,0.08),transparent 45%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:6px 14px;border-radius:100px;letter-spacing:1.5px;margin-bottom:24px;}
+.hero-title{font-size:44px;font-weight:800;line-height:1.2;letter-spacing:-0.5px;margin-bottom:20px;}
+.hero-title .gradient{background:linear-gradient(120deg,var(--gold),var(--meal-c),var(--train-c));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:28px;max-width:640px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.hero-stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 14px;}
+.hero-stat-num{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;line-height:1;margin-bottom:4px;}
+.hero-stat-label{font-size:11px;color:var(--text3);letter-spacing:1px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+.hero-stat:nth-child(1) .hero-stat-num{color:var(--gold);}
+.hero-stat:nth-child(2) .hero-stat-num{color:var(--meal-c);}
+.hero-stat:nth-child(3) .hero-stat-num{color:var(--train-c);}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.card-title i[data-lucide]{color:var(--gold);width:16px;height:16px;}
+.card-desc{font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.6;}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+label{font-size:11px;color:var(--text3);letter-spacing:1.5px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+input[type=number],select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);font-family:inherit;width:100%;appearance:none;transition:border-color 0.2s,box-shadow 0.2s;}
+input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,199,92,0.1);}
+input::placeholder{color:var(--text3);}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5682' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:32px;}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.slider-val{font-size:14px;font-weight:600;min-width:50px;text-align:right;font-family:'DM Mono',monospace;color:var(--gold);}
+input[type=range]{flex:1;height:4px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer;border:none;padding:0;appearance:none;}
+input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;cursor:pointer;appearance:none;background:var(--gold);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--gold);}
+
+/* RESULT */
+.roi-hero{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--gold);border-radius:24px;padding:36px 28px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(242,199,92,0.1);}
+.roi-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(242,199,92,0.15),transparent 60%);pointer-events:none;}
+.roi-hero-inner{position:relative;z-index:1;}
+.roi-label{font-size:11px;color:var(--text3);letter-spacing:2px;margin-bottom:14px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+.roi-value{font-family:'DM Mono',monospace;font-size:72px;font-weight:600;line-height:1;color:var(--gold);margin-bottom:8px;letter-spacing:-2px;}
+.roi-value .unit{font-size:28px;color:var(--text2);margin-left:6px;}
+.roi-sub{font-size:14px;color:var(--text2);margin-top:12px;}
+.roi-sub strong{color:var(--text);}
+
+.breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.bk-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;}
+.bk-card.meal{border-color:rgba(101,212,131,0.3);}
+.bk-card.train{border-color:rgba(140,191,255,0.3);}
+.bk-card.sleep{border-color:rgba(195,142,255,0.3);}
+.bk-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.bk-icon.meal{background:rgba(101,212,131,0.15);color:var(--meal-c);}
+.bk-icon.train{background:rgba(140,191,255,0.15);color:var(--train-c);}
+.bk-icon.sleep{background:rgba(195,142,255,0.15);color:var(--sleep-c);}
+.bk-icon i[data-lucide]{width:20px;height:20px;}
+.bk-label{font-size:11px;color:var(--text3);letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;}
+.bk-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace;line-height:1.2;}
+.bk-value.meal{color:var(--meal-c);}
+.bk-value.train{color:var(--train-c);}
+.bk-value.sleep{color:var(--sleep-c);}
+.bk-unit{font-size:10px;color:var(--text3);margin-top:4px;}
+
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.chart-box-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.chart-box-title i[data-lucide]{color:var(--gold);width:16px;height:16px;}
+.chart-wrap{position:relative;height:280px;}
+
+.top-measures{list-style:none;padding:0;}
+.top-measures li{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+.top-measures li:last-child{border-bottom:none;}
+.top-rank{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;background:var(--surface2);}
+.top-measures li:nth-child(1) .top-rank{background:rgba(242,199,92,0.15);color:var(--gold);}
+.top-measures li:nth-child(2) .top-rank{background:rgba(140,191,255,0.15);color:var(--train-c);}
+.top-measures li:nth-child(3) .top-rank{background:rgba(101,212,131,0.15);color:var(--meal-c);}
+.top-content{flex:1;}
+.top-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.top-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+.top-kpi{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:6px;}
+
+/* ASSUMPTION BOX */
+.assumption{background:rgba(140,191,255,0.05);border:1px solid rgba(140,191,255,0.2);border-radius:12px;padding:16px 20px;margin-bottom:16px;}
+.assumption-title{font-size:11px;color:var(--train-c);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.assumption-text{font-size:12px;color:var(--text2);line-height:1.8;}
+.assumption-text strong{color:var(--text);}
+
+/* BTN */
+.btn-gen{display:flex;align-items:center;justify-content:center;gap:10px;border:none;padding:16px 28px;border-radius:100px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.3s;width:100%;margin-top:12px;background:var(--gold);color:var(--bg);box-shadow:0 4px 20px rgba(242,199,92,0.25);}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(242,199,92,0.35);}
+.btn-gen i[data-lucide]{width:18px;height:18px;}
+
+/* RESULT SECTION */
+.result{display:none;margin-top:24px;animation:fadeUp 0.6s cubic-bezier(0.4,0,0.2,1);}
+.result.vis{display:block;}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.result-title{font-size:20px;font-weight:700;}
+.result-badge{font-size:10px;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:100px;letter-spacing:1px;display:flex;align-items:center;gap:4px;color:var(--gold);background:rgba(242,199,92,0.1);border:1px solid rgba(242,199,92,0.3);}
+
+/* FOOTER */
+.footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--border);text-align:center;}
+.footer-links{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.footer-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);text-decoration:none;padding:8px 16px;border:1px solid var(--border);border-radius:100px;transition:all 0.2s;}
+.footer-link:hover{color:var(--text);border-color:var(--text3);background:var(--surface);}
+.footer-link i[data-lucide]{width:14px;height:14px;}
+.footer-creator{display:inline-flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:16px;}
+.footer-creator-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--meal-c));display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0;}
+.footer-creator-icon i[data-lucide]{width:18px;height:18px;}
+.footer-creator-text{text-align:left;font-size:12px;color:var(--text2);line-height:1.6;}
+.footer-creator-text strong{color:var(--text);font-weight:600;display:block;font-size:13px;}
+.footer-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1.5px;}
+
+[role="button"]:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:8px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+@media(max-width:540px){
+  .wrap{padding:0 16px 60px;}
+  .hero{padding:36px 0 44px;}
+  .hero-title{font-size:30px;}
+  .hero-sub{font-size:14px;}
+  .hero-stats{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .hero-stat{padding:12px 8px;}
+  .hero-stat-num{font-size:18px;}
+  .form-row{grid-template-columns:1fr;}
+  .roi-value{font-size:54px;}
+  .breakdown{grid-template-columns:1fr;}
+  .card{padding:16px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="banknote"></i>HEALTH ROI SIMULATOR</div>
+    <div class="nav-badge"><i data-lucide="shield-check"></i>NSCA-CPT 監修</div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><i data-lucide="sparkles" style="color:var(--gold);"></i> FOR CEO / CFO / HR</div>
+      <h1 class="hero-title">
+        投資1円を、<br>
+        <span class="gradient">何円にするか。</span>
+      </h1>
+      <p class="hero-sub">
+        健康経営は「コスト」か「投資」か。従業員データを入力するだけで、<strong>離職削減・医療費削減・生産性向上</strong>の3軸でROIを金額算出。<br>
+        経営層が数字で意思決定できる粒度で、<strong>5年分</strong>のシミュレーションを提示します。
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">30秒</div>
+          <div class="hero-stat-label">入力 to 結果</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">3軸</div>
+          <div class="hero-stat-label">効果測定</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">5年</div>
+          <div class="hero-stat-label">累積シミュ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUT -->
+  <div class="card">
+    <div class="card-title"><i data-lucide="building-2"></i>企業情報</div>
+    <div class="card-desc">従業員数と平均給与（年収）から、総人件費を自動算出します。</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>業種</label>
+        <select id="industry">
+          <option value="IT">IT・情報通信</option>
+          <option value="manufacturing">製造</option>
+          <option value="finance">金融</option>
+          <option value="retail">小売</option>
+          <option value="service" selected>サービス</option>
+          <option value="medical">医療・介護</option>
+          <option value="construction">建設</option>
+          <option value="other">その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>従業員数（人）</label>
+        <input type="number" id="employees" value="300" min="10" max="100000">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>平均給与（万円/年）</label>
+        <input type="number" id="avgSalary" value="500" min="200" max="2000">
+      </div>
+      <div class="form-group">
+        <label>平均年齢</label>
+        <input type="number" id="avgAge" value="38" min="22" max="65">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i data-lucide="activity"></i>現状の健康指標</div>
+    <div class="card-desc">現在の状況を入力。健康経営投資でどれだけ改善するかを算出します。</div>
+
+    <label style="display:block;margin-bottom:6px;">離職率（年間）</label>
+    <div class="slider-row">
+      <input type="range" id="turnover" min="3" max="30" step="0.5" value="12" oninput="updateVal('turnover',this.value+'%')">
+      <span class="slider-val" id="turnover-val">12%</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:16px;">ストレス高リスク者率</label>
+    <div class="slider-row">
+      <input type="range" id="stress" min="3" max="30" step="0.5" value="12" oninput="updateVal('stress',this.value+'%')">
+      <span class="slider-val" id="stress-val">12%</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:16px;">健診受診率</label>
+    <div class="slider-row">
+      <input type="range" id="checkup" min="50" max="100" step="1" value="88" oninput="updateVal('checkup',this.value+'%')">
+      <span class="slider-val" id="checkup-val">88%</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:16px;">月平均残業時間</label>
+    <div class="slider-row">
+      <input type="range" id="overtime" min="0" max="80" step="1" value="28" oninput="updateVal('overtime',this.value+'h')">
+      <span class="slider-val" id="overtime-val">28h</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i data-lucide="wallet"></i>健康経営への年間投資額</div>
+    <div class="card-desc">健診コスト・ストレスチェック・研修・福利厚生などの年間予算合計。従業員1人あたりの目安は年2〜5万円。</div>
+    <div class="slider-row">
+      <input type="range" id="budget" min="100" max="10000" step="50" value="1500" oninput="updateVal('budget','¥'+parseInt(this.value).toLocaleString()+'万')">
+      <span class="slider-val" id="budget-val" style="min-width:90px;">¥1,500万</span>
+    </div>
+  </div>
+
+  <button class="btn-gen" onclick="calculate()"><i data-lucide="calculator"></i>ROIを計算する</button>
+
+  <!-- RESULT -->
+  <section class="result" id="result">
+    <div class="result-header">
+      <div class="result-title">シミュレーション結果</div>
+      <div class="result-badge"><i data-lucide="trending-up"></i>SIMULATION</div>
+    </div>
+
+    <div class="roi-hero">
+      <div class="roi-hero-inner">
+        <div class="roi-label">ROI — RETURN ON INVESTMENT（5年累積）</div>
+        <div class="roi-value"><span id="roi-num">0</span><span class="unit">倍</span></div>
+        <div class="roi-sub">
+          投資 <strong id="invest-amount">¥0</strong>/年 → 5年累積リターン <strong id="return-amount">¥0</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="bk-card train">
+        <div class="bk-icon train"><i data-lucide="users-round"></i></div>
+        <div class="bk-label">離職削減</div>
+        <div class="bk-value train" id="bk-turnover">¥0</div>
+        <div class="bk-unit">5年累積</div>
+      </div>
+      <div class="bk-card meal">
+        <div class="bk-icon meal"><i data-lucide="stethoscope"></i></div>
+        <div class="bk-label">医療費・欠勤削減</div>
+        <div class="bk-value meal" id="bk-health">¥0</div>
+        <div class="bk-unit">5年累積</div>
+      </div>
+      <div class="bk-card sleep">
+        <div class="bk-icon sleep"><i data-lucide="zap"></i></div>
+        <div class="bk-label">生産性向上</div>
+        <div class="bk-value sleep" id="bk-prod">¥0</div>
+        <div class="bk-unit">5年累積</div>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-box-title"><i data-lucide="line-chart"></i>5年累積効果の推移</div>
+      <div class="chart-wrap"><canvas id="roiChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i data-lucide="target"></i>優先実施施策 TOP 3</div>
+      <div class="card-desc">現状データから、ROIが高い順に推奨施策を自動選定。NSCA-CPT監修の実施優先順位で提示。</div>
+      <ul class="top-measures" id="topMeasures"></ul>
+    </div>
+
+    <div class="assumption">
+      <div class="assumption-title"><i data-lucide="info"></i>計算根拠（主要仮定）</div>
+      <div class="assumption-text">
+        <strong>離職コスト</strong> = 年収の35%（採用・教育・引継ぎ損失）／ <strong>プレゼンティーイズム</strong> = 総人件費の約4%が損失と試算（厚労省・経産省データ準拠）／ <strong>健康経営投資</strong>による改善率：離職率 -20%、ストレス高リスク -30%、生産性 +2%（健康経営銘柄企業の実績レンジ）。<br>
+        ※本数値は一般的な業界水準に基づくシミュレーションです。実際の効果は施策内容・実行度により変動します。
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="ポートフォリオまとめ.html" class="footer-link"><i data-lucide="arrow-left"></i>ポートフォリオTOPへ戻る</a>
+      <a href="健康経営AI診断ツールv5.html" class="footer-link"><i data-lucide="brain-circuit"></i>AI診断ツール</a>
+      <a href="組織健康ダッシュボード.html" class="footer-link"><i data-lucide="layout-dashboard"></i>ダッシュボード</a>
+    </div>
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        健康経営・HRテック領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; ROI SIMULATOR v1</div>
+  </footer>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+// a11y
+document.querySelectorAll('[onclick]').forEach(el => {
+  if(el.tagName !== 'BUTTON' && el.tagName !== 'A'){
+    el.setAttribute('role','button');
+    el.setAttribute('tabindex','0');
+  }
+});
+
+function updateVal(id,val){document.getElementById(id+'-val').textContent=val;}
+
+let roiChart = null;
+
+function calculate() {
+  const employees = parseInt(document.getElementById('employees').value) || 300;
+  const avgSalary = (parseInt(document.getElementById('avgSalary').value) || 500) * 10000; // 万円 → 円
+  const turnover = parseFloat(document.getElementById('turnover').value) / 100;
+  const stress = parseFloat(document.getElementById('stress').value) / 100;
+  const checkup = parseFloat(document.getElementById('checkup').value) / 100;
+  const overtime = parseFloat(document.getElementById('overtime').value);
+  const budget = (parseInt(document.getElementById('budget').value) || 1500) * 10000; // 万円 → 円
+
+  // ===== 総人件費 =====
+  const totalLabor = employees * avgSalary;
+
+  // ===== 1年分の効果 =====
+  // 離職削減: 離職率 × 従業員数 × 年収 × 0.35(採用・教育コスト係数) × 0.20(改善率)
+  const turnoverReduced1y = turnover * employees * avgSalary * 0.35 * 0.20;
+
+  // 医療費・欠勤削減: ストレス高リスク改善 + 健診受診率向上
+  // アブセンティーイズム損失=総人件費の約1.5%。ストレス改善で30%削減、健診向上で早期発見効果
+  const absenteeismReduced1y = totalLabor * 0.015 * (stress * 0.30 / Math.max(stress, 0.05) + (1 - checkup) * 0.3);
+  // ざっくり単純化: 現状ストレスが高いほど効果大
+  const healthReduced1y = totalLabor * 0.015 * 0.30 * (stress / 0.10) + totalLabor * 0.005 * (1 - checkup);
+
+  // 生産性向上: プレゼンティーイズム改善(総人件費の4%損失→30%削減) + 残業削減効果
+  const presenteeismReduced1y = totalLabor * 0.04 * 0.30 * Math.min(stress / 0.10, 1.5);
+  const overtimeEffect1y = overtime > 30 ? totalLabor * 0.01 * ((overtime - 30) / 30) : 0;
+  const productivity1y = presenteeismReduced1y + overtimeEffect1y;
+
+  // ===== 5年累積（年次改善を織り込み） =====
+  // 1年目は効果50%、2年目80%、3年目100%、4年目110%、5年目120%
+  const yearMultipliers = [0.5, 0.8, 1.0, 1.1, 1.2];
+  const years = [1, 2, 3, 4, 5];
+
+  const turnoverByYear = yearMultipliers.map(m => turnoverReduced1y * m);
+  const healthByYear = yearMultipliers.map(m => healthReduced1y * m);
+  const productivityByYear = yearMultipliers.map(m => productivity1y * m);
+  const totalByYear = years.map((_, i) => turnoverByYear[i] + healthByYear[i] + productivityByYear[i]);
+  const cumulativeTotal = totalByYear.reduce((a, b) => a + b, 0);
+  const cumulativeInvestment = budget * 5;
+
+  // ===== ROI =====
+  const roi = cumulativeTotal / cumulativeInvestment;
+
+  // ===== 表示 =====
+  document.getElementById('roi-num').textContent = roi.toFixed(1);
+  document.getElementById('invest-amount').textContent = '¥' + (budget / 10000).toLocaleString() + '万';
+  document.getElementById('return-amount').textContent = '¥' + Math.round(cumulativeTotal / 10000).toLocaleString() + '万';
+  document.getElementById('bk-turnover').textContent = '¥' + Math.round(turnoverByYear.reduce((a,b)=>a+b,0) / 10000).toLocaleString() + '万';
+  document.getElementById('bk-health').textContent = '¥' + Math.round(healthByYear.reduce((a,b)=>a+b,0) / 10000).toLocaleString() + '万';
+  document.getElementById('bk-prod').textContent = '¥' + Math.round(productivityByYear.reduce((a,b)=>a+b,0) / 10000).toLocaleString() + '万';
+
+  // ===== CHART =====
+  drawChart(turnoverByYear, healthByYear, productivityByYear);
+
+  // ===== TOP 3 施策 =====
+  generateTopMeasures(turnover, stress, checkup, overtime);
+
+  // 表示
+  document.getElementById('result').classList.add('vis');
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+
+  // Lucide 再描画（動的生成分）
+  lucide.createIcons();
+}
+
+function drawChart(turnover, health, productivity) {
+  const ctx = document.getElementById('roiChart').getContext('2d');
+  if (roiChart) roiChart.destroy();
+
+  const toMan = arr => arr.map(v => Math.round(v / 10000));
+
+  roiChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['1年目', '2年目', '3年目', '4年目', '5年目'],
+      datasets: [
+        { label: '離職削減', data: toMan(turnover), backgroundColor: '#8cbfff', borderRadius: 6, stack: 's' },
+        { label: '医療費・欠勤', data: toMan(health), backgroundColor: '#65d483', borderRadius: 6, stack: 's' },
+        { label: '生産性向上', data: toMan(productivity), backgroundColor: '#c38eff', borderRadius: 6, stack: 's' },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#a3b0d4' } },
+        y: { stacked: true, grid: { color: 'rgba(46,54,84,0.5)' }, ticks: { color: '#6a7699', callback: v => '¥' + v.toLocaleString() + '万' } }
+      },
+      plugins: {
+        legend: { labels: { color: '#a3b0d4', padding: 16, usePointStyle: true } },
+        tooltip: {
+          backgroundColor: '#282e45', borderColor: '#3d4670', borderWidth: 1,
+          callbacks: { label: ctx => ctx.dataset.label + ': ¥' + ctx.parsed.y.toLocaleString() + '万' }
+        }
+      }
+    }
+  });
+}
+
+function generateTopMeasures(turnover, stress, checkup, overtime) {
+  const measures = [];
+
+  // 優先度スコアリング
+  if (stress > 0.10) {
+    measures.push({
+      name: 'ストレスチェック活用 × 管理職ラインケア研修',
+      desc: 'ストレス高リスク者率が高い。個別フォロー面談の義務化と、管理職向けメンタルヘルス研修で早期発見体制を構築。',
+      kpi: '期待効果: ストレス高リスク -30% / 離職率 -15%',
+      score: stress * 100
+    });
+  }
+  if (turnover > 0.10) {
+    measures.push({
+      name: '1on1ミーティング制度 + エンゲージメントサーベイ',
+      desc: '離職率改善の最短ルート。月1回以上の1on1と、四半期ごとのパルスサーベイで「辞める兆候」を早期検知。',
+      kpi: '期待効果: 離職率 -20% / 採用コスト削減',
+      score: turnover * 100
+    });
+  }
+  if (overtime > 25) {
+    measures.push({
+      name: '勤務間インターバル制度 + 残業可視化ダッシュボード',
+      desc: '月残業28h超は健康リスク増大ゾーン。11時間インターバル義務化と、部門別残業時間の経営会議での月次報告で抑制。',
+      kpi: '期待効果: 残業 -30% / プレゼンティーイズム改善',
+      score: (overtime - 25) * 2
+    });
+  }
+  if (checkup < 0.95) {
+    measures.push({
+      name: '健診100%受診プログラム + 再検査フォロー',
+      desc: '就業時間内受診の制度化と、要再検査者への個別フォロー担当アサインで、早期発見体制を構築。',
+      kpi: '期待効果: 受診率 +10% / 重症化予防',
+      score: (1 - checkup) * 100
+    });
+  }
+  // 常時候補
+  measures.push({
+    name: 'NSCA-CPT監修の運動習慣プログラム',
+    desc: 'ウォーキングイベント・昼ストレッチ・階段利用促進。継続率65%を実現した"8割で続ける"設計思想で、挫折しない仕組みに。',
+    kpi: '期待効果: 運動習慣率 +15% / 医療費 -8%',
+    score: 8
+  });
+  measures.push({
+    name: '食事・睡眠の行動変容プログラム',
+    desc: '社員食堂の栄養改善 + 睡眠衛生セミナー。「今日できる1歩」を毎週配信し、生活習慣の底上げを無理なく継続。',
+    kpi: '期待効果: 生活習慣病リスク -10%',
+    score: 6
+  });
+
+  // 上位3つ
+  measures.sort((a, b) => b.score - a.score);
+  const top3 = measures.slice(0, 3);
+
+  const list = document.getElementById('topMeasures');
+  list.innerHTML = top3.map((m, i) => `
+    <li>
+      <div class="top-rank">${i + 1}</div>
+      <div class="top-content">
+        <div class="top-name">${m.name}</div>
+        <div class="top-desc">${m.desc}</div>
+        <div class="top-kpi">▶ ${m.kpi}</div>
+      </div>
+    </li>
+  `).join('');
+}
+</script>
+</body>
+</html>
