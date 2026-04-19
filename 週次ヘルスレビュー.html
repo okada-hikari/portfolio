@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>週次ヘルスレビュー｜毎週5分で自分の健康を振り返る</title>
+<meta name="description" content="食事・運動・睡眠・気分の4つを毎週チェック。スコアとレーダーチャートで変化が見える。過去8週分の記録を自動保存。">
+<meta property="og:title" content="週次ヘルスレビュー">
+<meta property="og:description" content="毎週5分で食事・運動・睡眠・気分をセルフチェック。スコアで変化が見える。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#141826">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141826;--surface:#1a1f35;--surface-2:#232942;--surface-3:#2a3150;
+  --border:#2a3150;--border-2:#3a4268;
+  --text:#e8ecf5;--text-dim:#8b92a8;--text-faint:#5a6280;
+  --blue:#3d7dff;--cyan:#00d4ff;--orange:#ff9248;
+  --ok:#3dd9b8;--warn:#ffb84d;--error:#ff5a5a;--purple:#a855f7;--pink:#ff6b9d;
+  --meal:#65d483;--exercise:#8cbfff;--sleep:#c38eff;--mood:#ffb84d;
+  --radius:14px;--radius-sm:8px;--radius-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+
+.container{max-width:800px;margin:0 auto;padding:0 20px}
+
+/* Hero */
+.hero{
+  text-align:center;padding:48px 20px 40px;
+  background:radial-gradient(ellipse 600px 400px at 50% 30%,rgba(101,212,131,.12),transparent),
+             radial-gradient(ellipse 500px 300px at 30% 60%,rgba(140,191,255,.08),transparent),
+             var(--bg);
+}
+.hero h1{font-size:clamp(28px,5vw,44px);font-weight:900;letter-spacing:-.02em;margin-bottom:12px}
+.hero h1 .accent{background:linear-gradient(135deg,var(--meal),var(--exercise),var(--sleep));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:15px;color:var(--text-dim);margin-bottom:8px}
+.hero-stats{display:flex;justify-content:center;gap:24px;margin-top:24px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text-dim)}
+.hero-stats span{display:flex;align-items:center;gap:6px}
+.hero-stats .dot{width:8px;height:8px;border-radius:50%}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin:32px auto 24px;background:var(--surface);border:1px solid var(--border);border-radius:100px;overflow:hidden;max-width:500px}
+.tab{flex:1;padding:12px 8px;text-align:center;font-size:13px;font-weight:700;color:var(--text-faint);cursor:pointer;transition:all .2s;border:none;background:transparent;font-family:inherit}
+.tab.active{color:#141826}
+.tab[data-tab="input"].active{background:var(--meal)}
+.tab[data-tab="result"].active{background:var(--exercise)}
+.tab[data-tab="history"].active{background:var(--sleep)}
+
+/* Panels */
+.panel{display:none;padding:0 0 80px}
+.panel.active{display:block}
+
+/* Input cards */
+.input-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.input-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.input-card.c-meal::before{background:var(--meal)}
+.input-card.c-exercise::before{background:var(--exercise)}
+.input-card.c-sleep::before{background:var(--sleep)}
+.input-card.c-mood::before{background:var(--mood)}
+.input-title{font-size:17px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.input-desc{font-size:12px;color:var(--text-dim);margin-bottom:16px}
+
+/* Rating */
+.rating{display:flex;gap:8px;margin-bottom:12px}
+.rate-btn{
+  flex:1;padding:12px 8px;border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1px solid var(--border);
+  cursor:pointer;text-align:center;transition:all .2s;
+  font-family:inherit;color:var(--text);font-size:13px;font-weight:600;
+}
+.rate-btn:hover{border-color:var(--border-2)}
+.rate-btn.selected{color:#141826;border-color:transparent}
+.c-meal .rate-btn.selected{background:var(--meal)}
+.c-exercise .rate-btn.selected{background:var(--exercise)}
+.c-sleep .rate-btn.selected{background:var(--sleep)}
+.c-mood .rate-btn.selected{background:var(--mood)}
+
+/* Number input row */
+.num-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.num-group label{font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px}
+.num-input{
+  width:100%;padding:10px 14px;border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1px solid var(--border);
+  color:var(--text);font-size:15px;font-family:'DM Mono',monospace;
+  outline:none;
+}
+.num-input:focus{border-color:var(--cyan)}
+
+/* Memo */
+.memo-input{
+  width:100%;padding:10px 14px;border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1px solid var(--border);
+  color:var(--text);font-size:13px;font-family:inherit;
+  outline:none;resize:vertical;min-height:44px;
+}
+.memo-input:focus{border-color:var(--cyan)}
+.memo-input::placeholder{color:var(--text-faint)}
+.memo-label{font-size:12px;color:var(--text-faint);margin-bottom:4px}
+
+/* Good thing */
+.good-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:16px;
+}
+.good-card .input-title{color:var(--ok)}
+
+/* Submit */
+.submit-row{text-align:center;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--meal),var(--exercise));color:#141826;box-shadow:0 6px 20px rgba(101,212,131,.3)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--border-2)}
+
+/* Result */
+.result-hero{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:32px;text-align:center;margin-bottom:20px;
+}
+.result-score{font-family:'DM Mono',monospace;font-size:64px;font-weight:700;line-height:1}
+.result-label{font-size:14px;color:var(--text-dim);margin-top:8px}
+.result-rank{
+  display:inline-block;margin-top:12px;
+  padding:6px 18px;border-radius:100px;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:700;
+}
+
+/* 4 axis cards */
+.axis-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.axis-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;text-align:center;
+}
+.axis-icon{font-size:28px;margin-bottom:6px}
+.axis-name{font-size:12px;color:var(--text-dim);margin-bottom:4px}
+.axis-score{font-family:'DM Mono',monospace;font-size:28px;font-weight:700}
+.axis-sub{font-size:11px;color:var(--text-faint);margin-top:2px;font-family:'DM Mono',monospace}
+.axis-bar{height:6px;background:var(--surface-2);border-radius:3px;margin-top:8px;overflow:hidden}
+.axis-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+
+/* Radar */
+.radar-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:20px;text-align:center;
+}
+.radar-svg{width:100%;max-width:280px;height:auto;margin:0 auto}
+
+/* Advice */
+.advice-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:20px;
+}
+.advice-card h3{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.advice-item{
+  padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);
+  border-left:3px solid var(--cyan);margin-bottom:8px;
+  font-size:13px;color:var(--text-dim);line-height:1.8;
+}
+.advice-item b{color:var(--text)}
+
+/* Comparison */
+.compare-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:20px;
+}
+.compare-card h3{font-size:16px;font-weight:700;margin-bottom:14px}
+.compare-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.compare-row:last-child{border-bottom:none}
+.compare-diff{font-family:'DM Mono',monospace;font-weight:700;font-size:14px}
+.compare-diff.up{color:var(--ok)}
+.compare-diff.down{color:var(--error)}
+.compare-diff.same{color:var(--text-faint)}
+
+/* History */
+.history-empty{text-align:center;padding:60px 20px;color:var(--text-faint)}
+.history-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;margin-bottom:10px;
+  display:grid;grid-template-columns:80px 1fr repeat(4,50px) 60px;
+  align-items:center;gap:10px;font-size:13px;
+}
+.history-date{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-dim)}
+.history-good{font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-val{text-align:center;font-family:'DM Mono',monospace;font-weight:600}
+.history-total{text-align:center;font-family:'DM Mono',monospace;font-weight:700;font-size:15px}
+.history-header{
+  display:grid;grid-template-columns:80px 1fr repeat(4,50px) 60px;
+  gap:10px;padding:8px 18px;font-size:10px;color:var(--text-faint);
+  font-family:'DM Mono',monospace;letter-spacing:.06em;
+}
+.history-chart-wrap{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px;margin-bottom:20px;height:200px;
+}
+
+/* Actions */
+.result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:24px 0}
+
+/* Footer */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:32px 20px 24px;text-align:center;margin-top:40px}
+.footer-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.footer-link{padding:8px 16px;border-radius:100px;font-size:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);text-decoration:none;transition:all .2s}
+.footer-link:hover{border-color:var(--cyan);color:var(--cyan)}
+.footer-credit{font-size:11px;color:var(--text-faint);font-family:'DM Mono',monospace}
+.disclaimer{font-size:10px;color:var(--text-faint);margin-bottom:12px;line-height:1.7}
+
+@media(max-width:600px){
+  .axis-grid{grid-template-columns:1fr 1fr}
+  .history-item{grid-template-columns:60px 1fr repeat(2,40px) 50px;font-size:11px}
+  .history-item .history-good,.history-item .history-val:nth-child(5),.history-item .history-val:nth-child(6){display:none}
+  .history-header{grid-template-columns:60px 1fr repeat(2,40px) 50px}
+  .history-header span:nth-child(3),.history-header span:nth-child(4){display:none}
+  .rating{gap:4px}
+  .rate-btn{padding:10px 4px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>今週の自分、<span class="accent">どうだった？</span></h1>
+  <p>食事・運動・睡眠・気分の4つを振り返って、毎週の変化を見える化。</p>
+  <p style="font-size:13px;color:var(--text-faint)">所要時間：約3分 / 記録は自動保存（過去8週分）</p>
+  <div class="hero-stats">
+    <span><span class="dot" style="background:var(--meal)"></span>食事</span>
+    <span><span class="dot" style="background:var(--exercise)"></span>運動</span>
+    <span><span class="dot" style="background:var(--sleep)"></span>睡眠</span>
+    <span><span class="dot" style="background:var(--mood)"></span>気分</span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" data-tab="input">記録する</button>
+    <button class="tab" data-tab="result">今週の結果</button>
+    <button class="tab" data-tab="history">履歴</button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="panel active" id="panel-input">
+    <div class="input-card c-meal">
+      <div class="input-title">食事</div>
+      <div class="input-desc">今週の食事のバランスを振り返ってみてください</div>
+      <div class="rating" data-key="meal">
+        <button class="rate-btn" data-val="1">1<br><small>ほぼ外食</small></button>
+        <button class="rate-btn" data-val="2">2<br><small>偏りがち</small></button>
+        <button class="rate-btn" data-val="3">3<br><small>まあまあ</small></button>
+        <button class="rate-btn" data-val="4">4<br><small>意識した</small></button>
+        <button class="rate-btn" data-val="5">5<br><small>バッチリ</small></button>
+      </div>
+      <div class="memo-label">ひとことメモ（任意）</div>
+      <textarea class="memo-input" id="memo-meal" placeholder="例：水曜に野菜多めの自炊ができた"></textarea>
+    </div>
+
+    <div class="input-card c-exercise">
+      <div class="input-title">運動</div>
+      <div class="input-desc">ウォーキング、筋トレ、ストレッチなど何でもOK</div>
+      <div class="num-row">
+        <div class="num-group">
+          <label>運動した回数（週）</label>
+          <input class="num-input" id="ex-count" type="number" min="0" max="14" value="2">
+        </div>
+        <div class="num-group">
+          <label>1回あたりの時間（分）</label>
+          <input class="num-input" id="ex-time" type="number" min="0" max="180" value="30">
+        </div>
+      </div>
+      <div class="memo-label">ひとことメモ（任意）</div>
+      <textarea class="memo-input" id="memo-exercise" placeholder="例：火曜と木曜にジムに行けた"></textarea>
+    </div>
+
+    <div class="input-card c-sleep">
+      <div class="input-title">睡眠</div>
+      <div class="input-desc">今週の平均的な睡眠を思い出してください</div>
+      <div class="num-row">
+        <div class="num-group">
+          <label>平均睡眠時間（時間）</label>
+          <input class="num-input" id="sleep-hours" type="number" min="3" max="12" step="0.5" value="6.5">
+        </div>
+        <div class="num-group">
+          <label>睡眠の質</label>
+          <select class="num-input" id="sleep-quality" style="font-family:inherit">
+            <option value="1">1 - ほぼ眠れなかった</option>
+            <option value="2">2 - 途中で何度も起きた</option>
+            <option value="3" selected>3 - まあ普通</option>
+            <option value="4">4 - よく眠れた</option>
+            <option value="5">5 - ぐっすり快眠</option>
+          </select>
+        </div>
+      </div>
+      <div class="memo-label">ひとことメモ（任意）</div>
+      <textarea class="memo-input" id="memo-sleep" placeholder="例：金曜だけ夜更かしした"></textarea>
+    </div>
+
+    <div class="input-card c-mood">
+      <div class="input-title">気分・ストレス</div>
+      <div class="input-desc">今週の全体的な気分はどうでしたか？</div>
+      <div class="rating" data-key="mood">
+        <button class="rate-btn" data-val="1">1<br><small>つらい</small></button>
+        <button class="rate-btn" data-val="2">2<br><small>しんどい</small></button>
+        <button class="rate-btn" data-val="3">3<br><small>普通</small></button>
+        <button class="rate-btn" data-val="4">4<br><small>いい感じ</small></button>
+        <button class="rate-btn" data-val="5">5<br><small>最高</small></button>
+      </div>
+      <div class="memo-label">ひとことメモ（任意）</div>
+      <textarea class="memo-input" id="memo-mood" placeholder="例：水曜のプレゼンが終わって気が楽になった"></textarea>
+    </div>
+
+    <div class="good-card">
+      <div class="input-title">今週よかったこと</div>
+      <div class="input-desc">小さなことでもOK。書くだけで気分が上がります</div>
+      <textarea class="memo-input" id="good-thing" placeholder="例：朝のコーヒーがおいしかった / 同僚に褒められた" style="min-height:60px"></textarea>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn btn-primary" onclick="submitReview()">今週を記録する</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="panel" id="panel-result">
+    <div class="result-hero">
+      <div class="result-score" id="totalScore" style="background:linear-gradient(135deg,var(--meal),var(--exercise),var(--sleep));-webkit-background-clip:text;background-clip:text;color:transparent">--</div>
+      <div class="result-label">今週の健康スコア / 100</div>
+      <div class="result-rank" id="totalRank"></div>
+    </div>
+
+    <div class="axis-grid" id="axisGrid"></div>
+
+    <div class="radar-card">
+      <svg class="radar-svg" viewBox="0 0 260 260" id="radarSvg"></svg>
+    </div>
+
+    <div class="compare-card" id="compareCard" style="display:none">
+      <h3>先週との比較</h3>
+      <div id="compareBody"></div>
+    </div>
+
+    <div class="advice-card">
+      <h3>今週のアドバイス</h3>
+      <div id="adviceBody"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn btn-secondary" onclick="switchTab('input')">入力を修正する</button>
+      <button class="btn btn-secondary" onclick="switchTab('history')">履歴を見る</button>
+      <button class="btn btn-secondary" onclick="shareX()">Xでシェア</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="panel" id="panel-history">
+    <div class="history-chart-wrap"><canvas id="historyChart"></canvas></div>
+    <div class="history-header">
+      <span>DATE</span><span>GOOD THING</span><span>MEAL</span><span>MOVE</span><span>SLEEP</span><span>MOOD</span><span>TOTAL</span>
+    </div>
+    <div id="historyList"></div>
+    <div class="result-actions" style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="switchTab('input')">今週を記録する</button>
+      <button class="btn btn-secondary" onclick="if(confirm('全履歴を削除しますか？'))clearHistory()">履歴をリセット</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="disclaimer">※このツールは健康の自己管理サポート用デモです。体調に不安がある場合は医師にご相談ください。</div>
+  <div class="footer-links">
+    <a class="footer-link" href="ポートフォリオまとめ.html">まとめページ</a>
+    <a class="footer-link" href="健康施策レコメンダー.html">施策レコメンダー</a>
+    <a class="footer-link" href="1on1コーチングシミュレーター.html">1on1シミュレーター</a>
+  </div>
+  <div class="footer-credit">Portfolio &copy; 2026 Hikari Okada</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const STORAGE_KEY = 'weekly_health_reviews';
+const AXES = [
+  {key:'meal',    label:'食事', color:'#65d483', icon:'&#x1F957;'},
+  {key:'exercise',label:'運動', color:'#8cbfff', icon:'&#x1F3C3;'},
+  {key:'sleep',   label:'睡眠', color:'#c38eff', icon:'&#x1F634;'},
+  {key:'mood',    label:'気分', color:'#ffb84d', icon:'&#x1F60A;'},
+];
+
+const RANKS = [
+  {min:85, label:'絶好調！', color:'#3dd9b8', bg:'rgba(61,217,184,.15)'},
+  {min:70, label:'いい感じ', color:'#8cbfff', bg:'rgba(140,191,255,.15)'},
+  {min:50, label:'まずまず', color:'#ffb84d', bg:'rgba(255,184,77,.15)'},
+  {min:30, label:'ちょっと注意', color:'#ff9248', bg:'rgba(255,146,72,.15)'},
+  {min:0,  label:'要ケア',   color:'#ff5a5a', bg:'rgba(255,90,90,.15)'},
+];
+
+let ratings = {meal:0, mood:0};
+let historyChart = null;
+
+// === Tab ===
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>switchTab(t.dataset.tab));
+});
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
+  if(tab==='history') renderHistory();
+}
+
+// === Rating buttons ===
+document.querySelectorAll('.rating').forEach(group=>{
+  const key = group.dataset.key;
+  group.querySelectorAll('.rate-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      group.querySelectorAll('.rate-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      ratings[key] = parseInt(btn.dataset.val);
+    });
+  });
+});
+
+// === Submit ===
+function submitReview(){
+  if(!ratings.meal){alert('食事の評価を選んでください');return;}
+  if(!ratings.mood){alert('気分の評価を選んでください');return;}
+
+  const exCount = parseInt(document.getElementById('ex-count').value)||0;
+  const exTime = parseInt(document.getElementById('ex-time').value)||0;
+  const sleepH = parseFloat(document.getElementById('sleep-hours').value)||6;
+  const sleepQ = parseInt(document.getElementById('sleep-quality').value)||3;
+
+  // Score calculation (each axis 0-25, total 0-100)
+  const mealScore = ratings.meal * 5; // 5-25
+  const exerciseScore = Math.min(25, Math.round((exCount * exTime / 150) * 25)); // 150min/week = max
+  const sleepScore = Math.min(25, Math.round(((Math.min(sleepH,8)/8)*0.5 + (sleepQ/5)*0.5) * 25));
+  const moodScore = ratings.mood * 5;
+
+  const total = mealScore + exerciseScore + sleepScore + moodScore;
+
+  const record = {
+    date: new Date().toISOString().slice(0,10),
+    week: getWeekLabel(),
+    meal: mealScore,
+    exercise: exerciseScore,
+    sleep: sleepScore,
+    mood: moodScore,
+    total,
+    mealRaw: ratings.meal,
+    exCount, exTime,
+    sleepH, sleepQ,
+    moodRaw: ratings.mood,
+    memos: {
+      meal: document.getElementById('memo-meal').value,
+      exercise: document.getElementById('memo-exercise').value,
+      sleep: document.getElementById('memo-sleep').value,
+      mood: document.getElementById('memo-mood').value,
+    },
+    good: document.getElementById('good-thing').value,
+  };
+
+  saveRecord(record);
+  showResult(record);
+  switchTab('result');
+}
+
+function getWeekLabel(){
+  const d = new Date();
+  const m = d.getMonth()+1;
+  const day = d.getDate();
+  const w = Math.ceil(day/7);
+  return m+'月第'+w+'週';
+}
+
+// === Result ===
+function showResult(rec){
+  document.getElementById('totalScore').textContent = rec.total;
+  const rank = RANKS.find(r=>rec.total>=r.min);
+  const rankEl = document.getElementById('totalRank');
+  rankEl.textContent = rank.label;
+  rankEl.style.background = rank.bg;
+  rankEl.style.color = rank.color;
+
+  // Axis cards
+  const grid = document.getElementById('axisGrid');
+  grid.innerHTML = AXES.map(a=>{
+    const v = rec[a.key];
+    const pct = Math.round(v/25*100);
+    return `<div class="axis-card">
+      <div class="axis-icon">${a.icon}</div>
+      <div class="axis-name">${a.label}</div>
+      <div class="axis-score" style="color:${a.color}">${v}</div>
+      <div class="axis-sub">/ 25</div>
+      <div class="axis-bar"><div class="axis-bar-fill" style="width:${pct}%;background:${a.color}"></div></div>
+    </div>`;
+  }).join('');
+
+  // Radar
+  drawRadar(rec);
+
+  // Compare with last week
+  const records = loadRecords();
+  if(records.length >= 2){
+    const prev = records[records.length-2];
+    document.getElementById('compareCard').style.display = 'block';
+    document.getElementById('compareBody').innerHTML = AXES.map(a=>{
+      const diff = rec[a.key] - prev[a.key];
+      const cls = diff>0?'up':diff<0?'down':'same';
+      const arrow = diff>0?'+'+diff:diff<0?diff:'+-0';
+      return `<div class="compare-row">
+        <span>${a.icon} ${a.label}</span>
+        <span>${prev[a.key]} → ${rec[a.key]}</span>
+        <span class="compare-diff ${cls}">${arrow}</span>
+      </div>`;
+    }).join('') + `<div class="compare-row" style="font-weight:700">
+      <span>合計</span>
+      <span>${prev.total} → ${rec.total}</span>
+      <span class="compare-diff ${rec.total-prev.total>0?'up':rec.total-prev.total<0?'down':'same'}">${rec.total-prev.total>0?'+':''}${rec.total-prev.total}</span>
+    </div>`;
+  } else {
+    document.getElementById('compareCard').style.display = 'none';
+  }
+
+  // Advice
+  generateAdvice(rec);
+}
+
+function drawRadar(rec){
+  const svg = document.getElementById('radarSvg');
+  const cx=130,cy=130,r=90,n=4;
+  let html = '<defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#65d483" stop-opacity=".35"/><stop offset="100%" stop-color="#8cbfff" stop-opacity=".2"/></linearGradient></defs>';
+  [.25,.5,.75,1].forEach(k=>{
+    const pts=AXES.map((_,i)=>{const a=-Math.PI/2+(Math.PI*2/n)*i;return(cx+r*k*Math.cos(a))+','+(cy+r*k*Math.sin(a))}).join(' ');
+    html+=`<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,.06)"/>`;
+  });
+  AXES.forEach((_,i)=>{const a=-Math.PI/2+(Math.PI*2/n)*i;html+=`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="rgba(255,255,255,.08)"/>`;});
+  const pts=AXES.map((ax,i)=>{const a=-Math.PI/2+(Math.PI*2/n)*i;const v=Math.min(rec[ax.key]/25,1);return(cx+r*v*Math.cos(a))+','+(cy+r*v*Math.sin(a))}).join(' ');
+  html+=`<polygon points="${pts}" fill="url(#rg)" stroke="#65d483" stroke-width="2"/>`;
+  AXES.forEach((ax,i)=>{
+    const a=-Math.PI/2+(Math.PI*2/n)*i;
+    const v=Math.min(rec[ax.key]/25,1);
+    html+=`<circle cx="${cx+r*v*Math.cos(a)}" cy="${cy+r*v*Math.sin(a)}" r="4" fill="${ax.color}" stroke="#141826" stroke-width="2"/>`;
+    const lx=cx+(r+18)*Math.cos(a),ly=cy+(r+18)*Math.sin(a);
+    html+=`<text x="${lx}" y="${ly}" fill="${ax.color}" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">${ax.label}</text>`;
+  });
+  svg.innerHTML=html;
+}
+
+function generateAdvice(rec){
+  const advices = [];
+  if(rec.meal<=10) advices.push('<b>食事</b>：野菜を1品増やすだけでもOK。コンビニならサラダかカット野菜を追加してみて。');
+  else if(rec.meal<=15) advices.push('<b>食事</b>：まずまず。朝食を食べる習慣があると1日のエネルギーが安定するよ。');
+  else advices.push('<b>食事</b>：いい感じ！この調子を来週も続けよう。');
+
+  if(rec.exercise<=8) advices.push('<b>運動</b>：まずは1日10分の散歩から。エレベーターの代わりに階段を使うだけでも効果あり。');
+  else if(rec.exercise<=15) advices.push('<b>運動</b>：動けてる！週3回×30分を目指すと体が変わり始めるよ。');
+  else advices.push('<b>運動</b>：素晴らしい運動量。筋トレと有酸素のバランスも意識するとさらに良い。');
+
+  if(rec.sleep<=10) advices.push('<b>睡眠</b>：睡眠が足りてないかも。寝る1時間前にスマホを置く「デジタルサンセット」を試してみて。');
+  else if(rec.sleep<=15) advices.push('<b>睡眠</b>：もう少し質を上げたい。寝室の温度（18-22度）と暗さを整えると変わるよ。');
+  else advices.push('<b>睡眠</b>：よく眠れてる。睡眠は健康の土台。この習慣を大事にしよう。');
+
+  if(rec.mood<=10) advices.push('<b>気分</b>：しんどい時は無理しないで。信頼できる人に話を聞いてもらうだけでも気持ちが楽になるよ。');
+  else if(rec.mood<=15) advices.push('<b>気分</b>：まあまあ。「今週よかったこと」を3つ書く習慣は、気分の底上げに効果的。');
+  else advices.push('<b>気分</b>：いい気分で過ごせてるね。ポジティブな状態を維持するために、自分なりのリフレッシュ法を持っておこう。');
+
+  document.getElementById('adviceBody').innerHTML = advices.map(a=>`<div class="advice-item">${a}</div>`).join('');
+}
+
+// === Storage ===
+function loadRecords(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return[];}
+}
+function saveRecord(rec){
+  const records = loadRecords();
+  // 同じ週のデータがあれば上書き
+  const idx = records.findIndex(r=>r.week===rec.week);
+  if(idx>=0) records[idx]=rec; else records.push(rec);
+  // 最大8週分
+  while(records.length>8) records.shift();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+function clearHistory(){
+  localStorage.removeItem(STORAGE_KEY);
+  renderHistory();
+}
+
+// === History ===
+function renderHistory(){
+  const records = loadRecords();
+  const list = document.getElementById('historyList');
+  if(records.length===0){
+    list.innerHTML='<div class="history-empty">まだ記録がありません。「記録する」タブから今週の振り返りを始めよう。</div>';
+    return;
+  }
+  list.innerHTML = records.slice().reverse().map(r=>`
+    <div class="history-item">
+      <span class="history-date">${r.week}</span>
+      <span class="history-good">${r.good||'--'}</span>
+      <span class="history-val" style="color:#65d483">${r.meal}</span>
+      <span class="history-val" style="color:#8cbfff">${r.exercise}</span>
+      <span class="history-val" style="color:#c38eff">${r.sleep}</span>
+      <span class="history-val" style="color:#ffb84d">${r.mood}</span>
+      <span class="history-total">${r.total}</span>
+    </div>
+  `).join('');
+
+  // Chart
+  drawHistoryChart(records);
+}
+
+function drawHistoryChart(records){
+  const ctx = document.getElementById('historyChart').getContext('2d');
+  if(historyChart) historyChart.destroy();
+  historyChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: records.map(r=>r.week),
+      datasets: AXES.map(a=>({
+        label:a.label, data:records.map(r=>r[a.key]),
+        borderColor:a.color, backgroundColor:a.color+'33',
+        tension:.3, pointRadius:4, pointBackgroundColor:a.color,
+        fill:false, borderWidth:2,
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        y:{min:0,max:25,grid:{color:'rgba(46,54,84,.5)'},ticks:{color:'#6a7699'}},
+        x:{grid:{display:false},ticks:{color:'#a3b0d4',font:{size:10}}}
+      },
+      plugins:{
+        legend:{labels:{color:'#a3b0d4',padding:12,usePointStyle:true,font:{size:11}}},
+        tooltip:{backgroundColor:'#282e45',borderColor:'#3d4670',borderWidth:1}
+      }
+    }
+  });
+}
+
+function shareX(){
+  const records = loadRecords();
+  if(records.length===0) return;
+  const last = records[records.length-1];
+  const rank = RANKS.find(r=>last.total>=r.min);
+  const text = `今週のヘルスレビュー\n食事:${last.meal} 運動:${last.exercise} 睡眠:${last.sleep} 気分:${last.mood}\n合計: ${last.total}/100（${rank.label}）\n#週次ヘルスレビュー #健康経営`;
+  window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
+}
+
+// Init
+renderHistory();
+</script>
+</body>
+</html>
