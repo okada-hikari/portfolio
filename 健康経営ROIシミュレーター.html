@@ -378,6 +378,20 @@ function updateVal(id,val){document.getElementById(id+'-val').textContent=val;}
 
 let roiChart = null;
 
+function formatYen(yen) {
+  const man = Math.round(yen / 10000);
+  if (man >= 10000) {
+    return '約' + (man / 10000).toFixed(1) + '億円';
+  }
+  return man.toLocaleString() + '万円';
+}
+function formatYenShort(man) {
+  if (man >= 10000) {
+    return '約' + (man / 10000).toFixed(1) + '億円';
+  }
+  return man.toLocaleString() + '万円';
+}
+
 function calculate() {
   const employees = parseInt(document.getElementById('employees').value) || 300;
   const avgSalary = (parseInt(document.getElementById('avgSalary').value) || 500) * 10000; // 万円 → 円
@@ -416,22 +430,6 @@ function calculate() {
   const totalByYear = years.map((_, i) => turnoverByYear[i] + healthByYear[i] + productivityByYear[i]);
   const cumulativeTotal = totalByYear.reduce((a, b) => a + b, 0);
   const cumulativeInvestment = budget * 5;
-
-  // ===== 金額フォーマット =====
-  function formatYen(yen) {
-    const man = Math.round(yen / 10000);
-    if (man >= 10000) {
-      const oku = (man / 10000).toFixed(1);
-      return '約' + oku + '億円';
-    }
-    return man.toLocaleString() + '万円';
-  }
-  function formatYenShort(man) {
-    if (man >= 10000) {
-      return '約' + (man / 10000).toFixed(1) + '億円';
-    }
-    return man.toLocaleString() + '万円';
-  }
 
   // ===== ROI =====
   const roi = cumulativeTotal / cumulativeInvestment;
