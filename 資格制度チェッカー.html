@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康経営優良法人チェッカー｜うちの会社、認定取れる？</title>
+<meta name="description" content="健康経営優良法人の認定要件を20問でセルフチェック。達成率・カテゴリ別評価・改善アドバイスを表示。">
+<meta property="og:title" content="健康経営優良法人チェッカー">
+<meta property="og:description" content="20問のチェックリストで、健康経営優良法人の認定に近いか診断。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#141826">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141826;--surface:#1a1f35;--surface-2:#232942;--surface-3:#2a3150;
+  --border:#2a3150;--border-2:#3a4268;
+  --text:#e8ecf5;--text-dim:#8b92a8;--text-faint:#5a6280;
+  --blue:#3d7dff;--cyan:#00d4ff;--orange:#ff9248;
+  --ok:#3dd9b8;--warn:#ffb84d;--error:#ff5a5a;--purple:#a855f7;
+  --radius:14px;--radius-sm:8px;--radius-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+.container{max-width:800px;margin:0 auto;padding:0 20px}
+
+/* Hero */
+.hero{text-align:center;padding:48px 20px 40px;background:radial-gradient(ellipse 600px 400px at 50% 30%,rgba(61,125,255,.15),transparent),radial-gradient(ellipse 500px 300px at 70% 60%,rgba(61,217,184,.08),transparent),var(--bg)}
+.hero h1{font-size:clamp(26px,5vw,42px);font-weight:900;letter-spacing:-.02em;margin-bottom:12px}
+.hero h1 .accent{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:15px;color:var(--text-dim);margin-bottom:8px}
+.hero-sub{font-size:12px;color:var(--text-faint)}
+
+/* Info box */
+.info-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin:24px auto 32px;max-width:800px}
+.info-box h3{font-size:14px;font-weight:700;margin-bottom:8px;color:var(--cyan)}
+.info-box p{font-size:13px;color:var(--text-dim);line-height:1.8}
+.info-box .highlight{color:var(--ok);font-weight:600}
+
+/* Category section */
+.cat-section{margin-bottom:24px}
+.cat-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 20px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.cat-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px}
+.cat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.cat-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-dim)}
+
+.check-list{border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden}
+.check-row{
+  display:flex;align-items:center;gap:14px;padding:14px 20px;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;
+}
+.check-row:last-child{border-bottom:none}
+.check-row:hover{background:rgba(255,255,255,.02)}
+.check-box{
+  width:24px;height:24px;border-radius:6px;border:2px solid var(--border-2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:14px;color:transparent;transition:all .2s;
+}
+.check-row.checked .check-box{background:var(--ok);border-color:var(--ok);color:#141826}
+.check-label{font-size:13px;flex:1}
+.check-required{font-size:10px;color:var(--orange);font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0}
+
+/* Submit */
+.submit-row{text-align:center;margin:32px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;box-shadow:0 6px 20px rgba(61,125,255,.3)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+
+/* Result */
+.result{display:none;padding:20px 0 80px}
+.result.active{display:block}
+.result-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;margin-bottom:24px}
+.result-pct{font-family:'DM Mono',monospace;font-size:64px;font-weight:700;line-height:1}
+.result-label{font-size:14px;color:var(--text-dim);margin-top:6px}
+.result-rank{display:inline-block;margin-top:12px;padding:8px 20px;border-radius:100px;font-size:14px;font-weight:700}
+
+/* Category result */
+.cat-result{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
+.cat-result-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.cat-result-icon{font-size:22px;margin-bottom:4px}
+.cat-result-name{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+.cat-result-score{font-family:'DM Mono',monospace;font-size:18px;font-weight:700}
+.cat-result-bar{height:4px;background:var(--surface-2);border-radius:2px;margin-top:6px;overflow:hidden}
+.cat-result-fill{height:100%;border-radius:2px}
+
+/* Advice list */
+.advice-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:24px}
+.advice-section h3{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.advice-section h3::before{content:'';width:4px;height:18px;background:linear-gradient(var(--blue),var(--cyan));border-radius:2px}
+.advice-item{padding:14px;background:var(--surface-2);border-radius:var(--radius-sm);margin-bottom:8px;border-left:3px solid var(--orange)}
+.advice-item.done{border-left-color:var(--ok);opacity:.6}
+.advice-q{font-size:13px;font-weight:600;margin-bottom:4px}
+.advice-a{font-size:12px;color:var(--text-dim);line-height:1.8}
+.advice-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;margin-top:6px;font-family:'DM Mono',monospace}
+.advice-tag.easy{background:rgba(61,217,184,.12);color:var(--ok)}
+.advice-tag.mid{background:rgba(255,184,77,.12);color:var(--warn)}
+.advice-tag.hard{background:rgba(255,90,90,.12);color:var(--error)}
+
+/* Flow */
+.flow-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:24px}
+.flow-section h3{font-size:16px;font-weight:700;margin-bottom:14px}
+.flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.flow-step{text-align:center;padding:16px 10px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border);position:relative}
+.flow-step::after{content:'';position:absolute;right:-8px;top:50%;width:6px;height:6px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);transform:translateY(-50%) rotate(45deg)}
+.flow-step:last-child::after{display:none}
+.flow-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:4px}
+.flow-text{font-size:12px;font-weight:600}
+.flow-sub{font-size:10px;color:var(--text-faint);margin-top:2px}
+
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:24px 0}
+
+footer{background:var(--surface);border-top:1px solid var(--border);padding:32px 20px 24px;text-align:center;margin-top:40px}
+.footer-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.footer-link{padding:8px 16px;border-radius:100px;font-size:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);text-decoration:none;transition:all .2s}
+.footer-link:hover{border-color:var(--cyan);color:var(--cyan)}
+.footer-credit{font-size:11px;color:var(--text-faint);font-family:'DM Mono',monospace}
+.disclaimer{font-size:10px;color:var(--text-faint);margin-bottom:12px;line-height:1.7}
+
+@media(max-width:600px){
+  .cat-result{grid-template-columns:repeat(3,1fr)}
+  .flow-steps{grid-template-columns:repeat(2,1fr)}
+  .flow-step::after{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>うちの会社、<br><span class="accent">認定取れる？</span></h1>
+  <p>健康経営優良法人の認定要件を20問でセルフチェック。</p>
+  <p class="hero-sub">所要時間：約3分 / 経産省の認定基準をベースに構成</p>
+</div>
+
+<div class="container">
+  <div class="info-box">
+    <h3>健康経営優良法人とは？</h3>
+    <p>社員の健康づくりに積極的に取り組む会社を、経済産業省が認定する制度。認定されると<span class="highlight">採用力UP・取引先からの信頼UP・自治体の優遇（入札加点・金利優遇）</span>などのメリットがある。大規模法人の上位500社は「ホワイト500」と呼ばれる。</p>
+  </div>
+
+  <div id="checkArea"></div>
+
+  <div class="submit-row">
+    <button class="btn btn-primary" onclick="diagnose()">診断する</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-hero">
+      <div class="result-pct" id="resultPct" style="background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent">--</div>
+      <div class="result-label">認定要件 達成率</div>
+      <div class="result-rank" id="resultRank"></div>
+    </div>
+
+    <div class="cat-result" id="catResult"></div>
+
+    <div class="advice-section">
+      <h3>改善アドバイス</h3>
+      <div id="adviceList"></div>
+    </div>
+
+    <div class="flow-section">
+      <h3>認定までのフロー</h3>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-num">STEP 1</div>
+          <div class="flow-text">自社の現状把握</div>
+          <div class="flow-sub">このチェッカーで確認</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">STEP 2</div>
+          <div class="flow-text">健康宣言を策定</div>
+          <div class="flow-sub">加入保険者に届出</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">STEP 3</div>
+          <div class="flow-text">申請書類を提出</div>
+          <div class="flow-sub">毎年8-10月頃</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">STEP 4</div>
+          <div class="flow-text">認定・公表</div>
+          <div class="flow-sub">翌年3月頃</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="location.href='健康施策レコメンダー.html'">施策レコメンダーで対策を探す</button>
+      <button class="btn btn-secondary" onclick="restart()">もう一度チェック</button>
+      <button class="btn btn-secondary" onclick="shareX()">Xでシェア</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="disclaimer">※本ツールは健康経営優良法人認定の公式審査ではありません。実際の申請は経済産業省・日本健康会議のガイドラインをご確認ください。認定要件は年度により変更されることがあります。</div>
+  <div class="footer-links">
+    <a class="footer-link" href="ポートフォリオまとめ.html">まとめページ</a>
+    <a class="footer-link" href="健康施策レコメンダー.html">施策レコメンダー</a>
+    <a class="footer-link" href="健康経営キーワード辞典.html">キーワード辞典</a>
+  </div>
+  <div class="footer-credit">Portfolio &copy; 2026 Hikari Okada</div>
+</footer>
+
+<script>
+const CATEGORIES = [
+  {id:'policy',   name:'経営方針',     icon:'&#x1F3E2;', color:'#3d7dff'},
+  {id:'org',      name:'体制づくり',   icon:'&#x1F465;', color:'#00d4ff'},
+  {id:'program',  name:'施策の実施',   icon:'&#x2699;',  color:'#3dd9b8'},
+  {id:'check',    name:'評価・改善',   icon:'&#x1F4CA;', color:'#ff9248'},
+  {id:'law',      name:'法令遵守',     icon:'&#x2696;',  color:'#a855f7'},
+];
+
+const QUESTIONS = [
+  // 経営方針
+  {id:1,  cat:'policy',  text:'健康経営を経営理念や方針に明文化している', required:true,
+   advice:'まず「健康宣言」を作成しましょう。社長メッセージとして社内外に公開するだけでOK。テンプレートは協会けんぽのサイトにあります。', difficulty:'easy'},
+  {id:2,  cat:'policy',  text:'社内外に健康経営の取り組みを発信している（HP・社内報など）', required:false,
+   advice:'自社HPに「健康経営の取り組み」ページを1枚作るだけで達成。社内報やSlackでの定期発信も有効です。', difficulty:'easy'},
+  {id:3,  cat:'policy',  text:'経営トップが健康経営の推進に関与している', required:true,
+   advice:'社長が全社会議で「社員の健康は経営の最優先事項」と宣言するだけでも大きな一歩。トップのコミットメントが認定の必須条件です。', difficulty:'easy'},
+  {id:4,  cat:'policy',  text:'健康経営の中長期計画（3年以上）を策定している', required:false,
+   advice:'「1年目: 現状把握、2年目: 施策実行、3年目: 効果検証」のような大枠でOK。A4一枚のロードマップから始めましょう。', difficulty:'mid'},
+  // 体制づくり
+  {id:5,  cat:'org',     text:'健康経営の担当者・推進チームを設置している', required:true,
+   advice:'人事部や総務部から1名を「健康経営推進担当」として任命するだけで達成。専任でなく兼務でもOK。', difficulty:'easy'},
+  {id:6,  cat:'org',     text:'産業医・保健師と連携できている', required:true,
+   advice:'50人以上の会社は産業医の選任が法的義務。まだなら、オンライン産業医サービス（月数万円〜）から始められます。', difficulty:'mid'},
+  {id:7,  cat:'org',     text:'健康保険組合（協会けんぽ含む）と協力して取り組んでいる', required:false,
+   advice:'加入している健康保険組合に「コラボヘルス」の相談をしましょう。保険者が持つ健診データの分析支援を受けられます。', difficulty:'mid'},
+  {id:8,  cat:'org',     text:'健康経営に関する予算を確保している', required:false,
+   advice:'最初は1人あたり年5,000円程度からでOK。ストレスチェック費用+健康セミナー1回分で始められます。', difficulty:'easy'},
+  // 施策の実施
+  {id:9,  cat:'program', text:'定期健康診断の受診率が100%（またはそれに近い）', required:true,
+   advice:'未受診者への個別フォロー（リマインドメール+上司からの声かけ）で改善できます。受診率100%は認定の最重要項目の1つ。', difficulty:'easy'},
+  {id:10, cat:'program', text:'ストレスチェックを実施し、集団分析を行っている', required:true,
+   advice:'50人以上なら法的義務。50人未満でも実施すると認定に有利。外部サービスなら1人500〜1000円で実施可能。', difficulty:'easy'},
+  {id:11, cat:'program', text:'運動機会の提供（歩数チャレンジ・ジム補助・体操など）をしている', required:false,
+   advice:'朝の3分間ラジオ体操、歩数チャレンジアプリの導入、ジムの法人契約など。低コストで始められるものから。', difficulty:'easy'},
+  {id:12, cat:'program', text:'食生活の改善支援（社食改善・栄養セミナーなど）をしている', required:false,
+   advice:'置き社食サービスの導入、管理栄養士によるセミナー（年1回でもOK）、野菜を増やした社食メニューの追加など。', difficulty:'mid'},
+  {id:13, cat:'program', text:'メンタルヘルス対策（相談窓口・研修など）を実施している', required:false,
+   advice:'EAP（従業員支援プログラム）の導入が最も手軽。月額1人300〜800円で24時間匿名相談が可能になります。', difficulty:'mid'},
+  {id:14, cat:'program', text:'長時間労働への対策（ノー残業デー・業務効率化など）をしている', required:false,
+   advice:'まず「毎週水曜はノー残業デー」から。残業時間のモニタリングと月次報告の仕組みを作ると継続しやすい。', difficulty:'mid'},
+  {id:15, cat:'program', text:'受動喫煙対策（分煙・禁煙支援など）を実施している', required:true,
+   advice:'2020年の改正健康増進法で屋内全面禁煙が原則義務化。喫煙室の設置基準を満たしているか確認を。禁煙外来の費用補助も有効。', difficulty:'mid'},
+  {id:16, cat:'program', text:'感染症予防（インフルエンザ予防接種補助など）をしている', required:false,
+   advice:'インフルエンザ予防接種の費用補助（1人2,000〜3,000円程度）は最もコスパの良い施策の1つ。', difficulty:'easy'},
+  // 評価・改善
+  {id:17, cat:'check',   text:'健康経営の効果を測る指標（KPI）を設定している', required:false,
+   advice:'健診受診率、ストレスチェック高リスク率、有給取得率、離職率、残業時間のうち2〜3個をKPIに設定。数字で追えるものを選ぶ。', difficulty:'mid'},
+  {id:18, cat:'check',   text:'取り組みの効果を定期的に検証し、改善している（PDCA）', required:false,
+   advice:'年1回の振り返りミーティング（健診データの前年比較+施策の参加率確認）を開くだけでPDCAが回り始めます。', difficulty:'mid'},
+  // 法令遵守
+  {id:19, cat:'law',     text:'労働基準法、労働安全衛生法を遵守している', required:true,
+   advice:'これは認定の大前提。残業の36協定、健診の実施、安全衛生委員会の設置など、基本的な法令遵守ができているか総点検を。', difficulty:'hard'},
+  {id:20, cat:'law',     text:'50人以上の場合、衛生委員会を毎月開催している', required:false,
+   advice:'毎月1回、産業医+衛生管理者+労使代表で開催。議事録を残すことが重要。50人未満の場合は努力義務。', difficulty:'mid'},
+];
+
+function init(){
+  const area = document.getElementById('checkArea');
+  area.innerHTML = CATEGORIES.map(cat=>{
+    const qs = QUESTIONS.filter(q=>q.cat===cat.id);
+    return `
+      <div class="cat-section">
+        <div class="cat-header">
+          <div class="cat-title">
+            <div class="cat-icon" style="background:${cat.color}22;border:1px solid ${cat.color}44">${cat.icon}</div>
+            ${cat.name}
+          </div>
+          <div class="cat-count" id="count-${cat.id}">0 / ${qs.length}</div>
+        </div>
+        <div class="check-list">
+          ${qs.map(q=>`
+            <div class="check-row" data-id="${q.id}" onclick="toggleCheck(this)" tabindex="0" role="checkbox" aria-checked="false">
+              <div class="check-box">&#10003;</div>
+              <div class="check-label">${q.text}</div>
+              ${q.required?'<span class="check-required">MUST</span>':''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // キーボード対応
+  area.querySelectorAll('.check-row').forEach(r=>{
+    r.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();r.click()}});
+  });
+}
+
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  el.setAttribute('aria-checked', el.classList.contains('checked'));
+  updateCounts();
+}
+
+function updateCounts(){
+  CATEGORIES.forEach(cat=>{
+    const qs = QUESTIONS.filter(q=>q.cat===cat.id);
+    const checked = qs.filter(q=>document.querySelector(`.check-row[data-id="${q.id}"]`).classList.contains('checked')).length;
+    document.getElementById('count-'+cat.id).textContent = checked+' / '+qs.length;
+  });
+}
+
+function diagnose(){
+  const checked = new Set();
+  document.querySelectorAll('.check-row.checked').forEach(r=>checked.add(parseInt(r.dataset.id)));
+
+  const total = QUESTIONS.length;
+  const score = checked.size;
+  const pct = Math.round(score/total*100);
+
+  // 必須項目チェック
+  const requiredQs = QUESTIONS.filter(q=>q.required);
+  const requiredDone = requiredQs.filter(q=>checked.has(q.id)).length;
+  const requiredAll = requiredQs.length;
+
+  // ランク判定
+  let rank, rankColor, rankBg;
+  if(pct>=80 && requiredDone===requiredAll){
+    rank='認定圏内'; rankColor='#3dd9b8'; rankBg='rgba(61,217,184,.15)';
+  } else if(pct>=60){
+    rank='あと少し！'; rankColor='#ffb84d'; rankBg='rgba(255,184,77,.15)';
+  } else if(pct>=40){
+    rank='もうひと頑張り'; rankColor='#ff9248'; rankBg='rgba(255,146,72,.15)';
+  } else {
+    rank='これから！'; rankColor='#ff5a5a'; rankBg='rgba(255,90,90,.15)';
+  }
+
+  document.getElementById('resultPct').textContent = pct+'%';
+  const rankEl = document.getElementById('resultRank');
+  rankEl.textContent = rank + (requiredDone<requiredAll ? ' （必須項目が'+(requiredAll-requiredDone)+'件未達）' : '');
+  rankEl.style.background=rankBg;
+  rankEl.style.color=rankColor;
+
+  // カテゴリ別
+  document.getElementById('catResult').innerHTML = CATEGORIES.map(cat=>{
+    const qs = QUESTIONS.filter(q=>q.cat===cat.id);
+    const done = qs.filter(q=>checked.has(q.id)).length;
+    const catPct = Math.round(done/qs.length*100);
+    return `<div class="cat-result-item">
+      <div class="cat-result-icon">${cat.icon}</div>
+      <div class="cat-result-name">${cat.name}</div>
+      <div class="cat-result-score" style="color:${cat.color}">${done}/${qs.length}</div>
+      <div class="cat-result-bar"><div class="cat-result-fill" style="width:${catPct}%;background:${cat.color}"></div></div>
+    </div>`;
+  }).join('');
+
+  // アドバイス
+  const advices = QUESTIONS.map(q=>{
+    const isDone = checked.has(q.id);
+    const diffLabel = {easy:'すぐできる', mid:'少し準備が必要', hard:'しっかり対応'}[q.difficulty];
+    const diffCls = q.difficulty;
+    return `<div class="advice-item ${isDone?'done':''}">
+      <div class="advice-q">${isDone?'&#10003; ':'&#9744; '}${q.text}${q.required?' <span style="color:var(--orange);font-size:10px">MUST</span>':''}</div>
+      ${!isDone?`<div class="advice-a">${q.advice}</div><span class="advice-tag ${diffCls}">${diffLabel}</span>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('adviceList').innerHTML = advices;
+
+  document.getElementById('result').classList.add('active');
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function restart(){
+  document.querySelectorAll('.check-row').forEach(r=>{r.classList.remove('checked');r.setAttribute('aria-checked','false')});
+  updateCounts();
+  document.getElementById('result').classList.remove('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function shareX(){
+  const checked = document.querySelectorAll('.check-row.checked').length;
+  const pct = Math.round(checked/QUESTIONS.length*100);
+  const text = '健康経営優良法人チェッカーで自社を診断してみた！\n達成率: '+pct+'%（'+checked+'/'+QUESTIONS.length+'）\n#健康経営 #健康経営優良法人';
+  window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
+}
+
+init();
+</script>
+</body>
+</html>
