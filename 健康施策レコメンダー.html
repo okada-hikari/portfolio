@@ -186,6 +186,36 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 .disclaimer{border-top:1px solid var(--border);padding-top:18px;font-size:11px;color:var(--text-faint);line-height:1.8;text-align:center;max-width:900px;margin:0 auto}
 .credit{text-align:center;font-size:11px;color:var(--text-faint);margin-top:14px;font-family:'DM Mono',monospace}
 
+/* Tooltip */
+.tip{
+  position:relative;display:inline-flex;align-items:center;gap:3px;
+  border-bottom:1px dashed var(--cyan);cursor:help;color:var(--cyan);
+}
+.tip::after{
+  content:'?';
+  display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;border-radius:50%;
+  background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.4);
+  font-size:10px;font-weight:700;color:var(--cyan);
+  flex-shrink:0;
+}
+.tip-box{
+  display:none;position:absolute;bottom:calc(100% + 8px);left:50%;
+  transform:translateX(-50%);
+  width:260px;padding:12px 14px;border-radius:10px;
+  background:var(--surface-2);border:1px solid var(--cyan);
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  font-size:12px;color:var(--text);line-height:1.7;
+  z-index:100;pointer-events:none;
+  font-weight:400;
+}
+.tip-box::after{
+  content:'';position:absolute;top:100%;left:50%;
+  transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:var(--cyan);
+}
+.tip:hover .tip-box,.tip:focus .tip-box{display:block}
+
 @media(max-width:860px){
   .section{padding:60px 16px}
   .check-grid{grid-template-columns:1fr}
@@ -361,7 +391,7 @@ const ISSUES = [
   {id:'mental',    label:'心の不調が増えている',      desc:'休む人やストレスを抱える人が目立つ'},
   {id:'turnover',  label:'人がすぐ辞めてしまう',      desc:'入社しても長く続かない'},
   {id:'lifestyle', label:'健診の結果が悪い人が多い',  desc:'血圧・血糖値など、引っかかる人が多い'},
-  {id:'present',   label:'出勤してるけど元気がない',  desc:'来てはいるけど集中力やパフォーマンスが低い'},
+  {id:'present',   label:'出勤してるけど元気がない',  desc:'来てはいるけど集中力やパフォーマンスが低い（プレゼンティーズム）'},
   {id:'exercise',  label:'運動する人が少ない',        desc:'デスクワーク中心で体を動かす機会がない'},
   {id:'comm',      label:'社内の会話が減っている',    desc:'チームや部署の間で連携がうまくいかない'},
   {id:'overtime',  label:'残業が多い',                desc:'帰れない日が続いている'},
@@ -663,8 +693,8 @@ function renderResult(top5, empCount){
   document.getElementById('recList').innerHTML = top5.map((m,i)=>`
     <div class="rec-card">
       <div class="rec-rank ${rankCls[i]}">TOP ${i+1}</div>
-      <div class="rec-name">${m.name}</div>
-      <div class="rec-desc">${m.desc}</div>
+      <div class="rec-name">${addTooltips(m.name)}</div>
+      <div class="rec-desc">${addTooltips(m.desc)}</div>
       <div class="rec-metrics">
         <div class="rec-metric">
           <div class="rec-metric-label">EFFECT</div>
@@ -697,7 +727,7 @@ function renderResult(top5, empCount){
     ? matchedSynergies.map(s=>`
         <div class="synergy-item">
           <div class="synergy-icon">&#x2728;</div>
-          <div class="synergy-text"><b>${s.text}</b></div>
+          <div class="synergy-text"><b>${addTooltips(s.text)}</b></div>
         </div>
       `).join('')
     : '<div class="synergy-item"><div class="synergy-icon">&#x1F4A1;</div><div class="synergy-text">TOP5の組み合わせに特筆すべき相乗効果パターンはありませんが、複数施策の同時導入は単体導入より20-30%高い効果が期待できます。</div></div>';
@@ -716,6 +746,38 @@ function restart(){
 function shareX(){
   const text = '組織の健康課題からTOP5施策を自動提案してくれるツール、面白い。\n#健康経営 #HRテック';
   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(location.href),'_blank');
+}
+
+/* ============================
+   用語ツールチップ（自動変換）
+   ============================ */
+const GLOSSARY = {
+  'EAP': '従業員支援プログラム。社外の専門家がカウンセリングや相談を受けてくれるサービス',
+  'パルスサーベイ': '月1回程度のかんたんなアンケート。社員の気持ちの変化を定期的につかむための調査',
+  'ラインケア': '上司（管理職）が部下の心身の変化に気づいて対応すること。管理職の大事な役割の1つ',
+  'フレックスタイム': '出勤・退勤の時間を自分で決められる制度。コアタイム（必ず出勤する時間帯）がある場合も',
+  'ROI': '投資対効果。かけたお金に対してどれだけリターン（成果）があったかを数字で表したもの',
+  'PDCA': 'Plan（計画）→Do（実行）→Check（確認）→Act（改善）のサイクル。やりっぱなしにしない仕組み',
+  'エンゲージメント': '社員の仕事への熱意・やりがい・会社への愛着の度合い。高いほど生産性も上がる',
+  'ナッジ': 'さりげなく良い行動に導く仕掛け。「強制」ではなく「自然とやりたくなる」設計',
+  'プレゼンティーズム': '出勤はしているけど、体調不良やメンタルの不調でパフォーマンスが落ちている状態',
+  'アブセンティーズム': '病気やケガで仕事を休むこと。欠勤日数で測る',
+  'ゲーミフィケーション': 'ゲームの要素（ポイント・ランキング・バッジなど）を使って楽しく行動を促す仕組み',
+  'ウェアラブルデバイス': 'スマートウォッチなど、体に身につけて歩数・心拍・睡眠などを自動で記録するデバイス',
+  '産業医': '会社の従業員の健康管理を担当するお医者さん。50人以上の会社では配置が法律で義務',
+  '健康経営': '社員の健康を「投資」として戦略的に取り組む経営手法。経産省が推進している',
+  '健康経営優良法人': '社員の健康づくりに積極的な会社を国が認定する制度。「ホワイト500」が上位枠',
+};
+
+function addTooltips(text){
+  let result = text;
+  Object.entries(GLOSSARY).forEach(([term, desc])=>{
+    const regex = new RegExp(term, 'g');
+    if(result.includes(term)){
+      result = result.replace(regex, `<span class="tip" tabindex="0">${term}<span class="tip-box">${desc}</span></span>`);
+    }
+  });
+  return result;
 }
 
 /* init */

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康経営キーワード辞典｜難しい用語をかんたんに</title>
+<meta name="description" content="健康経営・HRテックの専門用語を、誰でもわかる言葉で解説。検索・カテゴリ絞り込み対応。">
+<meta property="og:title" content="健康経営キーワード辞典">
+<meta property="og:description" content="プレゼンティーズム、EAP、ROI...健康経営の用語を1秒で理解。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#141826">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141826;--surface:#1a1f35;--surface-2:#232942;--surface-3:#2a3150;
+  --border:#2a3150;--border-2:#3a4268;
+  --text:#e8ecf5;--text-dim:#8b92a8;--text-faint:#5a6280;
+  --blue:#3d7dff;--cyan:#00d4ff;--orange:#ff9248;
+  --ok:#3dd9b8;--warn:#ffb84d;--error:#ff5a5a;--purple:#a855f7;--pink:#ff6b9d;
+  --radius:14px;--radius-sm:8px;--radius-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* Header */
+.header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:20px 24px;position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.header-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.header-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+.header-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--ok),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.header-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-dim)}
+
+.container{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+
+/* Hero */
+.hero-mini{
+  text-align:center;padding:48px 20px 40px;
+}
+.hero-mini h1{
+  font-size:clamp(28px,5vw,44px);font-weight:900;
+  letter-spacing:-.02em;margin-bottom:12px;
+}
+.hero-mini h1 .accent{
+  background:linear-gradient(135deg,var(--ok),var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-mini p{font-size:15px;color:var(--text-dim);margin-bottom:32px}
+
+/* Search */
+.search-wrap{
+  position:relative;max-width:600px;margin:0 auto 24px;
+}
+.search-input{
+  width:100%;padding:16px 20px 16px 48px;border-radius:100px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-size:15px;font-family:inherit;outline:none;
+  transition:border-color .2s;
+}
+.search-input:focus{border-color:var(--cyan)}
+.search-input::placeholder{color:var(--text-faint)}
+.search-icon{
+  position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  font-size:18px;color:var(--text-faint);pointer-events:none;
+}
+.search-clear{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:var(--surface-2);color:var(--text-dim);
+  font-size:14px;cursor:pointer;display:none;
+  align-items:center;justify-content:center;
+}
+.search-clear.show{display:flex}
+
+/* Category filters */
+.cat-filters{
+  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+  margin-bottom:32px;
+}
+.cat-btn{
+  padding:7px 16px;border-radius:100px;font-size:12px;font-weight:600;
+  cursor:pointer;border:1px solid var(--border);background:var(--surface);
+  color:var(--text-dim);transition:all .2s;font-family:inherit;
+}
+.cat-btn:hover{border-color:var(--border-2)}
+.cat-btn.active{background:rgba(61,217,184,.12);border-color:var(--ok);color:var(--ok)}
+.cat-btn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+
+/* Results count */
+.results-info{
+  font-size:13px;color:var(--text-faint);margin-bottom:16px;
+  font-family:'DM Mono',monospace;
+}
+
+/* Word cards */
+.word-list{display:grid;gap:12px}
+.word-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  transition:all .2s;cursor:pointer;
+}
+.word-card:hover{border-color:var(--border-2);transform:translateY(-1px)}
+.word-card.open{border-color:var(--cyan)}
+.word-header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.word-term{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.word-en{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-faint);font-weight:400}
+.word-cat{
+  font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;
+  letter-spacing:.06em;font-family:'DM Mono',monospace;flex-shrink:0;
+}
+.word-cat.c-mental{background:rgba(255,107,157,.12);color:var(--pink)}
+.word-cat.c-data{background:rgba(0,212,255,.12);color:var(--cyan)}
+.word-cat.c-system{background:rgba(61,125,255,.12);color:var(--blue)}
+.word-cat.c-work{background:rgba(255,146,72,.12);color:var(--orange)}
+.word-cat.c-health{background:rgba(61,217,184,.12);color:var(--ok)}
+.word-cat.c-hr{background:rgba(168,85,247,.12);color:var(--purple)}
+.word-cat.c-finance{background:rgba(255,184,77,.12);color:var(--warn)}
+.word-body{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.word-card.open .word-body{display:block}
+.word-simple{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--ok)}
+.word-detail{font-size:13px;color:var(--text-dim);line-height:1.9;margin-bottom:14px}
+.word-example{
+  background:var(--surface-2);border-radius:var(--radius-sm);
+  padding:12px 14px;font-size:12px;color:var(--text-dim);line-height:1.8;
+  border-left:3px solid var(--cyan);
+}
+.word-example b{color:var(--text);font-weight:600}
+.word-toggle{
+  font-size:18px;color:var(--text-faint);transition:transform .2s;flex-shrink:0;
+}
+.word-card.open .word-toggle{transform:rotate(45deg);color:var(--cyan)}
+
+/* No results */
+.no-results{
+  text-align:center;padding:60px 20px;color:var(--text-faint);
+}
+.no-results-icon{font-size:48px;margin-bottom:16px}
+.no-results p{font-size:14px}
+
+/* Footer */
+footer{
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:32px 20px 24px;margin-top:60px;text-align:center;
+}
+.footer-links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.footer-link{
+  padding:8px 16px;border-radius:100px;font-size:12px;
+  background:var(--surface-2);border:1px solid var(--border);
+  color:var(--text-dim);text-decoration:none;transition:all .2s;
+}
+.footer-link:hover{border-color:var(--cyan);color:var(--cyan)}
+.footer-credit{font-size:11px;color:var(--text-faint);font-family:'DM Mono',monospace}
+
+@media(max-width:600px){
+  .word-term{font-size:15px}
+  .word-en{display:none}
+  .header-inner{flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title">
+      <div class="header-icon">&#x1F4D6;</div>
+      健康経営キーワード辞典
+    </div>
+    <div class="header-count" id="totalCount"></div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="hero-mini">
+    <h1>分からない用語、<br><span class="accent">1秒で解決。</span></h1>
+    <p>健康経営・HRテックの専門用語を、誰でもわかる言葉で解説します。</p>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">&#x1F50D;</span>
+    <input class="search-input" id="searchInput" type="text" placeholder="キーワードを入力..." aria-label="用語を検索">
+    <button class="search-clear" id="searchClear" aria-label="検索をクリア">&#x2715;</button>
+  </div>
+
+  <div class="cat-filters" id="catFilters"></div>
+  <div class="results-info" id="resultsInfo"></div>
+  <div class="word-list" id="wordList"></div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a class="footer-link" href="ポートフォリオまとめ.html">まとめページ</a>
+    <a class="footer-link" href="健康施策レコメンダー.html">施策レコメンダー</a>
+    <a class="footer-link" href="健康経営ROIシミュレーター.html">ROIシミュレーター</a>
+    <a class="footer-link" href="1on1コーチングシミュレーター.html">1on1シミュレーター</a>
+  </div>
+  <div class="footer-credit">Portfolio &copy; 2026 Hikari Okada</div>
+</footer>
+
+<script>
+const WORDS = [
+  {
+    term:'プレゼンティーズム', en:'Presenteeism', cat:'health', catLabel:'健康',
+    simple:'出勤してるけど、体調やメンタルの不調でパフォーマンスが落ちてる状態',
+    detail:'欠勤（アブセンティーズム）と違い、数字として見えにくいのが厄介。実は欠勤よりも企業のコスト損失が大きいと言われている。頭痛・腰痛・花粉症・睡眠不足・ストレスなどが原因になることが多い。',
+    example:'<b>使い方</b>：「うちの会社はプレゼンティーズムのコストが年間○○万円。まず睡眠改善から取り組もう」'
+  },
+  {
+    term:'アブセンティーズム', en:'Absenteeism', cat:'health', catLabel:'健康',
+    simple:'病気やケガで仕事を休むこと',
+    detail:'欠勤日数で簡単に測れるため、昔からよく使われる指標。ただし最近は「休めずに出勤するプレゼンティーズム」の方がコスト大きいことが分かっている。',
+    example:'<b>使い方</b>：「メンタル不調によるアブセンティーズムが増えている → EAP導入を検討」'
+  },
+  {
+    term:'EAP', en:'Employee Assistance Program', cat:'mental', catLabel:'メンタル',
+    simple:'社外の専門家が社員の相談にのってくれるサービス',
+    detail:'24時間匿名で相談できるのが特徴。メンタル、家庭問題、金銭問題など幅広く対応。会社に知られずに使えるので利用のハードルが低い。家族も使えるプランが人気。',
+    example:'<b>使い方</b>：「ストレスチェックで高ストレスと出た社員に、EAPの相談窓口を案内する」'
+  },
+  {
+    term:'ストレスチェック', en:'Stress Check', cat:'system', catLabel:'制度',
+    simple:'社員のストレス状態を調べるアンケート調査',
+    detail:'50人以上の会社では年1回の実施が法律で義務化されている（2015年~）。57問の質問に答える形式が一般的。結果は個人には返るが、会社には個人名付きでは通知されない。',
+    example:'<b>使い方</b>：「ストレスチェックの集団分析で、○○部署の数値が悪い → 部署単位で対策を打つ」'
+  },
+  {
+    term:'ROI', en:'Return On Investment', cat:'finance', catLabel:'お金',
+    simple:'かけたお金に対して、どれだけ成果が返ってきたかの数字',
+    detail:'例えば100万円かけて200万円の効果があれば、ROIは100%。健康経営では「医療費削減額」「離職コスト削減額」「生産性向上額」などで計算する。経営層への報告に必須の数字。',
+    example:'<b>使い方</b>：「健康施策のROIは平均3倍。1ドル投資すると3ドル返ってくる（ジョンソン&ジョンソンの研究）」'
+  },
+  {
+    term:'健康経営', en:'Health and Productivity Management', cat:'system', catLabel:'制度',
+    simple:'社員の健康を「コスト」ではなく「投資」として考える経営のやり方',
+    detail:'経済産業省が2014年から推進している考え方。社員が健康だと、医療費が減る・離職が減る・生産性が上がるという好循環を狙う。「健康経営優良法人」の認定制度もある。',
+    example:'<b>使い方</b>：「健康経営に取り組むことで、採用のブランド力も上がる。求職者の44%が健康経営の取り組みを重視」'
+  },
+  {
+    term:'健康経営優良法人', en:'Certified Health & Productivity Management Organization', cat:'system', catLabel:'制度',
+    simple:'社員の健康づくりに力を入れている会社を、国が「お墨付き」として認定する制度',
+    detail:'大規模法人部門の上位500社は「ホワイト500」、中小規模法人部門の上位500社は「ブライト500」と呼ばれる。認定を受けると採用力UP・取引先からの信頼UP・自治体の優遇などのメリットがある。',
+    example:'<b>使い方</b>：「来年のホワイト500認定を目指して、まずストレスチェックの集団分析から始めよう」'
+  },
+  {
+    term:'PDCA', en:'Plan-Do-Check-Act', cat:'data', catLabel:'データ',
+    simple:'「計画→実行→確認→改善」を繰り返す仕組み',
+    detail:'やりっぱなしにしないための考え方。健康施策は「やって終わり」になりがちだが、Check（効果を測る）とAct（やり方を見直す）が大事。エンゲージメント調査がCheckの役割を果たす。',
+    example:'<b>使い方</b>：「歩数チャレンジをやった（Do） → 3ヶ月後に運動習慣を再調査（Check） → 参加率が低かったのでインセンティブを追加（Act）」'
+  },
+  {
+    term:'エンゲージメント', en:'Employee Engagement', cat:'hr', catLabel:'人事',
+    simple:'社員の「やる気」「仕事への熱意」「会社への愛着」の度合い',
+    detail:'単なる「満足度」とは違う。満足してるけどやる気ゼロ、はあり得る。エンゲージメントが高いと生産性が上がり、離職が減ることが多くの研究で証明されている。',
+    example:'<b>使い方</b>：「四半期ごとにエンゲージメント調査を実施し、スコアの変化を追跡する」'
+  },
+  {
+    term:'パルスサーベイ', en:'Pulse Survey', cat:'data', catLabel:'データ',
+    simple:'月1回くらいのかんたんなアンケートで、社員の気分の変化を追いかける調査',
+    detail:'年1回の大がかりな調査（センサス）だとリアルタイム性がない。パルスサーベイは5~10問程度の短い質問を毎月やることで、変化をすぐキャッチできる。「パルス」は脈拍の意味。',
+    example:'<b>使い方</b>：「毎月第1月曜にパルスサーベイを配信。回答率80%以上をキープすることが目標」'
+  },
+  {
+    term:'ラインケア', en:'Line Care', cat:'mental', catLabel:'メンタル',
+    simple:'上司が部下の心身の変化に気づいて、声をかけて、必要なら専門家につなぐこと',
+    detail:'メンタルヘルスケアの4つの柱の1つ。他にセルフケア、事業場内スタッフによるケア、事業場外資源によるケア（EAPなど）がある。管理職に研修で教えることが重要。',
+    example:'<b>使い方</b>：「ラインケア研修で、部下の『いつもと違う』に気づくポイントを学ぶ」'
+  },
+  {
+    term:'産業医', en:'Occupational Physician', cat:'system', catLabel:'制度',
+    simple:'会社の社員の健康を守るためのお医者さん',
+    detail:'50人以上の会社では選任が法律で義務。月1回以上の職場巡視、長時間労働者への面談指導、ストレスチェック後の面談などが主な仕事。最近はオンライン産業医サービスも増えている。',
+    example:'<b>使い方</b>：「残業80時間超えた社員には産業医面談を必ず実施する」'
+  },
+  {
+    term:'フレックスタイム', en:'Flex Time', cat:'work', catLabel:'働き方',
+    simple:'出勤と退勤の時間を自分で決められる制度',
+    detail:'「コアタイム」（例：10時~15時は必ず出勤）を設ける会社が多い。コアタイムなしの「スーパーフレックス」も増えている。通勤ラッシュを避けられる、子育て・介護と両立しやすいなどのメリット。',
+    example:'<b>使い方</b>：「フレックスタイム導入後、社員の満足度が15ポイント向上した」'
+  },
+  {
+    term:'ナッジ', en:'Nudge', cat:'hr', catLabel:'人事',
+    simple:'「強制」せずに、自然と良い行動を選ぶように導く工夫',
+    detail:'2017年のノーベル経済学賞を受賞したリチャード・セイラー教授が提唱。例えば社食で野菜を手に取りやすい位置に置く、階段の前に消費カロリーを表示するなど。健康施策との相性がとても良い。',
+    example:'<b>使い方</b>：「エレベーター前に"階段を使うと○kcal消費"の表示を置く → 階段利用率が30%UP」'
+  },
+  {
+    term:'ゲーミフィケーション', en:'Gamification', cat:'hr', catLabel:'人事',
+    simple:'ゲームの仕組み（ポイント・ランキング・バッジなど）を使って楽しく行動を促すやり方',
+    detail:'歩数チャレンジのランキング表示や、健康ポイント制度がこれにあたる。人は「競争」「達成感」「報酬」があると続けやすい。ただし、やりすぎると逆にストレスになるので注意。',
+    example:'<b>使い方</b>：「歩数アプリにチーム対抗ランキングを導入 → 運動継続率が40%アップ」'
+  },
+  {
+    term:'ウェアラブルデバイス', en:'Wearable Device', cat:'data', catLabel:'データ',
+    simple:'体につけて、歩数・心拍・睡眠などを自動で記録してくれる機器',
+    detail:'Apple Watch、Fitbit、Garminなど。会社が社員に貸与するケースも増えている。睡眠の質や活動量が数字で見えるので、健康への意識が高まりやすい。プライバシーへの配慮が重要。',
+    example:'<b>使い方</b>：「社員にウェアラブルデバイスを貸与し、睡眠スコアの平均を部署ごとに比較」'
+  },
+  {
+    term:'ワークライフバランス', en:'Work-Life Balance', cat:'work', catLabel:'働き方',
+    simple:'仕事と私生活のバランスが取れている状態',
+    detail:'「仕事を減らす」だけでなく「仕事も生活も充実させる」が本来の意味。残業削減、有給取得促進、育児・介護支援などが代表的な施策。最近は「ワークライフインテグレーション（融合）」という考え方も。',
+    example:'<b>使い方</b>：「有給取得率を70%以上にすることで、ワークライフバランスの改善を図る」'
+  },
+  {
+    term:'心理的安全性', en:'Psychological Safety', cat:'mental', catLabel:'メンタル',
+    simple:'「こんなこと言ったら怒られるかも」と心配せずに、自由に意見を言えるチームの雰囲気',
+    detail:'Googleの研究「プロジェクトアリストテレス」で、最も生産性の高いチームの共通点として発見された。間違いを報告できる、質問できる、アイデアを出せる環境が大事。',
+    example:'<b>使い方</b>：「1on1面談で心理的安全性を高め、部下が本音を話せる関係をつくる」'
+  },
+  {
+    term:'KPI', en:'Key Performance Indicator', cat:'data', catLabel:'データ',
+    simple:'目標の達成度を測るための「数字の指標」',
+    detail:'健康経営のKPIの例：ストレスチェック高リスク者率、有給取得率、残業時間、離職率、運動習慣率、喫煙率など。何を測るかを先に決めてから施策を打つのが鉄則。',
+    example:'<b>使い方</b>：「健康経営のKPIとして、ストレスチェック高リスク者率を前年比-5%と設定」'
+  },
+  {
+    term:'ホワイト500', en:'White 500', cat:'system', catLabel:'制度',
+    simple:'健康経営優良法人の中でも、特に優れた上位500社に与えられる称号',
+    detail:'大規模法人部門（従業員数が多い会社）の上位500社。認定されると、ロゴマークを名刺や採用サイトに使え、求職者からの印象がアップ。自治体によっては入札加点や金利優遇もある。',
+    example:'<b>使い方</b>：「ホワイト500に認定されたことを採用ページでアピールし、応募数が20%増加」'
+  },
+];
+
+const CATEGORIES = [
+  {id:'all',     label:'すべて'},
+  {id:'health',  label:'健康',   cls:'c-health'},
+  {id:'mental',  label:'メンタル',cls:'c-mental'},
+  {id:'system',  label:'制度',   cls:'c-system'},
+  {id:'data',    label:'データ', cls:'c-data'},
+  {id:'hr',      label:'人事',   cls:'c-hr'},
+  {id:'work',    label:'働き方', cls:'c-work'},
+  {id:'finance', label:'お金',   cls:'c-finance'},
+];
+
+let currentCat = 'all';
+
+function init(){
+  document.getElementById('totalCount').textContent = WORDS.length + ' words';
+
+  // Category buttons
+  const cf = document.getElementById('catFilters');
+  cf.innerHTML = CATEGORIES.map(c=>`
+    <button class="cat-btn ${c.id==='all'?'active':''}" data-cat="${c.id}">${c.label}</button>
+  `).join('');
+  cf.querySelectorAll('.cat-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      cf.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      currentCat = b.dataset.cat;
+      renderWords();
+    });
+  });
+
+  // Search
+  const si = document.getElementById('searchInput');
+  const sc = document.getElementById('searchClear');
+  si.addEventListener('input',()=>{
+    sc.classList.toggle('show', si.value.length > 0);
+    renderWords();
+  });
+  sc.addEventListener('click',()=>{
+    si.value=''; sc.classList.remove('show'); renderWords(); si.focus();
+  });
+
+  renderWords();
+}
+
+function renderWords(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let filtered = WORDS;
+  if(currentCat !== 'all') filtered = filtered.filter(w=>w.cat===currentCat);
+  if(q) filtered = filtered.filter(w=>
+    w.term.toLowerCase().includes(q) ||
+    w.en.toLowerCase().includes(q) ||
+    w.simple.includes(q) ||
+    w.detail.includes(q)
+  );
+
+  document.getElementById('resultsInfo').textContent = filtered.length + ' / ' + WORDS.length + ' words';
+
+  const wl = document.getElementById('wordList');
+  if(filtered.length === 0){
+    wl.innerHTML = '<div class="no-results"><div class="no-results-icon">&#x1F914;</div><p>該当する用語が見つかりません。<br>別のキーワードで検索してみてください。</p></div>';
+    return;
+  }
+
+  wl.innerHTML = filtered.map(w=>{
+    const catInfo = CATEGORIES.find(c=>c.id===w.cat);
+    return `
+      <div class="word-card" onclick="this.classList.toggle('open')">
+        <div class="word-header">
+          <div class="word-term">${highlight(w.term, q)} <span class="word-en">${w.en}</span></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="word-cat ${catInfo?.cls||''}">${w.catLabel}</span>
+            <span class="word-toggle">+</span>
+          </div>
+        </div>
+        <div class="word-body">
+          <div class="word-simple">${highlight(w.simple, q)}</div>
+          <div class="word-detail">${highlight(w.detail, q)}</div>
+          <div class="word-example">${w.example}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function highlight(text, q){
+  if(!q) return text;
+  const regex = new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+  return text.replace(regex, '<mark style="background:rgba(0,212,255,.25);color:var(--cyan);padding:0 2px;border-radius:2px">$1</mark>');
+}
+
+init();
+</script>
+</body>
+</html>
