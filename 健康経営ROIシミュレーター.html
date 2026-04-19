@@ -278,8 +278,8 @@ input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%
     <div class="card-title"><i data-lucide="wallet"></i>健康経営への年間投資額</div>
     <div class="card-desc">健診コスト・ストレスチェック・研修・福利厚生などの年間予算合計。従業員1人あたりの目安は年2〜5万円。</div>
     <div class="slider-row">
-      <input type="range" id="budget" min="100" max="10000" step="50" value="1500" oninput="updateVal('budget','¥'+parseInt(this.value).toLocaleString()+'万')">
-      <span class="slider-val" id="budget-val" style="min-width:90px;">¥1,500万</span>
+      <input type="range" id="budget" min="100" max="10000" step="50" value="1500" oninput="updateVal('budget',parseInt(this.value).toLocaleString()+'万円')">
+      <span class="slider-val" id="budget-val" style="min-width:90px;">1,500万円</span>
     </div>
   </div>
 
@@ -417,16 +417,32 @@ function calculate() {
   const cumulativeTotal = totalByYear.reduce((a, b) => a + b, 0);
   const cumulativeInvestment = budget * 5;
 
+  // ===== 金額フォーマット =====
+  function formatYen(yen) {
+    const man = Math.round(yen / 10000);
+    if (man >= 10000) {
+      const oku = (man / 10000).toFixed(1);
+      return '約' + oku + '億円';
+    }
+    return man.toLocaleString() + '万円';
+  }
+  function formatYenShort(man) {
+    if (man >= 10000) {
+      return '約' + (man / 10000).toFixed(1) + '億円';
+    }
+    return man.toLocaleString() + '万円';
+  }
+
   // ===== ROI =====
   const roi = cumulativeTotal / cumulativeInvestment;
 
   // ===== 表示 =====
   document.getElementById('roi-num').textContent = roi.toFixed(1);
-  document.getElementById('invest-amount').textContent = '¥' + (budget / 10000).toLocaleString() + '万';
-  document.getElementById('return-amount').textContent = '¥' + Math.round(cumulativeTotal / 10000).toLocaleString() + '万';
-  document.getElementById('bk-turnover').textContent = '¥' + Math.round(turnoverByYear.reduce((a,b)=>a+b,0) / 10000).toLocaleString() + '万';
-  document.getElementById('bk-health').textContent = '¥' + Math.round(healthByYear.reduce((a,b)=>a+b,0) / 10000).toLocaleString() + '万';
-  document.getElementById('bk-prod').textContent = '¥' + Math.round(productivityByYear.reduce((a,b)=>a+b,0) / 10000).toLocaleString() + '万';
+  document.getElementById('invest-amount').textContent = formatYen(budget);
+  document.getElementById('return-amount').textContent = formatYen(cumulativeTotal);
+  document.getElementById('bk-turnover').textContent = formatYen(turnoverByYear.reduce((a,b)=>a+b,0));
+  document.getElementById('bk-health').textContent = formatYen(healthByYear.reduce((a,b)=>a+b,0));
+  document.getElementById('bk-prod').textContent = formatYen(productivityByYear.reduce((a,b)=>a+b,0));
 
   // ===== CHART =====
   drawChart(turnoverByYear, healthByYear, productivityByYear);
@@ -462,13 +478,13 @@ function drawChart(turnover, health, productivity) {
       responsive: true, maintainAspectRatio: false,
       scales: {
         x: { stacked: true, grid: { display: false }, ticks: { color: '#a3b0d4' } },
-        y: { stacked: true, grid: { color: 'rgba(46,54,84,0.5)' }, ticks: { color: '#6a7699', callback: v => '¥' + v.toLocaleString() + '万' } }
+        y: { stacked: true, grid: { color: 'rgba(46,54,84,0.5)' }, ticks: { color: '#6a7699', callback: v => formatYenShort(v) } }
       },
       plugins: {
         legend: { labels: { color: '#a3b0d4', padding: 16, usePointStyle: true } },
         tooltip: {
           backgroundColor: '#282e45', borderColor: '#3d4670', borderWidth: 1,
-          callbacks: { label: ctx => ctx.dataset.label + ': ¥' + ctx.parsed.y.toLocaleString() + '万' }
+          callbacks: { label: ctx => ctx.dataset.label + ': ' + formatYenShort(ctx.parsed.y) }
         }
       }
     }
