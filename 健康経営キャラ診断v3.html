@@ -33,7 +33,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
-body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:999;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:-1;}
 .wrap{max-width:740px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
 i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
 
@@ -458,7 +458,8 @@ i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
         健康経営・HRテック領域 転職活動中
       </div>
     </div>
-    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; CHARACTER DIAGNOSIS v3</div>
+    <div style="font-size:10px;color:#6a7699;margin:16px 0 8px;line-height:1.7;text-align:center">※本ツールはポートフォリオ用のデモです。組織の公式評価ではありません。</div>
+    <div class="footer-meta">&copy; 2026 OKADA HIKARI &nbsp;&middot;&nbsp; CHARACTER DIAGNOSIS v3</div>
   </footer>
 
 </div>

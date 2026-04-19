@@ -237,14 +237,14 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:32px
 </div>
 
 <div class="container">
-  <div class="tabs">
-    <button class="tab active" data-tab="input">記録する</button>
-    <button class="tab" data-tab="result">今週の結果</button>
-    <button class="tab" data-tab="history">履歴</button>
+  <div class="tabs" role="tablist" aria-label="ヘルスレビューのタブ">
+    <button class="tab active" data-tab="input" role="tab" aria-selected="true" aria-controls="panel-input">記録する</button>
+    <button class="tab" data-tab="result" role="tab" aria-selected="false" aria-controls="panel-result">今週の結果</button>
+    <button class="tab" data-tab="history" role="tab" aria-selected="false" aria-controls="panel-history">履歴</button>
   </div>
 
   <!-- INPUT -->
-  <div class="panel active" id="panel-input">
+  <div class="panel active" id="panel-input" role="tabpanel">
     <div class="input-card c-meal">
       <div class="input-title">食事</div>
       <div class="input-desc">今週の食事のバランスを振り返ってみてください</div>
@@ -325,7 +325,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:32px
   </div>
 
   <!-- RESULT -->
-  <div class="panel" id="panel-result">
+  <div class="panel" id="panel-result" role="tabpanel">
     <div class="result-hero">
       <div class="result-score" id="totalScore" style="background:linear-gradient(135deg,var(--meal),var(--exercise),var(--sleep));-webkit-background-clip:text;background-clip:text;color:transparent">--</div>
       <div class="result-label">今週の健康スコア / 100</div>
@@ -356,7 +356,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:32px
   </div>
 
   <!-- HISTORY -->
-  <div class="panel" id="panel-history">
+  <div class="panel" id="panel-history" role="tabpanel">
     <div class="history-chart-wrap"><canvas id="historyChart"></canvas></div>
     <div class="history-header">
       <span>DATE</span><span>GOOD THING</span><span>MEAL</span><span>MOVE</span><span>SLEEP</span><span>MOOD</span><span>TOTAL</span>
@@ -405,7 +405,7 @@ document.querySelectorAll('.tab').forEach(t=>{
   t.addEventListener('click',()=>switchTab(t.dataset.tab));
 });
 function switchTab(tab){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab);t.setAttribute('aria-selected',t.dataset.tab===tab)});
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
   if(tab==='history') renderHistory();
 }

@@ -43,7 +43,7 @@ body {
 body::after {
   content: ''; position: fixed; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 999;
+  pointer-events: none; z-index: -1;
 }
 
 .mono { font-family: 'DM Mono', monospace; }
@@ -298,7 +298,8 @@ a:focus-visible, button:focus-visible, select:focus-visible {
   </section>
 
   <div class="company-selector">
-    <select id="companySelect">
+    <label for="companySelect" style="display:none">企業選択</label>
+    <select id="companySelect" aria-label="企業選択">
       <option>サンプル株式会社（従業員320名）</option>
     </select>
     <span class="tag">健康経営優良法人 2026</span>

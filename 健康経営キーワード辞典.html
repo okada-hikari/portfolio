@@ -204,6 +204,7 @@ footer{
     <a class="footer-link" href="健康経営ROIシミュレーター.html">ROIシミュレーター</a>
     <a class="footer-link" href="1on1コーチングシミュレーター.html">1on1シミュレーター</a>
   </div>
+  <div style="font-size:10px;color:#5a6280;margin-bottom:10px;line-height:1.7">※本ツールはポートフォリオ用のデモです。用語解説は一般的な定義に基づいており、個別の状況に応じた専門的アドバイスではありません。</div>
   <div class="footer-credit">Portfolio &copy; 2026 Hikari Okada</div>
 </footer>
 
@@ -397,7 +398,7 @@ function renderWords(){
   wl.innerHTML = filtered.map(w=>{
     const catInfo = CATEGORIES.find(c=>c.id===w.cat);
     return `
-      <div class="word-card" onclick="this.classList.toggle('open')">
+      <div class="word-card" tabindex="0" role="button" aria-expanded="false" onclick="this.classList.toggle('open');this.setAttribute('aria-expanded',this.classList.contains('open'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"
         <div class="word-header">
           <div class="word-term">${highlight(w.term, q)} <span class="word-en">${w.en}</span></div>
           <div style="display:flex;align-items:center;gap:8px">

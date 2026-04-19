@@ -46,7 +46,7 @@ body {
 body::after {
   content: ''; position: fixed; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 999;
+  pointer-events: none; z-index: -1;
 }
 .wrap{max-width:740px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
 
@@ -673,8 +673,10 @@ input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%
         健康経営・HRテック領域 転職活動中
       </div>
     </div>
+    <div style="margin:16px 0 8px;text-align:center"><a href="ポートフォリオまとめ.html" style="color:#a3b0d4;text-decoration:none;font-size:12px;border-bottom:1px dotted #6a7699">ポートフォリオTOPに戻る</a></div>
+    <div style="font-size:10px;color:#6a7699;margin-bottom:10px;line-height:1.7;text-align:center">※本ツールはポートフォリオ用のデモです。医療行為の代替ではありません。体調に不安がある場合は専門家にご相談ください。</div>
     <div class="footer-meta">
-      © 2026 OKADA HIKARI &nbsp;·&nbsp; BUILT WITH GEMINI API
+      &copy; 2026 OKADA HIKARI &nbsp;&middot;&nbsp; BUILT WITH GEMINI API
     </div>
   </footer>
 
