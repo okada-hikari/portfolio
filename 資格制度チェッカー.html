@@ -199,7 +199,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:32px
 </div>
 
 <footer>
-  <div class="disclaimer">※本ツールは健康経営優良法人認定の公式審査ではありません。実際の申請は経済産業省・日本健康会議のガイドラインをご確認ください。認定要件は年度により変更されることがあります。</div>
+  <div class="disclaimer">※本ツールは健康経営優良法人認定の公式審査ではありません。チェック項目は経産省の認定基準を簡略化したものであり、実際の要件はより詳細です。認定要件は年度ごとに更新されるため、最新情報は経済産業省・日本健康会議のガイドラインをご確認ください。</div>
   <div class="footer-links">
     <a class="footer-link" href="ポートフォリオまとめ.html">まとめページ</a>
     <a class="footer-link" href="健康施策レコメンダー.html">施策レコメンダー</a>
@@ -312,8 +312,10 @@ function updateCounts(){
 }
 
 function diagnose(){
+  const checkedRows = document.querySelectorAll('.check-row.checked');
+  if(checkedRows.length===0){alert('1つ以上チェックしてから診断してください');return;}
   const checked = new Set();
-  document.querySelectorAll('.check-row.checked').forEach(r=>checked.add(parseInt(r.dataset.id)));
+  checkedRows.forEach(r=>checked.add(parseInt(r.dataset.id)));
 
   const total = QUESTIONS.length;
   const score = checked.size;
