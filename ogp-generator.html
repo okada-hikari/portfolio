@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OGP画像ジェネレーター（内部ツール）</title>
+<style>
+body{font-family:'Noto Sans JP',sans-serif;background:#141826;color:#e8ecf5;padding:40px 20px}
+h1{font-size:24px;margin-bottom:8px}
+p{color:#8b92a8;font-size:14px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:1300px}
+.card{background:#1a1f35;border:1px solid #2a3150;border-radius:12px;padding:16px;text-align:center}
+.card h3{font-size:13px;margin-bottom:8px}
+canvas{width:100%;border-radius:8px;border:1px solid #2a3150}
+button{margin-top:8px;padding:8px 16px;border-radius:100px;border:none;background:#3d7dff;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+button:hover{background:#5a93ff}
+.dl-all{margin-bottom:24px;padding:14px 32px;font-size:15px;background:linear-gradient(135deg,#3dd9b8,#00d4ff);color:#141826;border-radius:100px;border:none;font-weight:700;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<h1>OGP画像ジェネレーター</h1>
+<p>全14ツールのOGP画像（1200x630px）を生成してダウンロード。GitHub Pagesに追加するとSNSプレビューが表示される。</p>
+<button class="dl-all" onclick="downloadAll()">全14枚を一括ダウンロード</button>
+<div class="grid" id="grid"></div>
+
+<script>
+const TOOLS = [
+  {file:'ポートフォリオまとめ', title:'岡田 光 ポートフォリオ', sub:'健康経営 x AI', desc:'14ツールを自主開発。NSCA-CPT x 11年の現場経験。', color1:'#65d483', color2:'#8cbfff', color3:'#c38eff', icon:'HO'},
+  {file:'健康経営AI診断ツールv5', title:'健康経営AI診断ツール', sub:'v5 / Claude API', desc:'6指標で組織の健康経営レベルを100点満点で診断。田村博士がアドバイス。', color1:'#8cbfff', color2:'#65d483', color3:'#c38eff', icon:'AI'},
+  {file:'健康経営キャラ診断v3', title:'健康経営キャラ診断', sub:'v3 / MBTI風8タイプ', desc:'8問の質問で組織タイプを動物キャラで判定。SNSシェア対応。', color1:'#ff92c4', color2:'#c38eff', color3:'#8cbfff', icon:'CH'},
+  {file:'健康経営スコアシート', title:'健康経営スコアシート', sub:'5カテゴリ25問', desc:'組織の健康度を5カテゴリ25問でスコアリング。レーダーチャートで可視化。', color1:'#f2c75c', color2:'#ffa86b', color3:'#ff92c4', icon:'SC'},
+  {file:'生活習慣インプルーバー', title:'生活習慣インプルーバー', sub:'食事・運動・睡眠 3in1', desc:'Gemini APIで食事・運動・睡眠のパーソナルプランを提案。', color1:'#65d483', color2:'#8cbfff', color3:'#c38eff', icon:'LI'},
+  {file:'組織健康ダッシュボード', title:'組織健康ダッシュボード', sub:'部門別ヘルスデータ', desc:'KPI・アラート・レーダーチャートで組織の健康を一目で把握。', color1:'#c38eff', color2:'#8cbfff', color3:'#65d483', icon:'DB'},
+  {file:'健康経営市場_競合7社調査', title:'健康経営市場 競合7社調査', sub:'市場分析レポート', desc:'主要7社の強み・弱み・ポジショニングを横串で比較分析。', color1:'#ff92c4', color2:'#f2c75c', color3:'#ffa86b', icon:'MK'},
+  {file:'健康経営ROIシミュレーター', title:'健康経営ROIシミュレーター', sub:'5年累積ROI算出', desc:'離職・医療費・生産性の3軸でROIをシミュレーション。', color1:'#f2c75c', color2:'#65d483', color3:'#8cbfff', icon:'ROI'},
+  {file:'1on1コーチングシミュレーター', title:'1on1コーチングシミュレーター', sub:'3シナリオ x 5ターン', desc:'部下との1on1をAIと練習。5軸レーダーでコーチング力を診断。', color1:'#8cbfff', color2:'#00d4ff', color3:'#3d7dff', icon:'1:1'},
+  {file:'プロジェクト進捗ダッシュボード', title:'プロジェクト進捗ダッシュボード', sub:'タスク管理・進捗率', desc:'KPI・進捗リング・タスクボード・タイムラインで進捗を一元管理。', color1:'#f2c75c', color2:'#ffa86b', color3:'#65d483', icon:'PM'},
+  {file:'健康施策レコメンダー', title:'健康施策レコメンダー', sub:'15施策DB / TOP5提案', desc:'組織の課題からTOP5施策を自動提案。コスト・効果・難易度を比較。', color1:'#3dd9b8', color2:'#00d4ff', color3:'#3d7dff', icon:'RC'},
+  {file:'健康経営キーワード辞典', title:'健康経営キーワード辞典', sub:'20用語をかんたん解説', desc:'プレゼンティーズム、EAP、ROI...専門用語を誰でもわかる言葉で。', color1:'#00d4ff', color2:'#3d7dff', color3:'#8cbfff', icon:'WD'},
+  {file:'週次ヘルスレビュー', title:'週次ヘルスレビュー', sub:'食事・運動・睡眠・気分', desc:'毎週3分で4軸セルフチェック。スコア+レーダー+8週履歴。', color1:'#65d483', color2:'#8cbfff', color3:'#c38eff', icon:'WH'},
+  {file:'資格制度チェッカー', title:'健康経営優良法人チェッカー', sub:'20問セルフチェック', desc:'「うちの会社、認定取れる？」を5カテゴリ20問で診断。', color1:'#3d7dff', color2:'#00d4ff', color3:'#3dd9b8', icon:'CK'},
+];
+
+function drawOGP(canvas, tool){
+  const ctx = canvas.getContext('2d');
+  const W = 1200, H = 630;
+  canvas.width = W; canvas.height = H;
+
+  // Background
+  ctx.fillStyle = '#141826';
+  ctx.fillRect(0, 0, W, H);
+
+  // Gradient circles
+  const grd1 = ctx.createRadialGradient(200, 150, 0, 200, 150, 350);
+  grd1.addColorStop(0, tool.color1 + '30');
+  grd1.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd1;
+  ctx.fillRect(0, 0, W, H);
+
+  const grd2 = ctx.createRadialGradient(900, 500, 0, 900, 500, 300);
+  grd2.addColorStop(0, tool.color2 + '20');
+  grd2.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd2;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid pattern
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for(let x = 0; x < W; x += 60){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for(let y = 0; y < H; y += 60){
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Icon circle
+  const grdIcon = ctx.createLinearGradient(80, 100, 180, 200);
+  grdIcon.addColorStop(0, tool.color1);
+  grdIcon.addColorStop(1, tool.color2);
+  ctx.beginPath();
+  ctx.arc(130, 160, 50, 0, Math.PI * 2);
+  ctx.fillStyle = grdIcon;
+  ctx.fill();
+
+  ctx.font = 'bold 24px "DM Mono", monospace';
+  ctx.fillStyle = '#141826';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(tool.icon, 130, 162);
+
+  // Sub badge
+  ctx.font = '500 18px "Noto Sans JP", sans-serif';
+  ctx.fillStyle = tool.color1;
+  ctx.textAlign = 'left';
+  ctx.fillText(tool.sub, 200, 130);
+
+  // Title
+  ctx.font = 'bold 44px "Noto Sans JP", sans-serif';
+  ctx.fillStyle = '#e8ecf5';
+  ctx.fillText(tool.title, 200, 185);
+
+  // Description
+  ctx.font = '400 22px "Noto Sans JP", sans-serif';
+  ctx.fillStyle = '#8b92a8';
+  const words = tool.desc;
+  if(words.length > 35){
+    ctx.fillText(words.slice(0, 35), 80, 300);
+    ctx.fillText(words.slice(35), 80, 335);
+  } else {
+    ctx.fillText(words, 80, 300);
+  }
+
+  // Bottom bar
+  ctx.fillStyle = '#1a1f35';
+  ctx.fillRect(0, H - 90, W, 90);
+  ctx.strokeStyle = '#2a3150';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, H - 90); ctx.lineTo(W, H - 90); ctx.stroke();
+
+  // Author
+  ctx.font = 'bold 20px "Noto Sans JP", sans-serif';
+  ctx.fillStyle = '#e8ecf5';
+  ctx.textAlign = 'left';
+  ctx.fillText('Hikari Okada', 80, H - 50);
+
+  ctx.font = '400 16px "DM Mono", monospace';
+  ctx.fillStyle = '#5a6280';
+  ctx.fillText('NSCA-CPT / Health Management Portfolio', 260, H - 50);
+
+  // Accent line top
+  const grdLine = ctx.createLinearGradient(0, 0, W, 0);
+  grdLine.addColorStop(0, tool.color1);
+  grdLine.addColorStop(0.5, tool.color2);
+  grdLine.addColorStop(1, tool.color3);
+  ctx.fillStyle = grdLine;
+  ctx.fillRect(0, 0, W, 4);
+}
+
+// Render all
+const grid = document.getElementById('grid');
+TOOLS.forEach((tool, i) => {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.innerHTML = `<h3>${i+1}. ${tool.title}</h3><canvas id="c${i}"></canvas><br><button onclick="download(${i})">ダウンロード</button>`;
+  grid.appendChild(div);
+  setTimeout(() => drawOGP(document.getElementById('c'+i), tool), 50 * i);
+});
+
+function download(i){
+  const canvas = document.getElementById('c'+i);
+  const link = document.createElement('a');
+  link.download = 'ogp-' + TOOLS[i].file + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function downloadAll(){
+  TOOLS.forEach((_, i) => setTimeout(() => download(i), 200 * i));
+}
+</script>
+</body>
+</html>
