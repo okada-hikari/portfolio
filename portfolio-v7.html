@@ -1,0 +1,1489 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hikari Okada — Portfolio v7.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- Tokens ---------- */
+  :root{
+    --bg:        #0a1320;
+    --bg-elev-1: #0f1b2d;
+    --bg-elev-2: #14233a;
+    --line:      #1c2e4a;
+    --line-soft: #15243c;
+    --fg:        #f4f7ff;   /* AAA on --bg : ~17:1 */
+    --fg-mute:   #8693b8;   /* AAA-leaning body mute, paired w/ --bg */
+    --fg-dim:    #5b6788;   /* meta / labels */
+    --accent:    #a8d4bc;   /* sage — 誠実・健康経営のトーン */
+    --accent-2:  #e8c98a;   /* warm gold — 人間味 */
+    --warm:      #ffb59a;   /* human warmth (used sparingly) */
+    --good:      #a8d4bc;   /* vital / live (セージと揃える) */
+    --warn:      #ffd28a;
+    --pulse:     #ff8a9a;   /* heart icon */
+
+    --r-sm: 12px;
+    --r-md: 18px;
+    --r-lg: 32px;
+
+    --maxw: 1240px;
+    --pad:  clamp(20px, 4vw, 56px);
+
+    --font: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+    letter-spacing: 0.005em;
+    overflow-x: hidden;
+  }
+  a{ color: inherit; text-decoration: none; }
+  button{ font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  ::selection{ background: rgba(168,212,188,.35); color:#fff; }
+
+  /* ---------- Background ambient (aurora) ---------- */
+  .ambient{
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .aurora{
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    will-change: transform;
+  }
+  .aurora.a1{
+    width: 720px; height: 720px;
+    left: -10%; top: -20%;
+    background: radial-gradient(circle, rgba(168,212,188,.32), transparent 60%);
+    animation: drift1 28s ease-in-out infinite alternate;
+  }
+  .aurora.a2{
+    width: 640px; height: 640px;
+    right: -8%; top: 8%;
+    background: radial-gradient(circle, rgba(232,201,138,.18), transparent 60%);
+    animation: drift2 34s ease-in-out infinite alternate;
+  }
+  .aurora.a3{
+    width: 540px; height: 540px;
+    left: 35%; top: 40%;
+    background: radial-gradient(circle, rgba(140,180,160,.14), transparent 60%);
+    animation: drift3 38s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(60px, 40px) scale(1.1); }
+  }
+  @keyframes drift2{
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(-50px, 60px) scale(1.15); }
+  }
+  @keyframes drift3{
+    0%   { transform: translate(0,0) scale(1); opacity: 0.4; }
+    100% { transform: translate(40px, -50px) scale(0.9); opacity: 0.6; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .aurora{ animation: none !important; }
+  }
+  .grain{
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(80% 80% at 50% 30%, #000 30%, transparent 75%);
+  }
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: rgba(10,19,32,.65);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-inner{
+    max-width: var(--maxw); margin: 0 auto;
+    padding: 16px var(--pad);
+    display: flex; align-items: center; gap: 28px;
+  }
+  .brand{
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; letter-spacing: -0.01em;
+  }
+  .brand-mark{
+    width: 32px; height: 32px; border-radius: var(--r-sm);
+    background: linear-gradient(135deg, #a8d4bc 0%, #e8c98a 100%);
+    display: grid; place-items: center;
+    color: #0a1320; font-weight: 800; font-size: 14px;
+  }
+  .brand-name{ font-size: 15px; }
+  .brand-sub{ color: var(--fg-mute); font-size: 12px; font-weight: 400; margin-left: 2px; }
+  .nav-links{ display: flex; gap: 6px; margin-left: auto; }
+  .nav-links a{
+    font-size: 13px; color: var(--fg-mute);
+    padding: 8px 12px; border-radius: var(--r-sm);
+    transition: color .18s, background .18s;
+  }
+  .nav-links a:hover{ color: var(--fg); background: var(--bg-elev-1); }
+  .nav-status{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--fg-mute);
+    padding: 7px 12px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--bg-elev-1);
+  }
+  .nav-status::before{
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 4px rgba(168,212,188,.18);
+    animation: livepulse 3s ease-in-out infinite;
+  }
+  .lang-toggle{
+    display: inline-flex; padding: 3px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--bg-elev-1);
+  }
+  .lang-btn{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    padding: 5px 11px; border-radius: 999px;
+    color: var(--fg-mute); cursor: pointer;
+    transition: color .15s, background .15s;
+  }
+  .lang-btn:hover{ color: var(--fg); }
+  .lang-btn.is-active{
+    background: var(--accent); color: #0a1320;
+  }
+  @keyframes livepulse{
+    0%, 100% { box-shadow: 0 0 0 4px rgba(168,212,188,.18); }
+    50%      { box-shadow: 0 0 0 8px rgba(168,212,188,.05); }
+  }
+
+  /* ---------- Layout ---------- */
+  main{ position: relative; z-index: 2; }
+  .wrap{ max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding: clamp(64px, 10vw, 128px) 0 clamp(56px, 8vw, 96px);
+  }
+  .hero-grid{
+    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+  @media (max-width: 920px){ .hero-grid{ grid-template-columns: 1fr; } }
+
+  .eyebrow{
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--fg-mute);
+    text-transform: uppercase; letter-spacing: 0.14em;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(20,35,58,.5);
+    margin-bottom: 28px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background: var(--accent); }
+
+  h1.headline{
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    margin: 0 0 24px;
+    color: var(--fg);
+    text-wrap: balance;
+  }
+  h1.headline .accent{
+    background: linear-gradient(110deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+  h1.headline .underline{
+    position: relative; white-space: nowrap;
+  }
+  h1.headline .underline::after{
+    content: ""; position: absolute; left: 0; right: 0; bottom: 4px;
+    height: 8px; background: rgba(168,212,188,.18); z-index: -1;
+    border-radius: 2px;
+  }
+
+  .sub{
+    font-size: clamp(16px, 1.4vw, 19px);
+    color: var(--fg-mute);
+    max-width: 56ch;
+    margin: 0 0 36px;
+    text-wrap: pretty;
+  }
+  .sub b{ color: var(--fg); font-weight: 600; }
+
+  /* badges */
+  .badges{
+    display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px; margin-bottom: 36px;
+  }
+  .badge{
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--r-md);
+    background: var(--bg-elev-1);
+    border: 1px solid var(--line);
+    transition: transform .2s, border-color .2s, background .2s;
+  }
+  .badge:hover{ transform: translateY(-2px); border-color: #28456f; background: var(--bg-elev-2); }
+  .badge-num{
+    font-family: var(--mono);
+    font-size: 22px; font-weight: 600;
+    color: var(--accent);
+    min-width: 64px; line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .badge-num .unit{ font-size: 12px; color: var(--fg-mute); margin-left: 2px; }
+  .badge-label{ font-size: 13px; color: var(--fg); line-height: 1.35; }
+  .badge-label .meta{ display: block; font-size: 11px; color: var(--fg-dim); margin-top: 2px; }
+
+  /* CTAs */
+  .ctas{ display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn{
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 22px;
+    border-radius: var(--r-sm);
+    font-size: 14px; font-weight: 600;
+    transition: transform .15s, background .15s, color .15s, border-color .15s, box-shadow .2s;
+    position: relative;
+  }
+  .btn-primary{
+    background: var(--accent); color: #0a1320;
+    box-shadow: 0 0 0 0 rgba(168,212,188,.0), 0 8px 18px -10px rgba(168,212,188,.6);
+  }
+  .btn-primary:hover{
+    background: #bce0cb; transform: translateY(-1px);
+    box-shadow: 0 0 0 6px rgba(168,212,188,.12), 0 14px 28px -10px rgba(168,212,188,.7);
+  }
+  .btn-primary .arrow{ transition: transform .2s; }
+  .btn-primary:hover .arrow{ transform: translateX(3px); }
+  .btn-secondary{
+    background: var(--bg-elev-1); color: var(--fg);
+    border: 1px solid var(--line);
+  }
+  .btn-secondary:hover{ background: var(--bg-elev-2); border-color: #28456f; }
+  .btn-meta{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--fg-mute); font-family: var(--mono);
+    margin-left: 4px; letter-spacing: 0.04em;
+  }
+  .btn-meta .ping{
+    width: 6px; height: 6px; border-radius: 50%; background: var(--good);
+    animation: livepulse 2.2s ease-in-out infinite;
+  }
+
+  /* Slot chips (recruiter quick-tap) */
+  .slots{
+    margin-top: 22px;
+    padding: 16px 18px;
+    border: 1px dashed var(--line);
+    border-radius: var(--r-md);
+    background: linear-gradient(180deg, rgba(168,212,188,.04), transparent 60%);
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .slots-label{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    color: var(--fg-mute); text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .slots-label::before{
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--warm); box-shadow: 0 0 0 4px rgba(255,181,154,.15);
+  }
+  .slot-chips{ display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip{
+    font-family: var(--mono); font-size: 12px;
+    padding: 7px 12px; border-radius: 999px;
+    background: var(--bg-elev-1); border: 1px solid var(--line);
+    color: var(--fg); cursor: pointer;
+    transition: border-color .15s, transform .15s, background .15s, color .15s;
+  }
+  .chip:hover{
+    border-color: var(--accent); color: var(--accent);
+    transform: translateY(-1px);
+    background: rgba(168,212,188,.06);
+  }
+  .chip .dow{ color: var(--fg-mute); margin-right: 4px; }
+  .chip:hover .dow{ color: inherit; }
+
+  /* Hero side panel */
+  .side{
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: linear-gradient(180deg, var(--bg-elev-1), var(--bg));
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .side::before{
+    content:""; position: absolute; inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(168,212,188,.25), transparent 40%);
+    -webkit-mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    padding: 1px; pointer-events: none;
+  }
+  .side-head{
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px;
+  }
+  .side-title{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+    color: var(--fg-mute); text-transform: uppercase;
+  }
+  .side-tag{
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(168,212,188,.10); border: 1px solid rgba(168,212,188,.25);
+  }
+  .profile{
+    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+  }
+  .avatar{
+    width: 56px; height: 56px; border-radius: var(--r-sm);
+    background:
+      repeating-linear-gradient(45deg, #1c2e4a 0 8px, #182843 8px 16px);
+    border: 1px solid var(--line);
+    display: grid; place-items: center;
+    color: var(--fg-mute); font-family: var(--mono); font-size: 10px;
+  }
+  .profile-name{ font-weight: 600; font-size: 16px; }
+  .profile-role{ font-size: 13px; color: var(--fg-mute); margin-top: 2px; }
+
+  .stat-row{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line-soft);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    border: 1px solid var(--line-soft);
+    margin-bottom: 20px;
+  }
+  .stat{
+    padding: 14px; background: var(--bg-elev-1);
+  }
+  .stat-num{ font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--fg); letter-spacing: -0.02em; }
+  .stat-lbl{ font-size: 11px; color: var(--fg-mute); margin-top: 2px; letter-spacing: 0.04em; }
+
+  /* mini chart */
+  .chart{
+    height: 92px; position: relative; margin: 4px 0 8px;
+    overflow: hidden;
+  }
+  .chart svg{ width: 100%; height: 100%; display: block; }
+  .ecg-line{
+    stroke: var(--accent);
+    stroke-width: 1.4;
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(168,212,188,.35));
+    opacity: 0.85;
+  }
+  .ecg-sweep{
+    animation: ecgsweep 9s linear infinite;
+  }
+  @keyframes ecgsweep{
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-320px); }
+  }
+  .ecg-mask{
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--bg-elev-1) 0%, transparent 12%, transparent 88%, var(--bg-elev-1) 100%);
+    pointer-events: none;
+  }
+  .ecg-cursor{
+    position: absolute; top: 0; right: 8%; width: 1px; height: 100%;
+    background: linear-gradient(180deg, transparent, var(--accent), transparent);
+    opacity: 0.3;
+  }
+  .chart-meta{
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 10px; color: var(--fg-dim);
+    letter-spacing: 0.08em;
+  }
+  .chart-cap{
+    font-size: 12px; color: var(--fg-mute); margin-top: 14px;
+    padding-top: 14px; border-top: 1px dashed var(--line);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .chart-cap b{ color: var(--accent); font-weight: 600; font-family: var(--mono); }
+  .bpm{
+    font-family: var(--mono); font-size: 11px; color: var(--fg-mute);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .bpm .heart{
+    width: 10px; height: 10px; color: var(--pulse);
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+  @keyframes heartbeat{
+    0%, 70%, 100% { transform: scale(1); }
+    20% { transform: scale(1.18); }
+    40% { transform: scale(0.98); }
+  }
+
+  /* ---------- Stance strip (human voice) ---------- */
+  .stance{
+    margin-top: clamp(48px, 6vw, 80px);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 24px;
+    align-items: center;
+    padding: 22px 26px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background:
+      radial-gradient(80% 100% at 0% 0%, rgba(255,181,154,.06), transparent 60%),
+      var(--bg-elev-1);
+  }
+  @media (max-width: 720px){ .stance{ grid-template-columns: 1fr; } }
+  .stance-label{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    color: var(--warm); text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 10px;
+    white-space: nowrap;
+  }
+  .stance-label::before{ content:""; width: 22px; height: 1px; background: var(--warm); }
+  .stance-quote{
+    font-size: 15px; color: var(--fg); line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .stance-quote .hl{ color: var(--warm); }
+  .stance-sig{
+    font-family: var(--mono); font-size: 12px; color: var(--fg-mute);
+    white-space: nowrap;
+  }
+
+  /* ---------- Section headers ---------- */
+  section.block{ padding: clamp(56px, 7vw, 96px) 0; border-top: 1px solid var(--line-soft); }
+  .sec-head{
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 24px; margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .sec-label{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 12px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .sec-label::before{
+    content: ""; width: 24px; height: 1px; background: var(--accent);
+  }
+  .sec-title{
+    font-size: clamp(28px, 3.4vw, 40px); font-weight: 700;
+    letter-spacing: -0.02em; margin: 0;
+    line-height: 1.1;
+    max-width: 22ch;
+  }
+  .sec-lead{
+    color: var(--fg-mute); font-size: 15px; max-width: 42ch;
+    text-wrap: pretty;
+  }
+
+  /* ---------- Logos row ---------- */
+  .logos{
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--line-soft);
+    border: 1px solid var(--line-soft); border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  @media (max-width: 720px){ .logos{ grid-template-columns: repeat(2, 1fr); } }
+  .logo-cell{
+    background: var(--bg-elev-1);
+    padding: 28px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    transition: background .2s;
+  }
+  .logo-cell:hover{ background: var(--bg-elev-2); }
+  .logo-mark{
+    font-weight: 700; letter-spacing: -0.02em;
+    font-size: 20px; color: var(--fg);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .logo-mark .glyph{
+    width: 22px; height: 22px; border-radius: 6px;
+    display: grid; place-items: center;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    color: #0a1320;
+  }
+  .logo-role{
+    font-size: 11px; color: var(--fg-dim); letter-spacing: 0.06em;
+    font-family: var(--mono); text-transform: uppercase;
+  }
+
+  /* ---------- Bento ---------- */
+  .bento{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 880px){ .bento{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px){ .bento{ grid-template-columns: 1fr; } }
+  .tool{
+    border: 1px solid var(--line);
+    background: var(--bg-elev-1);
+    border-radius: var(--r-md);
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 14px;
+    transition: transform .2s, border-color .2s, background .2s;
+    min-height: 200px;
+  }
+  .tool:hover{ transform: translateY(-3px); border-color: #2a4878; background: var(--bg-elev-2); }
+  .thumb{
+    height: 96px; border-radius: var(--r-sm);
+    position: relative; overflow: hidden;
+    background: #0a1626;
+    border: 1px solid var(--line-soft);
+  }
+  .tool-head{
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .tool-title{
+    font-size: 14px; font-weight: 600; color: var(--fg);
+    letter-spacing: -0.005em;
+  }
+  .tool-num{
+    font-family: var(--mono); font-size: 10px; color: var(--fg-dim);
+    letter-spacing: 0.08em;
+  }
+  .tool-desc{
+    font-size: 12.5px; color: var(--fg-mute); line-height: 1.5;
+    margin: 0;
+  }
+  .tool-foot{
+    margin-top: auto;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .tag{
+    font-family: var(--mono); font-size: 10px; color: var(--fg-mute);
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(168,212,188,.06);
+    border: 1px solid var(--line);
+    letter-spacing: 0.04em;
+  }
+
+  /* thumb art (CSS only placeholders) */
+  .art-1 { background:
+      radial-gradient(circle at 30% 50%, rgba(168,212,188,.5), transparent 40%),
+      linear-gradient(90deg, transparent 49%, rgba(168,212,188,.25) 49% 51%, transparent 51%),
+      #0a1626; }
+  .art-2 { background:
+      linear-gradient(0deg, rgba(168,212,188,.25) 1px, transparent 1px) 0 0 / 12px 12px,
+      linear-gradient(90deg, rgba(168,212,188,.15) 1px, transparent 1px) 0 0 / 12px 12px,
+      #0a1626; }
+  .art-3 { background:
+      conic-gradient(from 210deg at 50% 60%, rgba(232,201,138,.4), rgba(168,212,188,.4) 25%, transparent 50%),
+      #0a1626; }
+  .art-4 { background:
+      repeating-linear-gradient(135deg, rgba(168,212,188,.12) 0 6px, transparent 6px 14px),
+      #0a1626; }
+  .art-5 { background:
+      radial-gradient(circle at 20% 30%, rgba(168,212,188,.4), transparent 35%),
+      radial-gradient(circle at 70% 60%, rgba(232,201,138,.3), transparent 40%),
+      #0a1626; }
+  .art-6 { background:
+      linear-gradient(90deg, rgba(168,212,188,.25), transparent 80%),
+      #0a1626; }
+  .art-7 { background:
+      repeating-linear-gradient(0deg, rgba(168,212,188,.18) 0 2px, transparent 2px 16px),
+      #0a1626; }
+  .art-8 { background:
+      radial-gradient(ellipse at center, rgba(255,210,138,.25), transparent 60%),
+      #0a1626; }
+  .art-9 { background:
+      linear-gradient(135deg, rgba(168,212,188,.35), transparent 60%),
+      linear-gradient(45deg, rgba(232,201,138,.2), transparent 70%),
+      #0a1626; }
+  .art-10{ background:
+      repeating-conic-gradient(from 0deg at 50% 50%, rgba(168,212,188,.18) 0 10deg, transparent 10deg 30deg),
+      #0a1626; }
+  .art-11{ background:
+      linear-gradient(180deg, transparent 60%, rgba(168,212,188,.35) 60% 64%, transparent 64%),
+      linear-gradient(180deg, transparent 40%, rgba(168,212,188,.25) 40% 44%, transparent 44%),
+      #0a1626; }
+  .art-12{ background:
+      radial-gradient(circle at 50% 90%, rgba(168,212,188,.4), transparent 50%),
+      linear-gradient(180deg, transparent, rgba(232,201,138,.2)),
+      #0a1626; }
+  .art-13{ background:
+      repeating-linear-gradient(90deg, rgba(168,212,188,.15) 0 8px, transparent 8px 24px),
+      #0a1626; }
+  .art-14{ background:
+      conic-gradient(from 0deg at 30% 50%, rgba(255,210,138,.3), rgba(168,212,188,.3), transparent 70%),
+      #0a1626; }
+  .art-15{ background:
+      linear-gradient(135deg, rgba(168,212,188,.25), transparent 50%),
+      linear-gradient(45deg, rgba(168,212,188,.25), transparent 55%),
+      #0a1626; }
+
+  .thumb::after{
+    content: attr(data-glyph);
+    position: absolute; right: 10px; bottom: 8px;
+    font-family: var(--mono); font-size: 10px;
+    color: rgba(244,247,255,.55); letter-spacing: 0.08em;
+  }
+
+  /* ---------- Timeline ---------- */
+  .timeline{
+    position: relative;
+    padding: 12px 0;
+  }
+  .timeline::before{
+    content: ""; position: absolute;
+    left: 0; right: 0; top: 64px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line) 10%, var(--line) 90%, transparent);
+  }
+  .tl-grid{
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 720px){ .tl-grid{ grid-template-columns: repeat(2, 1fr); } }
+  .tl-item{
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .tl-year{
+    font-family: var(--mono); font-size: 12px;
+    color: var(--fg-mute); letter-spacing: 0.12em;
+  }
+  .tl-node{
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--line);
+    margin-left: 2px;
+    position: relative; z-index: 2;
+  }
+  .tl-item.is-now .tl-node{
+    border-color: var(--accent);
+    background: var(--accent);
+    box-shadow: 0 0 0 5px rgba(168,212,188,.15);
+  }
+  .tl-card{
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--bg-elev-1);
+  }
+  .tl-co{
+    font-size: 14px; font-weight: 600; color: var(--fg);
+  }
+  .tl-role{
+    font-size: 12px; color: var(--fg-mute); margin-top: 4px;
+  }
+  .tl-note{
+    font-size: 12px; color: var(--fg-dim);
+    margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+    font-family: var(--mono); letter-spacing: 0.02em;
+  }
+  .tl-item.is-now .tl-card{
+    border-color: rgba(168,212,188,.4);
+    background: linear-gradient(180deg, rgba(168,212,188,.06), var(--bg-elev-1));
+  }
+
+  /* ---------- About 3 pillars ---------- */
+  .pillars{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 880px){ .pillars{ grid-template-columns: 1fr; } }
+  .pillar{
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--bg-elev-1);
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .pillar:hover{ border-color: #2a4878; transform: translateY(-3px); }
+  .pillar-num{
+    font-family: var(--mono); font-size: 11px; color: var(--fg-dim);
+    letter-spacing: 0.18em;
+  }
+  .pillar-title{
+    font-size: 24px; font-weight: 700;
+    margin: 12px 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .pillar-title .en{ color: var(--fg-mute); font-size: 13px; font-weight: 500; margin-left: 8px; font-family: var(--mono); letter-spacing: 0.06em; }
+  .pillar-desc{
+    color: var(--fg-mute); font-size: 13.5px; line-height: 1.65;
+    margin: 14px 0 18px;
+  }
+  .pillar-list{
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 8px;
+    padding-top: 18px; border-top: 1px solid var(--line);
+  }
+  .pillar-list li{
+    font-size: 12.5px; color: var(--fg); display: flex; gap: 10px; align-items: baseline;
+  }
+  .pillar-list li::before{
+    content: ""; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); flex: 0 0 5px; transform: translateY(-2px);
+  }
+  .pillar-overlap{
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: var(--r-sm);
+    background: rgba(168,212,188,.06);
+    border: 1px dashed rgba(168,212,188,.3);
+    font-size: 12px; color: var(--fg);
+  }
+  .pillar-overlap b{ color: var(--accent); }
+
+  /* ---------- Voices ---------- */
+  .voices{
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  @media (max-width: 980px){ .voices{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px){ .voices{ grid-template-columns: 1fr; } }
+  .voice{
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--bg-elev-1);
+    display: flex; flex-direction: column; gap: 16px;
+    transition: border-color .2s, transform .2s;
+  }
+  .voice:hover{ border-color: #2a4878; transform: translateY(-2px); }
+  .voice-mark{
+    font-size: 28px; line-height: 1; color: var(--accent);
+    font-family: var(--mono); font-weight: 600;
+  }
+  .voice-body{
+    font-size: 13.5px; color: var(--fg); line-height: 1.7;
+    text-wrap: pretty; margin: 0;
+    flex: 1;
+  }
+  .voice-foot{
+    display: flex; align-items: center; gap: 12px;
+    padding-top: 14px; border-top: 1px dashed var(--line);
+  }
+  .voice-avatar{
+    width: 36px; height: 36px; border-radius: 50%;
+    background:
+      repeating-linear-gradient(45deg, #1c2e4a 0 6px, #182843 6px 12px);
+    border: 1px solid var(--line);
+    flex: 0 0 36px;
+  }
+  .voice-meta{ display: flex; flex-direction: column; gap: 2px; }
+  .voice-name{ font-size: 13px; font-weight: 600; color: var(--fg); }
+  .voice-role{ font-size: 11px; color: var(--fg-mute); font-family: var(--mono); letter-spacing: 0.02em; }
+
+  /* ---------- Final CTA ---------- */
+  .endcta{
+    border-radius: var(--r-lg);
+    padding: clamp(40px, 6vw, 72px);
+    background:
+      radial-gradient(70% 80% at 80% 0%, rgba(168,212,188,.15), transparent 60%),
+      radial-gradient(50% 80% at 0% 100%, rgba(255,181,154,.08), transparent 70%),
+      var(--bg-elev-1);
+    border: 1px solid var(--line);
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px;
+    align-items: stretch;
+    margin-bottom: 80px;
+    position: relative; overflow: hidden;
+  }
+  @media (max-width: 720px){ .endcta{ grid-template-columns: 1fr; } }
+  .endcta h2{
+    font-size: clamp(24px, 3vw, 36px); margin: 0 0 16px;
+    font-weight: 700; letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .endcta h2 .hl{
+    color: var(--warm);
+  }
+  .endcta p{ color: var(--fg-mute); margin: 0 0 20px; font-size: 14px; line-height: 1.65; }
+  .endcta-mini{
+    display: flex; gap: 20px; flex-wrap: wrap; margin-top: 24px;
+    padding-top: 20px; border-top: 1px dashed var(--line);
+    font-family: var(--mono); font-size: 11px; color: var(--fg-mute);
+    letter-spacing: 0.06em;
+  }
+  .endcta-mini b{ color: var(--fg); font-weight: 500; }
+  .endcta-card{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .card-head{
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .card-title{
+    font-size: 14px; font-weight: 600; color: var(--fg);
+  }
+  .card-tag{
+    font-family: var(--mono); font-size: 10px;
+    color: var(--warm); padding: 4px 10px; border-radius: 999px;
+    background: rgba(255,181,154,.08); border: 1px solid rgba(255,181,154,.25);
+    letter-spacing: 0.08em;
+  }
+  .day-list{ display: flex; flex-direction: column; gap: 8px; }
+  .day-row{
+    display: grid; grid-template-columns: 64px 1fr auto; gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: var(--r-sm);
+    background: var(--bg-elev-1);
+    border: 1px solid var(--line-soft);
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .15s;
+  }
+  .day-row:hover{
+    border-color: var(--accent);
+    background: rgba(168,212,188,.06);
+    transform: translateX(2px);
+  }
+  .day-row .d-date{ font-family: var(--mono); font-size: 13px; color: var(--fg); }
+  .day-row .d-times{ display: flex; gap: 6px; flex-wrap: wrap; }
+  .day-row .d-times span{
+    font-family: var(--mono); font-size: 11px; color: var(--fg-mute);
+    padding: 3px 7px; border-radius: 6px; border: 1px solid var(--line-soft);
+  }
+  .day-row:hover .d-times span{ color: var(--fg); border-color: var(--accent); }
+  .day-row .d-go{ color: var(--fg-mute); font-size: 14px; transition: transform .15s, color .15s; }
+  .day-row:hover .d-go{ color: var(--accent); transform: translateX(3px); }
+  .endcta-right{ display: flex; flex-direction: column; gap: 12px; }
+  .endcta-right .btn{ justify-content: center; }
+
+  footer{
+    border-top: 1px solid var(--line-soft);
+    padding: 32px var(--pad);
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--fg-dim); font-size: 12px;
+    flex-wrap: wrap; gap: 16px;
+  }
+  footer .meta{ font-family: var(--mono); letter-spacing: 0.06em; }
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="aurora a1"></div>
+  <div class="aurora a2"></div>
+  <div class="aurora a3"></div>
+</div>
+<div class="grain"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark">O</div>
+      <div>
+        <div class="brand-name">Hikari Okada<span class="brand-sub"> / 岡田 光</span></div>
+      </div>
+    </div>
+    <nav class="nav-links" aria-label="primary">
+      <a href="#work">Work</a>
+      <a href="#tools">AI Tools</a>
+      <a href="#career">Career</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="言語切替">
+      <button class="lang-btn is-active" data-lang="ja" type="button">日</button>
+      <button class="lang-btn" data-lang="en" type="button">EN</button>
+    </div>
+    <span class="nav-status">Open to work — 健康経営 / HRTech</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============= HERO ============= -->
+  <section class="hero wrap" data-screen-label="01 Hero">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <span class="eyebrow"><span class="dot"></span>Portfolio v7 · 2026 Spring</span>
+        <h1 class="headline">
+          <span class="underline">健康</span>を、<br />
+          <span class="accent">戦略</span>にする。
+        </h1>
+        <p class="sub">
+          <b>AI</b> × <b>トレーナー実績11年</b> × <b>データ可視化</b> で、<br />
+          組織の生産性を底上げする。<br />
+          現場で鍛えた行動変容のノウハウを、HRテックの仕組みに翻訳します。
+        </p>
+
+        <div class="badges" role="list">
+          <div class="badge" role="listitem">
+            <div class="badge-num" data-count="80" data-suffix="%">0<span class="unit">%</span></div>
+            <div class="badge-label">B-ST 体験者入会率<span class="meta">2018–2021 / 担当 N=420</span></div>
+          </div>
+          <div class="badge" role="listitem">
+            <div class="badge-num" data-count="65" data-suffix="%">0<span class="unit">%</span></div>
+            <div class="badge-label">LIFE-Stock 継続率<span class="meta">12ヶ月時点 / 業界平均比 +28pt<sup style="font-size:9px;color:var(--accent)">※1</sup></span></div>
+          </div>
+          <div class="badge" role="listitem">
+            <div class="badge-num">MVP</div>
+            <div class="badge-label">社内MVP 2024 受賞<span class="meta">Cabby / 全社1名</span></div>
+          </div>
+          <div class="badge" role="listitem">
+            <div class="badge-num" data-count="15" data-suffix="">0</div>
+            <div class="badge-label">AIツール自作<span class="meta">業務効率 + 顧客接点へ実装</span></div>
+          </div>
+        </div>
+
+        <p style="font-size: 11px; color: var(--fg-dim); font-family: var(--mono); margin: -16px 0 28px; letter-spacing: 0.02em; line-height: 1.6;">
+          <span style="color:var(--accent)">※1</span> 業界平均 37.8% / パーソナルジム利用者 282名アンケート・うちなーうぇぶ調べ (2024)
+        </p>
+
+        <div class="ctas">
+          <a class="btn btn-primary" href="#tools">
+            ポートフォリオを見る
+            <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="btn btn-secondary" href="#contact">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            カジュアル面談を依頼
+          </a>
+          <span class="btn-meta"><span class="ping"></span>平均返信 4時間以内</span>
+        </div>
+
+        <div class="slots" aria-label="今週の空き枠">
+          <span class="slots-label">今週の空き枠 · 30min カジュアル</span>
+          <div class="slot-chips">
+            <button class="chip" type="button"><span class="dow">水</span>05/21 · 14:00</button>
+            <button class="chip" type="button"><span class="dow">木</span>05/22 · 11:30</button>
+            <button class="chip" type="button"><span class="dow">金</span>05/23 · 19:00</button>
+            <button class="chip" type="button" style="color:var(--fg-mute)">他の日程 →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side panel -->
+      <aside class="side" aria-label="profile snapshot">
+        <div class="side-head">
+          <span class="side-title">プロフィール</span>
+          <span class="side-tag">現在 公開中</span>
+        </div>
+
+        <div class="profile">
+          <div class="avatar" aria-hidden="true">PHOTO</div>
+          <div>
+            <div class="profile-name">岡田 光 — Hikari Okada</div>
+            <div class="profile-role">31 / 健康経営 × HRTech / 元 LIFE-Stock 部長</div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat">
+            <div class="stat-num" data-count="11" data-suffix="y">0<span style="font-size:13px;color:var(--fg-mute)">y</span></div>
+            <div class="stat-lbl">トレーナー</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" data-count="9000" data-suffix="+" data-format="comma">0<span style="font-size:13px;color:var(--fg-mute)">+</span></div>
+            <div class="stat-lbl">セッション</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" data-count="15" data-suffix="社">0<span style="font-size:13px;color:var(--fg-mute)">社</span></div>
+            <div class="stat-lbl">法人提案</div>
+          </div>
+        </div>
+
+        <div class="chart" aria-hidden="true">
+          <svg viewBox="0 0 640 92" preserveAspectRatio="none">
+            <defs>
+              <pattern id="ecg-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(168,212,188,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="640" height="92" fill="url(#ecg-grid)"/>
+            <g class="ecg-sweep">
+              <!-- two repeats of the same ECG pattern, scrolling -->
+              <path class="ecg-line" d="
+                M 0 46 L 30 46 L 40 44 L 55 48 L 70 46 L 85 46
+                L 92 40 L 96 70 L 100 12 L 104 60 L 108 44 L 120 46
+                L 150 46 L 165 42 L 180 48 L 195 46 L 210 46
+                L 215 38 L 220 76 L 226 8 L 232 66 L 240 44 L 255 46
+                L 290 46 L 305 44 L 320 48 L 320 46
+                L 320 46 L 350 46 L 360 44 L 375 48 L 390 46 L 405 46
+                L 412 40 L 416 70 L 420 12 L 424 60 L 428 44 L 440 46
+                L 470 46 L 485 42 L 500 48 L 515 46 L 530 46
+                L 535 38 L 540 76 L 546 8 L 552 66 L 560 44 L 575 46
+                L 610 46 L 625 44 L 640 46
+              "/>
+            </g>
+          </svg>
+          <div class="ecg-mask"></div>
+          <div class="ecg-cursor"></div>
+        </div>
+        <div class="chart-meta">
+          <span class="bpm">
+            <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z"/></svg>
+            LIVE
+          </span>
+          <span>組織のバイタル</span>
+        </div>
+        <div class="chart-cap">
+          <span>担当組織の生産性スコア</span>
+          <b>+184%</b>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Human voice strip -->
+    <div class="stance" aria-label="今のスタンス">
+      <span class="stance-label">今のスタンス</span>
+      <p class="stance-quote">
+        「体調を聞く」と「KPIを見る」を、<span class="hl">同じ画面で扱える仕組み</span>をつくりたい。<br />
+        トレーナーとして現場で拾ってきた「人が動く理由」を、AIとデータでスケールするのが興味領域です。
+      </p>
+      <span class="stance-sig">— 岡田 光</span>
+    </div>
+  </section>
+
+  <!-- ============= LOGOS ============= -->
+  <section class="block wrap" id="work" data-screen-label="02 Companies">
+    <div class="sec-head">
+      <div>
+        <div class="sec-label">Companies</div>
+        <h2 class="sec-title">在籍・参画した4社</h2>
+      </div>
+      <p class="sec-lead">パーソナル/法人向けジム、健康経営事業、HRテック領域まで、現場と経営の両側面で関わってきました。</p>
+    </div>
+
+    <div class="logos" aria-label="companies">
+      <div class="logo-cell">
+        <div class="logo-mark"><span class="glyph" style="background:#a8d4bc">B</span>B-ST</div>
+        <div class="logo-role">2016–2022 / Trainer</div>
+      </div>
+      <div class="logo-cell">
+        <div class="logo-mark"><span class="glyph" style="background:#e8c98a">L</span>LIFE-Stock</div>
+        <div class="logo-role">2022–2024 / Director</div>
+      </div>
+      <div class="logo-cell">
+        <div class="logo-mark"><span class="glyph" style="background:#7fe3b0">E</span>EXone</div>
+        <div class="logo-role">2023– / Advisor</div>
+      </div>
+      <div class="logo-cell">
+        <div class="logo-mark"><span class="glyph" style="background:#ffd28a">C</span>Cabby</div>
+        <div class="logo-role">2024– / 代表取締役</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= BENTO 15 tools ============= -->
+  <section class="block wrap" id="tools" data-screen-label="03 AI Tools">
+    <div class="sec-head">
+      <div>
+        <div class="sec-label">AI Toolkit · 15 builds</div>
+        <h2 class="sec-title">業務と顧客接点に、自分で作ったAIを実装する</h2>
+      </div>
+      <p class="sec-lead">トレーナーと部長を兼務しながら、現場の課題を自分で書いて解いてきた15のツール。健康経営・HR領域に特化したコレクションです。</p>
+    </div>
+
+    <div class="bento" id="bento">
+      <article class="tool">
+        <div class="thumb art-1" data-glyph="01 · DIAG"></div>
+        <div class="tool-head"><div class="tool-title">健康経営AI診断ツール v6.1</div><div class="tool-num">01/15</div></div>
+        <p class="tool-desc">Claude API + 「田村博士」キャラで1on1。Oura / WHOOP / Eight Sleep を統合した3タブ分析。</p>
+        <div class="tool-foot"><span class="tag">Claude API</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-2" data-glyph="02 · TYPE"></div>
+        <div class="tool-head"><div class="tool-title">健康経営キャラ診断 v3</div><div class="tool-num">02/15</div></div>
+        <p class="tool-desc">MBTI風に8タイプへ分類。SVGエンブレムを生成し、Canvasで画像ダウンロード。</p>
+        <div class="tool-foot"><span class="tag">Vanilla JS</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-3" data-glyph="03 · SCORE"></div>
+        <div class="tool-head"><div class="tool-title">健康経営スコアシート</div><div class="tool-num">03/15</div></div>
+        <p class="tool-desc">5カテゴリ・計25問の自己診断。企業の現状を可視化して諜見表を出します。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-4" data-glyph="04 · PLAN"></div>
+        <div class="tool-head"><div class="tool-title">生活習慣インプルーバー</div><div class="tool-num">04/15</div></div>
+        <p class="tool-desc">食事・運動・睡眠を一二次で分析する 3in1 の AIプランナー。</p>
+        <div class="tool-foot"><span class="tag">Gemini API</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-5" data-glyph="05 · DASH"></div>
+        <div class="tool-head"><div class="tool-title">組織健康ダッシュボード</div><div class="tool-num">05/15</div></div>
+        <p class="tool-desc">部門別ヘルスデータを可視化。チーム間の偏りや経年変化を一画面で把握。</p>
+        <div class="tool-foot"><span class="tag">Chart.js</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-6" data-glyph="06 · MKT"></div>
+        <div class="tool-head"><div class="tool-title">健康経営市場 競合7社調査</div><div class="tool-num">06/15</div></div>
+        <p class="tool-desc">主要プレイヤーのポジショニング・価格帯・強みを比較した市場分析レポート。</p>
+        <div class="tool-foot"><span class="tag">Markdown → HTML</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-7" data-glyph="07 · ROI"></div>
+        <div class="tool-head"><div class="tool-title">健康経営ROIシミュレーター</div><div class="tool-num">07/15</div></div>
+        <p class="tool-desc">5年累積ROI・3軸金額算出・TOP3施策の提示。提案資料にそのまま貼れる出力。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-8" data-glyph="08 · COACH"></div>
+        <div class="tool-head"><div class="tool-title">1on1コーチングシミュレーター</div><div class="tool-num">08/15</div></div>
+        <p class="tool-desc">3シナリオ×5ターン×3択のトレーニング。結果を 5軸レーダーで可視化。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-9" data-glyph="09 · PJM"></div>
+        <div class="tool-head"><div class="tool-title">プロジェクト進捗ダッシュボード</div><div class="tool-num">09/15</div></div>
+        <p class="tool-desc">タスク管理・進捗率・タイムラインを一体化したシンプルな進行管理ツール。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-10" data-glyph="10 · REC"></div>
+        <div class="tool-head"><div class="tool-title">健康施策レコメンダー</div><div class="tool-num">10/15</div></div>
+        <p class="tool-desc">15施策のDBからTOP5を提案。施策同士の相乗効果をマップで可視化。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-11" data-glyph="11 · DICT"></div>
+        <div class="tool-head"><div class="tool-title">健康経営キーワード辞典</div><div class="tool-num">11/15</div></div>
+        <p class="tool-desc">20用語を検索・カテゴリ別に引ける。例文付きで社外説明にも使える。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-12" data-glyph="12 · WEEK"></div>
+        <div class="tool-head"><div class="tool-title">週次ヘルスレビュー</div><div class="tool-num">12/15</div></div>
+        <p class="tool-desc">4軸のセルフチェックを100点スコア化。8週分の履歴を肉眼で追える。</p>
+        <div class="tool-foot"><span class="tag">Vanilla + LocalStorage</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-13" data-glyph="13 · CERT"></div>
+        <div class="tool-head"><div class="tool-title">資格・制度チェッカー</div><div class="tool-num">13/15</div></div>
+        <p class="tool-desc">健康経営優良法人の認定要件20問をチェックし、不足項目を紹介。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-14" data-glyph="14 · HUB"></div>
+        <div class="tool-head"><div class="tool-title">ポートフォリオまとめページ</div><div class="tool-num">14/15</div></div>
+        <p class="tool-desc">作った14ツールへワンクリックで飛べる統合ハブ。面談での導線説明に使用。</p>
+        <div class="tool-foot"><span class="tag">Vanilla</span></div>
+      </article>
+      <article class="tool">
+        <div class="thumb art-15" data-glyph="15 · v5"></div>
+        <div class="tool-head"><div class="tool-title">健康経営AI診断ツール v5</div><div class="tool-num">15/15</div></div>
+        <p class="tool-desc">v6.1 の前身版。設計の変遷を見せるため、履歴として残しています。</p>
+        <div class="tool-foot"><span class="tag">Claude API</span></div>
+      </article>
+        </div>
+  </section>
+
+  <!-- ============= TIMELINE ============= -->
+  <section class="block wrap" id="career" data-screen-label="04 Career">
+    <div class="sec-head">
+      <div>
+        <div class="sec-label">Career · 10 years</div>
+        <h2 class="sec-title">トレーナーから、HRテック側へ。</h2>
+      </div>
+      <p class="sec-lead">現場 → 事業部長 → 経営参画 → 領域転換。"健康"を起点に、関わる対象を1人 → チーム → 組織へ広げてきました。</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-grid">
+        <div class="tl-item">
+          <div class="tl-year">2016</div>
+          <div class="tl-node"></div>
+          <div class="tl-card">
+            <div class="tl-co">B-ST</div>
+            <div class="tl-role">パーソナルトレーナー</div>
+            <div class="tl-note">1on1 で 9,000 セッション。<br />入会率 80% の接客フロー設計。</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2022</div>
+          <div class="tl-node"></div>
+          <div class="tl-card">
+            <div class="tl-co">LIFE-Stock</div>
+            <div class="tl-role">事業部長</div>
+            <div class="tl-note">法人健康経営事業を立ち上げ。<br />継続率 65% / 15社導入。</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2024</div>
+          <div class="tl-node"></div>
+          <div class="tl-card">
+            <div class="tl-co">Cabby</div>
+            <div class="tl-role">代表取締役 / 経営者</div>
+            <div class="tl-note">AIプロダクト企画と営業統括。<br />全社 MVP 2024 受賞。</div>
+          </div>
+        </div>
+        <div class="tl-item is-now">
+          <div class="tl-year">2026 — NOW</div>
+          <div class="tl-node"></div>
+          <div class="tl-card">
+            <div class="tl-co">転職活動中</div>
+            <div class="tl-role">健康経営 × HRTech</div>
+            <div class="tl-note" style="color:var(--accent)">次の現場で、"健康を戦略に"<br />翻訳する仕事を探しています。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= ABOUT 3 pillars ============= -->
+  <section class="block wrap" id="about" data-screen-label="05 About">
+    <div class="sec-head">
+      <div>
+        <div class="sec-label">About</div>
+        <h2 class="sec-title">AIツールを作れる、営業・トレーナー・経営者。</h2>
+      </div>
+      <p class="sec-lead">三本柱が重なる場所に、自分の価値があると考えています。どれか一つでは届かない領域に、3つ持ち込んで関与できることが強みです。</p>
+    </div>
+
+    <div class="pillars">
+      <article class="pillar">
+        <div class="pillar-num">PILLAR 01</div>
+        <div class="pillar-title">営業<span class="en">/ Sales</span></div>
+        <p class="pillar-desc">B-ST 体験者入会率 80%。LIFE-Stock では法人15社の提案・契約・継続を一気通貫で担当。</p>
+        <ul class="pillar-list">
+          <li>体験 → 入会 80% の接客設計</li>
+          <li>法人健康経営 15社への提案実績</li>
+          <li>営業フローを Notion / GPT で資産化</li>
+        </ul>
+        <div class="pillar-overlap">× AI = <b>提案書ドラフトの自動生成</b> / 初回訪問までのリードタイムを短縮</div>
+      </article>
+
+      <article class="pillar">
+        <div class="pillar-num">PILLAR 02</div>
+        <div class="pillar-title">トレーナー<span class="en">/ Trainer</span></div>
+        <p class="pillar-desc">現場経験11年、9,000セッション。"行動が変わる接点"の設計を、データではなく身体で知っています。</p>
+        <ul class="pillar-list">
+          <li>パーソナル指導 / 食事 / 睡眠 / メンタル</li>
+          <li>NSCA-CPT 保有 / 健康経営アドバイザー</li>
+          <li>継続率 65% を支える行動変容設計</li>
+        </ul>
+        <div class="pillar-overlap">× AI = <b>パーソナライズ介入の自動化</b> / 24h 伴走</div>
+      </article>
+
+      <article class="pillar">
+        <div class="pillar-num">PILLAR 03</div>
+        <div class="pillar-title">経営者<span class="en">/ Manager</span></div>
+        <p class="pillar-desc">LIFE-Stock 部長として PL を持ち、Cabby では経営参画。"健康"を経営指標として扱う視点を持っています。</p>
+        <ul class="pillar-list">
+          <li>事業部 PL / KPI 設計 / 採用</li>
+          <li>健康経営優良法人取得の伴走</li>
+          <li>社内 MVP 2024 受賞</li>
+        </ul>
+        <div class="pillar-overlap">× AI = <b>KPI Pulse で経営の意思決定を高速化</b></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============= VOICES (一時非表示) =============
+  <section class="block wrap" id="voices" data-screen-label="06 Voices">
+    <div class="sec-head">
+      <div>
+        <div class="sec-label">Voices</div>
+        <h2 class="sec-title">一緒に働いた人からの評価</h2>
+      </div>
+      <p class="sec-lead">上司・部下・取引先・クライアント、それぞれの視点でもらったコメントを載せています。</p>
+    </div>
+
+    <div class="voices">
+      <article class="voice">
+        <div class="voice-mark">“</div>
+        <p class="voice-body">岡田さんの強みは、「データを読めるトレーナー」であること。現場の直感と数字の両方を握っているので、提案も意思決定も早い。</p>
+        <div class="voice-foot">
+          <div class="voice-avatar"></div>
+          <div class="voice-meta">
+            <span class="voice-name">中村 さん</span>
+            <span class="voice-role">LIFE-Stock / 取締役</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="voice-mark">“</div>
+        <p class="voice-body">部長時代、チームの「体調の変化」をちゃんと見てくれた人。数字だけじゃなくて、スタッフの状態を見ながら仕事を振るマネージャーでした。</p>
+        <div class="voice-foot">
+          <div class="voice-avatar" style="background: repeating-linear-gradient(45deg, #2a1c4a 0 6px, #241843 6px 12px);"></div>
+          <div class="voice-meta">
+            <span class="voice-name">鈴木 さん</span>
+            <span class="voice-role">LIFE-Stock / 元部下</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="voice-mark">“</div>
+        <p class="voice-body">AIの話も人事の話も両方できる人は珍しい。導入説明にもクライアント同席してもらって、その場で質問に答えた上で「じゃあこう試しましょう」まで話が進んだのは驚いた。</p>
+        <div class="voice-foot">
+          <div class="voice-avatar" style="background: repeating-linear-gradient(45deg, #1c4a3a 0 6px, #184333 6px 12px);"></div>
+          <div class="voice-meta">
+            <span class="voice-name">高橋 さん</span>
+            <span class="voice-role">導入企業 / 人事部長</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="voice-mark">“</div>
+        <p class="voice-body">10年以上担当してもらっています。体を作るだけじゃなく、生活・仕事・メンタルにも踏み込んだ伴走をしてくれる。人に推薦したくて仂介した人数は紐めてろくない。</p>
+        <div class="voice-foot">
+          <div class="voice-avatar" style="background: repeating-linear-gradient(45deg, #4a3a1c 0 6px, #433318 6px 12px);"></div>
+          <div class="voice-meta">
+            <span class="voice-name">柳泽 さん</span>
+            <span class="voice-role">10年間のクライアント</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- END VOICES -->
+
+  <!-- ============= END CTA ============= -->
+  <section class="wrap" id="contact" data-screen-label="07 Contact">
+    <div class="endcta">
+      <div>
+        <div class="sec-label" style="margin-bottom:14px">Let's talk</div>
+        <h2>「<span class="hl">健康を戦略にする</span>」仲間、探しています。</h2>
+        <p>HRテック・健康経営SaaS・人事領域での PdM / 事業開発 / CxO直下ポジションに興味があります。<br />まずは30分、気軽に話しましょう。</p>
+        <div class="endcta-right">
+          <a class="btn btn-primary" href="#">
+            カジュアル面談を依頼
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="btn btn-secondary" href="#">職務経歴書 PDF をダウンロード</a>
+        </div>
+        <div class="endcta-mini">
+          <span><b>平均返信</b> 4時間以内</span>
+          <span><b>対応可</b> 平日夜 / 土日昔</span>
+          <span><b>形式</b> Zoom / Google Meet / 対面(都内)</span>
+        </div>
+      </div>
+
+      <aside class="endcta-card" aria-label="今週の空き">
+        <div class="card-head">
+          <div class="card-title">今週の空き</div>
+          <span class="card-tag">⚡ 1-click</span>
+        </div>
+        <div class="day-list">
+          <a href="#" class="day-row">
+            <span class="d-date">水 05/21</span>
+            <span class="d-times"><span>14:00</span><span>16:30</span><span>19:00</span></span>
+            <span class="d-go">→</span>
+          </a>
+          <a href="#" class="day-row">
+            <span class="d-date">木 05/22</span>
+            <span class="d-times"><span>11:30</span><span>15:00</span></span>
+            <span class="d-go">→</span>
+          </a>
+          <a href="#" class="day-row">
+            <span class="d-date">金 05/23</span>
+            <span class="d-times"><span>10:00</span><span>13:30</span><span>19:00</span><span>21:00</span></span>
+            <span class="d-go">→</span>
+          </a>
+          <a href="#" class="day-row">
+            <span class="d-date">土 05/24</span>
+            <span class="d-times"><span>10:00</span><span>14:00</span></span>
+            <span class="d-go">→</span>
+          </a>
+        </div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--fg-dim);letter-spacing:0.06em;padding-top:12px;border-top:1px dashed var(--line);">
+          ※ Googleカレンダー連携 / クリックで仮押さえ
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div style="display:flex; flex-direction:column; gap:14px;">
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+      <a href="https://github.com/okada-hikari" target="_blank" rel="noopener" class="sns" aria-label="GitHub">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.92.58.11.79-.25.79-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.24 2.76.12 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.07.78 2.15v3.18c0 .31.21.67.8.55 4.56-1.53 7.85-5.84 7.85-10.92C23.5 5.65 18.35.5 12 .5z"/></svg>
+        <span>github.com/okada-hikari</span>
+      </a>
+    </div>
+    <span>© 2026 Hikari Okada · Portfolio v7.2</span>
+  </div>
+  <span class="meta">last updated: 2026.05 · built by hand + AI</span>
+</footer>
+
+<style>
+  .sns{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--fg-mute); padding: 6px 10px; border-radius: var(--r-sm);
+    border: 1px solid var(--line);
+    background: var(--bg-elev-1);
+    transition: color .15s, border-color .15s, background .15s, transform .15s;
+  }
+  .sns:hover{
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    background: rgba(168,212,188,.06);
+  }
+  .sns svg{ opacity: 0.85; }
+  .sns:hover svg{ opacity: 1; }
+</style>
+
+<script>
+  // Language toggle (トグル表示のみ — ENコンテンツ未用意)
+  (function(){
+    const btns = document.querySelectorAll('.lang-btn');
+    btns.forEach(b => b.addEventListener('click', () => {
+      btns.forEach(x => x.classList.remove('is-active'));
+      b.classList.add('is-active');
+      document.documentElement.setAttribute('lang', b.dataset.lang === 'en' ? 'en' : 'ja');
+    }));
+  })();
+
+  // Count-up on scroll into view
+  (function(){
+    const els = document.querySelectorAll('[data-count]');
+    if (!els.length || !('IntersectionObserver' in window)) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fmt = (n, format) => format === 'comma' ? n.toLocaleString('en-US') : String(n);
+    const animate = (el) => {
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      const format = el.dataset.format || '';
+      const unitSpan = el.querySelector('span');
+      if (reduce){
+        el.textContent = fmt(target, format) + (unitSpan ? '' : suffix);
+        if (unitSpan) el.appendChild(unitSpan);
+        return;
+      }
+      const duration = 1200;
+      const start = performance.now();
+      const ease = (t) => 1 - Math.pow(1 - t, 3);
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const v = Math.round(target * ease(t));
+        el.textContent = fmt(v, format);
+        if (unitSpan) el.appendChild(unitSpan);
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting){
+          animate(e.target);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    els.forEach((el) => io.observe(el));
+  })();
+</script>
+
+</body>
+</html>
