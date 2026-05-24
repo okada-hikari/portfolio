@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイガモ農法ROIシミュレーター｜移住×米×自給自足の5年試算</title>
+<meta name="description" content="反数・地域・販路・労働投入から、アイガモ農法の5年累積ROIをシミュレーション。佐久・南魚沼・那須塩原・北杜・三島の5候補地で適地スコアまで算出。食農DX × 健康経営 × 移住を1つに。">
+<meta property="og:title" content="アイガモ農法ROIシミュレーター｜移住×米×自給自足の5年試算">
+<meta property="og:description" content="自分の3年後の意思決定を、数字で支える。31歳元PTが食農の現場に立つロードマップを試算。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://okada-hikari.github.io/portfolio/agri/ogp/ogp-アイガモ農法ROIシミュレーター.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦆%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --train-c: #8cbfff;
+  --sleep-c: #c38eff;
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:-1;}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
+
+/* NAV */
+.nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;}
+.nav-logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.nav-logo i[data-lucide]{color:var(--meal-c);}
+.nav-badge{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--meal-c);background:rgba(101,212,131,0.1);border:1px solid rgba(101,212,131,0.3);padding:6px 12px;border-radius:100px;letter-spacing:1px;}
+.nav-badge i[data-lucide]{width:12px;height:12px;}
+
+/* HERO */
+.hero{padding:48px 0 56px;border-bottom:1px solid var(--border);margin-bottom:40px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(101,212,131,0.12),transparent 45%),radial-gradient(circle at 80% 20%,rgba(242,199,92,0.08),transparent 45%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:6px 14px;border-radius:100px;letter-spacing:1.5px;margin-bottom:24px;}
+.hero-title{font-size:44px;font-weight:800;line-height:1.2;letter-spacing:-0.5px;margin-bottom:20px;}
+.hero-title .gradient{background:linear-gradient(120deg,var(--meal-c),var(--gold),var(--train-c));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:28px;max-width:680px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.hero-stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 14px;}
+.hero-stat-num{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;line-height:1;margin-bottom:4px;}
+.hero-stat-label{font-size:11px;color:var(--text3);letter-spacing:1px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+.hero-stat:nth-child(1) .hero-stat-num{color:var(--meal-c);}
+.hero-stat:nth-child(2) .hero-stat-num{color:var(--gold);}
+.hero-stat:nth-child(3) .hero-stat-num{color:var(--train-c);}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.card-title i[data-lucide]{color:var(--meal-c);width:16px;height:16px;}
+.card-desc{font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.6;}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+label{font-size:11px;color:var(--text3);letter-spacing:1.5px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+input[type=number],select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);font-family:inherit;width:100%;appearance:none;transition:border-color 0.2s,box-shadow 0.2s;}
+input:focus,select:focus{outline:none;border-color:var(--meal-c);box-shadow:0 0 0 3px rgba(101,212,131,0.1);}
+input::placeholder{color:var(--text3);}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5682' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:32px;}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.slider-val{font-size:14px;font-weight:600;min-width:80px;text-align:right;font-family:'DM Mono',monospace;color:var(--meal-c);}
+input[type=range]{flex:1;height:4px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer;border:none;padding:0;appearance:none;}
+input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;cursor:pointer;appearance:none;background:var(--meal-c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--meal-c);}
+
+/* MIX BAR */
+.mix-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface2);margin-top:8px;margin-bottom:4px;}
+.mix-seg{transition:width 0.3s;}
+.mix-legend{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);margin-top:8px;}
+.mix-legend div{display:flex;align-items:center;gap:6px;}
+.mix-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+/* RESULT */
+.roi-hero{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--meal-c);border-radius:24px;padding:36px 28px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(101,212,131,0.1);}
+.roi-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(101,212,131,0.15),transparent 60%);pointer-events:none;}
+.roi-hero-inner{position:relative;z-index:1;}
+.roi-label{font-size:11px;color:var(--text3);letter-spacing:2px;margin-bottom:14px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+.roi-value{font-family:'DM Mono',monospace;font-size:64px;font-weight:600;line-height:1;color:var(--meal-c);margin-bottom:8px;letter-spacing:-2px;}
+.roi-value .unit{font-size:24px;color:var(--text2);margin-left:6px;}
+.roi-sub{font-size:14px;color:var(--text2);margin-top:12px;}
+.roi-sub strong{color:var(--text);}
+
+.breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.bk-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;}
+.bk-card.rice{border-color:rgba(242,199,92,0.3);}
+.bk-card.subsidy{border-color:rgba(140,191,255,0.3);}
+.bk-card.cost{border-color:rgba(242,107,124,0.3);}
+.bk-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.bk-icon.rice{background:rgba(242,199,92,0.15);color:var(--gold);}
+.bk-icon.subsidy{background:rgba(140,191,255,0.15);color:var(--train-c);}
+.bk-icon.cost{background:rgba(242,107,124,0.15);color:var(--red);}
+.bk-icon i[data-lucide]{width:20px;height:20px;}
+.bk-label{font-size:11px;color:var(--text3);letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;}
+.bk-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace;line-height:1.2;}
+.bk-value.rice{color:var(--gold);}
+.bk-value.subsidy{color:var(--train-c);}
+.bk-value.cost{color:var(--red);}
+.bk-unit{font-size:10px;color:var(--text3);margin-top:4px;}
+
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.chart-box-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.chart-box-title i[data-lucide]{color:var(--meal-c);width:16px;height:16px;}
+.chart-wrap{position:relative;height:280px;}
+.chart-wrap.tall{height:340px;}
+
+/* REGION RANK */
+.region-list{display:flex;flex-direction:column;gap:10px;}
+.region-row{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;transition:border-color 0.2s;}
+.region-row.best{border-color:var(--meal-c);background:rgba(101,212,131,0.08);}
+.region-rank{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;background:var(--surface);}
+.region-row.best .region-rank{background:rgba(101,212,131,0.2);color:var(--meal-c);}
+.region-name{flex:1;font-size:14px;font-weight:600;}
+.region-score{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:var(--meal-c);min-width:60px;text-align:right;}
+.region-meta{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;}
+
+.top-measures{list-style:none;padding:0;}
+.top-measures li{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+.top-measures li:last-child{border-bottom:none;}
+.top-rank{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;background:var(--surface2);}
+.top-measures li:nth-child(1) .top-rank{background:rgba(101,212,131,0.15);color:var(--meal-c);}
+.top-measures li:nth-child(2) .top-rank{background:rgba(242,199,92,0.15);color:var(--gold);}
+.top-measures li:nth-child(3) .top-rank{background:rgba(140,191,255,0.15);color:var(--train-c);}
+.top-content{flex:1;}
+.top-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.top-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+.top-kpi{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:6px;}
+
+/* ASSUMPTION BOX */
+.assumption{background:rgba(140,191,255,0.05);border:1px solid rgba(140,191,255,0.2);border-radius:12px;padding:16px 20px;margin-bottom:16px;}
+.assumption-title{font-size:11px;color:var(--train-c);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.assumption-text{font-size:12px;color:var(--text2);line-height:1.8;}
+.assumption-text strong{color:var(--text);}
+
+/* BTN */
+.btn-gen{display:flex;align-items:center;justify-content:center;gap:10px;border:none;padding:16px 28px;border-radius:100px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.3s;width:100%;margin-top:12px;background:var(--meal-c);color:var(--bg);box-shadow:0 4px 20px rgba(101,212,131,0.25);}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(101,212,131,0.35);}
+.btn-gen i[data-lucide]{width:18px;height:18px;}
+
+/* RESULT SECTION */
+.result{display:none;margin-top:24px;animation:fadeUp 0.6s cubic-bezier(0.4,0,0.2,1);}
+.result.vis{display:block;}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.result-title{font-size:20px;font-weight:700;}
+.result-badge{font-size:10px;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:100px;letter-spacing:1px;display:flex;align-items:center;gap:4px;color:var(--meal-c);background:rgba(101,212,131,0.1);border:1px solid rgba(101,212,131,0.3);}
+
+/* STORY BOX */
+.story{background:linear-gradient(135deg,rgba(242,199,92,0.08),rgba(101,212,131,0.06));border:1px solid rgba(242,199,92,0.25);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+.story-title{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.story-text{font-size:13px;color:var(--text2);line-height:1.85;}
+.story-text strong{color:var(--text);}
+
+/* FOOTER */
+.footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--border);text-align:center;}
+.footer-links{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.footer-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);text-decoration:none;padding:8px 16px;border:1px solid var(--border);border-radius:100px;transition:all 0.2s;}
+.footer-link:hover{color:var(--text);border-color:var(--text3);background:var(--surface);}
+.footer-link i[data-lucide]{width:14px;height:14px;}
+.footer-creator{display:inline-flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:16px;}
+.footer-creator-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--meal-c),var(--gold));display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0;}
+.footer-creator-icon i[data-lucide]{width:18px;height:18px;}
+.footer-creator-text{text-align:left;font-size:12px;color:var(--text2);line-height:1.6;}
+.footer-creator-text strong{color:var(--text);font-weight:600;display:block;font-size:13px;}
+.footer-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1.5px;}
+
+[role="button"]:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:8px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+@media(max-width:540px){
+  .wrap{padding:0 16px 60px;}
+  .hero{padding:36px 0 44px;}
+  .hero-title{font-size:30px;}
+  .hero-sub{font-size:14px;}
+  .hero-stats{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .hero-stat{padding:12px 8px;}
+  .hero-stat-num{font-size:18px;}
+  .form-row{grid-template-columns:1fr;}
+  .roi-value{font-size:48px;}
+  .breakdown{grid-template-columns:1fr;}
+  .card{padding:16px;}
+  .mix-legend{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="bird"></i>AIGAMO ROI SIMULATOR</div>
+    <div class="nav-badge"><i data-lucide="sprout"></i>食農DX × 移住</div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><i data-lucide="map-pin" style="color:var(--meal-c);"></i> FOR FUTURE FARMER / 自分の3年後を試算する</div>
+      <h1 class="hero-title">
+        合鴨1羽を、<br>
+        <span class="gradient">地域の物語に。</span>
+      </h1>
+      <p class="hero-sub">
+        移住後、自分で田んぼと合鴨をやったらどうなるか。<strong>反数・販路ミックス・地域・労働投入</strong>を入れると、米収益・補助金・コスト・5年累積純利益・適地スコアまで一気に算出。<br>
+        食農DX企業の面接で「自分の意思決定をAIで支える」を見せるためのツール。<strong>当事者目線のCSになりたいから、まず自分を試算した。</strong>
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">5地域</div>
+          <div class="hero-stat-label">適地スコア</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">5年</div>
+          <div class="hero-stat-label">累積ROI</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">4販路</div>
+          <div class="hero-stat-label">販売ミックス</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUT 1: 規模 -->
+  <div class="card">
+    <div class="card-title"><i data-lucide="layout-grid"></i>規模・地域</div>
+    <div class="card-desc">反数（1反 = 約991㎡）、アイガモ放鳥数、移住候補地を設定。地域で収量と適地スコアが変わる。</div>
+
+    <label style="display:block;margin-bottom:6px;">田んぼ規模</label>
+    <div class="slider-row">
+      <input type="range" id="tan" min="1" max="5" step="0.5" value="1.5" oninput="updateVal('tan',this.value+'反')">
+      <span class="slider-val" id="tan-val">1.5反</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:16px;">アイガモ羽数 / 反</label>
+    <div class="slider-row">
+      <input type="range" id="duck" min="10" max="25" step="1" value="15" oninput="updateVal('duck',this.value+'羽')">
+      <span class="slider-val" id="duck-val">15羽</span>
+    </div>
+
+    <div class="form-row" style="margin-top:16px;">
+      <div class="form-group">
+        <label>移住候補地</label>
+        <select id="region">
+          <option value="sakuhokushin" selected>長野・佐久（五郎兵衛米地帯）</option>
+          <option value="minamiuonuma">新潟・南魚沼（雪解け水）</option>
+          <option value="nasushiobara">栃木・那須塩原（東北新幹線70分）</option>
+          <option value="hokuto">山梨・北杜（南アルプス湧水）</option>
+          <option value="mishima">静岡・三島（柿田川水系）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>米品種</label>
+        <select id="variety">
+          <option value="koshi" selected>コシヒカリ</option>
+          <option value="goro">五郎兵衛米</option>
+          <option value="yumepi">ゆめぴりか</option>
+          <option value="milky">ミルキークイーン</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT 2: 販路ミックス -->
+  <div class="card">
+    <div class="card-title"><i data-lucide="shopping-basket"></i>販路ミックス</div>
+    <div class="card-desc">合計100%になるよう自動調整。自家消費は実質「食費浮き」、直販・ふるさと納税は単価高め、JAは楽だが単価低い。</div>
+
+    <label style="display:block;margin-bottom:6px;">自家消費</label>
+    <div class="slider-row">
+      <input type="range" id="ch1" min="0" max="100" step="5" value="20" oninput="balanceMix('ch1')">
+      <span class="slider-val" id="ch1-val" style="color:var(--meal-c);">20%</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:12px;">直販（EC・道の駅）</label>
+    <div class="slider-row">
+      <input type="range" id="ch2" min="0" max="100" step="5" value="40" oninput="balanceMix('ch2')">
+      <span class="slider-val" id="ch2-val" style="color:var(--gold);">40%</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:12px;">ふるさと納税</label>
+    <div class="slider-row">
+      <input type="range" id="ch3" min="0" max="100" step="5" value="30" oninput="balanceMix('ch3')">
+      <span class="slider-val" id="ch3-val" style="color:var(--train-c);">30%</span>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:12px;">JA出荷</label>
+    <div class="slider-row">
+      <input type="range" id="ch4" min="0" max="100" step="5" value="10" oninput="balanceMix('ch4')">
+      <span class="slider-val" id="ch4-val" style="color:var(--sleep-c);">10%</span>
+    </div>
+
+    <div class="mix-bar" id="mix-bar">
+      <div class="mix-seg" style="width:20%;background:var(--meal-c);"></div>
+      <div class="mix-seg" style="width:40%;background:var(--gold);"></div>
+      <div class="mix-seg" style="width:30%;background:var(--train-c);"></div>
+      <div class="mix-seg" style="width:10%;background:var(--sleep-c);"></div>
+    </div>
+    <div class="mix-legend">
+      <div><span class="mix-dot" style="background:var(--meal-c);"></span>自家消費</div>
+      <div><span class="mix-dot" style="background:var(--gold);"></span>直販</div>
+      <div><span class="mix-dot" style="background:var(--train-c);"></span>ふるさと納税</div>
+      <div><span class="mix-dot" style="background:var(--sleep-c);"></span>JA</div>
+    </div>
+  </div>
+
+  <!-- INPUT 3: 労働投入と投資 -->
+  <div class="card">
+    <div class="card-title"><i data-lucide="hammer"></i>労働投入 & 初期設備</div>
+    <div class="card-desc">どれくらい時間と資金を入れるか。本業と並行するなら「副業」、本業化するなら「本業」を選択。</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>労働投入レベル</label>
+        <select id="labor">
+          <option value="hobby">趣味（年200h・週末のみ）</option>
+          <option value="side" selected>副業（年600h・週10h）</option>
+          <option value="main">本業（年1500h・週30h）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>農家連携</label>
+        <select id="partner">
+          <option value="solo">単独（全部自分でやる）</option>
+          <option value="link" selected>既存農家連携（指導料あり）</option>
+          <option value="coop">地域おこし協力隊（補助金枠）</option>
+        </select>
+      </div>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;margin-top:16px;">追加設備投資（防鳥ネット・小屋・精米機の上乗せ）</label>
+    <div class="slider-row">
+      <input type="range" id="equip" min="0" max="200" step="10" value="50" oninput="updateVal('equip',parseInt(this.value).toLocaleString()+'万円')">
+      <span class="slider-val" id="equip-val" style="min-width:90px;">50万円</span>
+    </div>
+  </div>
+
+  <button class="btn-gen" onclick="calculate()"><i data-lucide="calculator"></i>5年ROIを計算する</button>
+
+  <!-- RESULT -->
+  <section class="result" id="result">
+    <div class="result-header">
+      <div class="result-title">シミュレーション結果</div>
+      <div class="result-badge"><i data-lucide="trending-up"></i>5-YEAR SIM</div>
+    </div>
+
+    <div class="roi-hero">
+      <div class="roi-hero-inner">
+        <div class="roi-label">5年累積純利益（売上＋補助金 − コスト − 労働換算）</div>
+        <div class="roi-value"><span id="roi-num">0</span><span class="unit">万円</span></div>
+        <div class="roi-sub">
+          売上累計 <strong id="rev-amount">¥0</strong> ／ 補助金 <strong id="sub-amount">¥0</strong> ／ コスト累計 <strong id="cost-amount">¥0</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="bk-card rice">
+        <div class="bk-icon rice"><i data-lucide="wheat"></i></div>
+        <div class="bk-label">米売上</div>
+        <div class="bk-value rice" id="bk-rice">¥0</div>
+        <div class="bk-unit">5年累積</div>
+      </div>
+      <div class="bk-card subsidy">
+        <div class="bk-icon subsidy"><i data-lucide="landmark"></i></div>
+        <div class="bk-label">補助金合計</div>
+        <div class="bk-value subsidy" id="bk-sub">¥0</div>
+        <div class="bk-unit">活用可能枠</div>
+      </div>
+      <div class="bk-card cost">
+        <div class="bk-icon cost"><i data-lucide="wallet"></i></div>
+        <div class="bk-label">支出累計</div>
+        <div class="bk-value cost" id="bk-cost">¥0</div>
+        <div class="bk-unit">設備＋運営</div>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-box-title"><i data-lucide="line-chart"></i>5年の収支推移</div>
+      <div class="chart-wrap"><canvas id="roiChart"></canvas></div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-box-title"><i data-lucide="bar-chart-3"></i>月別 労働時間（年間）</div>
+      <div class="chart-wrap"><canvas id="laborChart"></canvas></div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-box-title"><i data-lucide="radar"></i>適地スコア（候補地別）</div>
+      <div class="chart-wrap tall"><canvas id="regionChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i data-lucide="trophy"></i>地域別ランキング（あなたの設定での)</div>
+      <div class="card-desc">適地スコア＝気候・水質・通勤・補助金・コミュニティの5軸。あなたの選択した販路ミックスとの相性込み。</div>
+      <div class="region-list" id="regionList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i data-lucide="target"></i>改善提案 TOP 3</div>
+      <div class="card-desc">あなたの設定を「次に伸ばすなら」の優先順。経済合理性 × 続けやすさ × 食農DXストーリーで自動選定。</div>
+      <ul class="top-measures" id="topMeasures"></ul>
+    </div>
+
+    <div class="story">
+      <div class="story-title"><i data-lucide="sparkles"></i>このシミュレーションが語ること</div>
+      <div class="story-text" id="storyText">―</div>
+    </div>
+
+    <div class="assumption">
+      <div class="assumption-title"><i data-lucide="info"></i>計算根拠（主要仮定 / 2026年5月時点）</div>
+      <div class="assumption-text">
+        <strong>反収量</strong>＝地域別 300〜420kg／反（農水省 都道府県別10a収量参考）／ <strong>米単価</strong>＝自家2,500円・直販2,000円・ふるさと納税1,300円（自治体手取り換算）・JA1,000円／kg／ <strong>アイガモコスト</strong>＝雛1,500円＋飼料800円／羽、生存率85%／ <strong>補助金</strong>＝認定新規就農経営開始資金 月12.5万×3年、地域おこし協力隊起業支援 100万円（任期終了時）、6次産業化補助金 ピーク年100万円換算／ <strong>労働単価</strong>＝1,500円／h（機会費用として控除）。<br>
+        ※あくまでも教育・意思決定支援用のシミュレーションです。実数は地域・年・販路・天候で大きく変動します。応募・移住の意思決定時は必ず一次情報で再確認してください。
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="index.html" class="footer-link"><i data-lucide="arrow-left"></i>食農DX TOPへ戻る</a>
+      <a href="../index.html" class="footer-link"><i data-lucide="layout-grid"></i>健康経営 × AI 軸</a>
+      <a href="../健康経営ROIシミュレーター.html" class="footer-link"><i data-lucide="banknote"></i>健康経営ROI</a>
+    </div>
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        食農DX × 健康経営 領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; AIGAMO ROI v1</div>
+  </footer>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+// ===== 地域マスタ =====
+const REGIONS = {
+  sakuhokushin: { name: '長野・佐久', yield: 360, climateScore: 75, waterScore: 85, commuteScore: 90, subsidyScore: 80, communityScore: 85, riceFloor: 1.0, note: '北陸新幹線75分／五郎兵衛米ブランド／積雪あり' },
+  minamiuonuma:  { name: '新潟・南魚沼', yield: 420, climateScore: 80, waterScore: 95, commuteScore: 65, subsidyScore: 85, communityScore: 80, riceFloor: 1.15, note: '魚沼コシヒカリ／雪解け水／豪雪適応必要' },
+  nasushiobara:  { name: '栃木・那須塩原', yield: 380, climateScore: 80, waterScore: 90, commuteScore: 85, subsidyScore: 75, communityScore: 70, riceFloor: 1.05, note: '東北新幹線70分／別荘地ブランド／観光連携可' },
+  hokuto:        { name: '山梨・北杜', yield: 320, climateScore: 70, waterScore: 95, commuteScore: 55, subsidyScore: 75, communityScore: 85, riceFloor: 0.95, note: '南アルプス湧水／移住先進地／中央線2.5h' },
+  mishima:       { name: '静岡・三島', yield: 300, climateScore: 90, waterScore: 90, commuteScore: 95, subsidyScore: 60, communityScore: 65, riceFloor: 0.9, note: '東海道新幹線30分／柿田川水系／田んぼ少ない' }
+};
+
+const PRICE = { ch1: 2500, ch2: 2000, ch3: 1300, ch4: 1000 }; // 円/kg
+const PRICE_LABEL = { ch1: '自家消費', ch2: '直販', ch3: 'ふるさと納税', ch4: 'JA' };
+const LABOR_HOURS = { hobby: 200, side: 600, main: 1500 };
+const LABOR_COST_PER_H = 1500;
+
+let roiChart = null, laborChart = null, regionChart = null;
+
+function updateVal(id,val){document.getElementById(id+'-val').textContent=val;}
+
+function balanceMix(changed) {
+  const ids = ['ch1','ch2','ch3','ch4'];
+  const vals = ids.map(i => parseInt(document.getElementById(i).value));
+  const total = vals.reduce((a,b)=>a+b,0);
+  if (total === 100) {
+    ids.forEach(i => updateVal(i, document.getElementById(i).value + '%'));
+    updateMixBar();
+    return;
+  }
+  const changedIdx = ids.indexOf(changed);
+  const others = ids.filter(i => i !== changed);
+  const remain = Math.max(0, 100 - vals[changedIdx]);
+  const otherTotal = ids.reduce((a,i,idx)=> idx===changedIdx?a:a+vals[idx], 0);
+  if (otherTotal === 0) {
+    others.forEach(i => { document.getElementById(i).value = Math.round(remain/3); });
+  } else {
+    others.forEach(i => {
+      const v = vals[ids.indexOf(i)];
+      document.getElementById(i).value = Math.round(v / otherTotal * remain);
+    });
+  }
+  ids.forEach(i => updateVal(i, document.getElementById(i).value + '%'));
+  updateMixBar();
+}
+
+function updateMixBar() {
+  const ids = ['ch1','ch2','ch3','ch4'];
+  const colors = ['var(--meal-c)','var(--gold)','var(--train-c)','var(--sleep-c)'];
+  const bar = document.getElementById('mix-bar');
+  bar.innerHTML = ids.map((i,idx) => `<div class="mix-seg" style="width:${document.getElementById(i).value}%;background:${colors[idx]};"></div>`).join('');
+}
+
+function formatMan(yen) {
+  const man = Math.round(yen / 10000);
+  if (Math.abs(man) >= 10000) return (man >= 0 ? '' : '-') + '約' + Math.abs(man/10000).toFixed(1) + '億円';
+  return man.toLocaleString() + '万円';
+}
+
+function calculate() {
+  const tan = parseFloat(document.getElementById('tan').value);
+  const duck = parseInt(document.getElementById('duck').value);
+  const regionKey = document.getElementById('region').value;
+  const region = REGIONS[regionKey];
+  const variety = document.getElementById('variety').value;
+  const labor = document.getElementById('labor').value;
+  const partner = document.getElementById('partner').value;
+  const equip = parseInt(document.getElementById('equip').value) * 10000;
+  const ch = {
+    ch1: parseInt(document.getElementById('ch1').value)/100,
+    ch2: parseInt(document.getElementById('ch2').value)/100,
+    ch3: parseInt(document.getElementById('ch3').value)/100,
+    ch4: parseInt(document.getElementById('ch4').value)/100
+  };
+
+  // ===== 米収量・単価 =====
+  const varietyMul = { koshi:1.0, goro:1.1, yumepi:1.05, milky:0.95 }[variety];
+  const yieldPerTan = region.yield * varietyMul; // kg/反
+  const totalYield = yieldPerTan * tan; // kg/年
+
+  // 加重単価
+  const weightedPrice = Object.keys(ch).reduce((a,k) => a + ch[k] * PRICE[k], 0);
+  // 自家消費は「食費浮き」として収入扱い、ふるさと納税は実質手取り
+  const annualRevenue = totalYield * weightedPrice;
+
+  // ===== コスト =====
+  // 固定初期投資：基本セット43万円 + 追加equip
+  const baseEquip = 430000;
+  const initialEquip = baseEquip + equip;
+  // 年間運営コスト
+  const aigamoCount = duck * tan;
+  const aigamoCost = aigamoCount * 2300 * 0.85; // 雛+飼料、生存率調整
+  const fertSeedCost = tan * 30000; // 種籾・肥料・農薬代替
+  const utilityCost = tan * 20000; // 水利・電気
+  const milling = totalYield * 50; // 精米外注
+  const annualOps = aigamoCost + fertSeedCost + utilityCost + milling;
+
+  // ===== 労働換算 =====
+  const laborH = LABOR_HOURS[labor] * (tan / 1.5); // 1.5反基準でスケール
+  const laborCost = laborH * LABOR_COST_PER_H;
+
+  // ===== 補助金 =====
+  let subsidyTotal = 0;
+  if (partner === 'coop') {
+    // 地域おこし協力隊：報酬 月20万 × 36ヶ月（3年）＋ 起業支援100万円
+    subsidyTotal += 200000 * 36 + 1000000;
+  } else if (labor === 'main') {
+    // 認定新規就農：月12.5万 × 36ヶ月
+    subsidyTotal += 125000 * 36;
+  }
+  // 6次産業化補助金（直販+ふるさと納税>50%なら）
+  if (ch.ch2 + ch.ch3 > 0.5) subsidyTotal += 1000000;
+  // 移住支援金（東京23区5年通勤要件があるので参考値、半分カウント）
+  subsidyTotal += 500000;
+  // 地域別補助金スコア補正
+  subsidyTotal *= (region.subsidyScore / 75);
+
+  // ===== 5年累積 =====
+  // 1年目：80%収量、2年目以降:100%
+  const yearMul = [0.8, 1.0, 1.0, 1.05, 1.05];
+  const revByYear = yearMul.map(m => annualRevenue * m);
+  const opsByYear = yearMul.map(m => annualOps * m);
+  const laborByYear = [laborCost, laborCost, laborCost, laborCost, laborCost];
+  // 補助金は3年分に配分（残りは0年目相当）
+  const subByYear = [subsidyTotal*0.35, subsidyTotal*0.30, subsidyTotal*0.20, subsidyTotal*0.10, subsidyTotal*0.05];
+
+  const totalRev = revByYear.reduce((a,b)=>a+b,0);
+  const totalOps = opsByYear.reduce((a,b)=>a+b,0) + initialEquip;
+  const totalLabor = laborByYear.reduce((a,b)=>a+b,0);
+  const totalSub = subByYear.reduce((a,b)=>a+b,0);
+  const netProfit = totalRev + totalSub - totalOps - totalLabor;
+
+  // ===== 表示 =====
+  document.getElementById('roi-num').textContent = Math.round(netProfit / 10000).toLocaleString();
+  document.getElementById('rev-amount').textContent = formatMan(totalRev);
+  document.getElementById('sub-amount').textContent = formatMan(totalSub);
+  document.getElementById('cost-amount').textContent = formatMan(totalOps + totalLabor);
+  document.getElementById('bk-rice').textContent = formatMan(totalRev);
+  document.getElementById('bk-sub').textContent = formatMan(totalSub);
+  document.getElementById('bk-cost').textContent = formatMan(totalOps + totalLabor);
+
+  // ROI色：負なら赤、正ならgreen
+  const roiEl = document.getElementById('roi-num').parentElement;
+  roiEl.style.color = netProfit >= 0 ? 'var(--meal-c)' : 'var(--red)';
+
+  drawROIChart(revByYear, subByYear, opsByYear, laborByYear);
+  drawLaborChart(labor, tan);
+  drawRegionChart(regionKey, ch);
+  renderRegionList(regionKey, ch, tan, duck, variety, labor, partner, equip);
+  generateTopMeasures({ tan, duck, ch, labor, partner, region: regionKey, netProfit, totalRev });
+  generateStory({ tan, region, netProfit, totalRev, totalSub, labor, partner });
+
+  document.getElementById('result').classList.add('vis');
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+  lucide.createIcons();
+}
+
+function drawROIChart(rev, sub, ops, labor) {
+  const ctx = document.getElementById('roiChart').getContext('2d');
+  if (roiChart) roiChart.destroy();
+  const toMan = arr => arr.map(v => Math.round(v / 10000));
+  const toManNeg = arr => arr.map(v => -Math.round(v / 10000));
+
+  roiChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['1年目', '2年目', '3年目', '4年目', '5年目'],
+      datasets: [
+        { label: '米売上', data: toMan(rev), backgroundColor: '#f2c75c', borderRadius: 6, stack: 'in' },
+        { label: '補助金', data: toMan(sub), backgroundColor: '#8cbfff', borderRadius: 6, stack: 'in' },
+        { label: '運営コスト', data: toManNeg(ops), backgroundColor: '#f26b7c', borderRadius: 6, stack: 'out' },
+        { label: '労働換算', data: toManNeg(labor), backgroundColor: '#6a7699', borderRadius: 6, stack: 'out' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#a3b0d4' } },
+        y: { stacked: true, grid: { color: 'rgba(46,54,84,0.5)' }, ticks: { color: '#6a7699', callback: v => v + '万' } }
+      },
+      plugins: {
+        legend: { labels: { color: '#a3b0d4', padding: 12, usePointStyle: true, font: { size: 11 } } },
+        tooltip: {
+          backgroundColor: '#282e45', borderColor: '#3d4670', borderWidth: 1,
+          callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.abs(ctx.parsed.y).toLocaleString() + '万円' }
+        }
+      }
+    }
+  });
+}
+
+function drawLaborChart(labor, tan) {
+  const ctx = document.getElementById('laborChart').getContext('2d');
+  if (laborChart) laborChart.destroy();
+  const total = LABOR_HOURS[labor] * (tan / 1.5);
+  // 月別配分（田植え5月、草取り6-8月、収穫9-10月、精米出荷11-2月、休閑3-4月）
+  const dist = [0.03,0.03,0.06,0.10,0.18,0.14,0.12,0.10,0.13,0.06,0.03,0.02];
+  const data = dist.map(d => Math.round(total * d));
+
+  laborChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['4月','5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月'],
+      datasets: [{ label: '労働時間(h)', data: data, backgroundColor: '#65d483', borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#a3b0d4', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(46,54,84,0.5)' }, ticks: { color: '#6a7699', callback: v => v + 'h' } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#282e45', borderColor: '#3d4670', borderWidth: 1 }
+      }
+    }
+  });
+}
+
+function drawRegionChart(currentKey, ch) {
+  const ctx = document.getElementById('regionChart').getContext('2d');
+  if (regionChart) regionChart.destroy();
+  const labels = ['気候適性','水質','通勤','補助金','コミュニティ'];
+  const colors = { sakuhokushin:'#f2c75c', minamiuonuma:'#8cbfff', nasushiobara:'#c38eff', hokuto:'#65d483', mishima:'#ffa86b' };
+
+  const datasets = Object.keys(REGIONS).map(k => {
+    const r = REGIONS[k];
+    return {
+      label: r.name,
+      data: [r.climateScore, r.waterScore, r.commuteScore, r.subsidyScore, r.communityScore],
+      borderColor: colors[k],
+      backgroundColor: colors[k] + (k === currentKey ? '40' : '10'),
+      borderWidth: k === currentKey ? 3 : 1.5,
+      pointRadius: k === currentKey ? 4 : 2,
+      pointBackgroundColor: colors[k]
+    };
+  });
+
+  regionChart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        r: {
+          beginAtZero: true, max: 100,
+          grid: { color: 'rgba(46,54,84,0.6)' },
+          angleLines: { color: 'rgba(46,54,84,0.6)' },
+          pointLabels: { color: '#a3b0d4', font: { size: 11 } },
+          ticks: { color: '#6a7699', backdropColor: 'transparent', font: { size: 9 } }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: '#a3b0d4', padding: 10, usePointStyle: true, font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function renderRegionList(currentKey, ch, tan, duck, variety, labor, partner, equip) {
+  // 各地域での総合スコア計算
+  const scored = Object.keys(REGIONS).map(k => {
+    const r = REGIONS[k];
+    const economic = r.yield * r.riceFloor / 4; // 経済スコア
+    const lifestyle = (r.climateScore + r.waterScore + r.communityScore) / 3;
+    const access = r.commuteScore;
+    const subsidyW = r.subsidyScore;
+    // 販路ミックスとの相性：直販多いほど通勤・補助金重視
+    const directMix = ch.ch2 + ch.ch3;
+    const score = economic * 0.30 + lifestyle * 0.25 + access * 0.20 + subsidyW * 0.25 + directMix * 20;
+    return { key: k, name: r.name, score: Math.round(score), note: r.note };
+  });
+  scored.sort((a,b) => b.score - a.score);
+
+  const list = document.getElementById('regionList');
+  list.innerHTML = scored.map((s, i) => `
+    <div class="region-row ${i === 0 ? 'best' : ''}">
+      <div class="region-rank">${i + 1}</div>
+      <div>
+        <div class="region-name">${s.name}${s.key === currentKey ? ' <span style="font-size:10px;color:var(--text3);font-family:DM Mono;">（現在の選択）</span>' : ''}</div>
+        <div class="region-meta">${s.note}</div>
+      </div>
+      <div class="region-score">${s.score}<span style="font-size:10px;color:var(--text3);">/200</span></div>
+    </div>
+  `).join('');
+}
+
+function generateTopMeasures({tan, duck, ch, labor, partner, region, netProfit, totalRev}) {
+  const m = [];
+
+  // 1. 販路ミックス改善
+  if (ch.ch4 > 0.3) {
+    m.push({
+      name: '直販・ふるさと納税の比率を上げる',
+      desc: `JA出荷比率${Math.round(ch.ch4*100)}%は単価1,000円/kgで稼ぎが薄い。直販ECとふるさと納税を合計70%以上にすると、同じ収量で売上1.4〜1.6倍。`,
+      kpi: '期待効果: 売上 +30〜60% / 単価 +500〜800円/kg',
+      score: ch.ch4 * 100
+    });
+  }
+  if (ch.ch3 < 0.2 && partner !== 'coop') {
+    m.push({
+      name: 'ふるさと納税返礼品事業者登録',
+      desc: '自治体の返礼品事業者として登録すれば、自社EC不要で年間100〜300万円規模の販路が安定的に確保できる。手数料は乗るが集客労力ゼロ。',
+      kpi: '期待効果: 安定販路 / 集客労力ゼロ',
+      score: 50 - ch.ch3 * 100
+    });
+  }
+  if (partner !== 'coop' && labor === 'main') {
+    m.push({
+      name: '地域おこし協力隊枠で本業化',
+      desc: '本業化するなら協力隊の3年間（報酬月20万＋起業支援100万）が最強。任期終了時に補助金で初期投資完全回収。移住支援金も100万円射程。',
+      kpi: '期待効果: 補助金累計 +820万円 / 3年安定収入',
+      score: 70
+    });
+  }
+  if (duck < 13) {
+    m.push({
+      name: 'アイガモ羽数を14〜16羽/反に増やす',
+      desc: '10羽/反だと除草効果が弱く農薬代替が中途半端。14〜16羽が最適で、無農薬米として直販単価を上げられる。',
+      kpi: '期待効果: 直販単価 +20% / 農薬コスト削減',
+      score: (13 - duck) * 10
+    });
+  }
+  if (tan >= 2.5 && labor === 'side') {
+    m.push({
+      name: '規模を1.5〜2反に縮小、または労働投入を本業へ',
+      desc: '2.5反以上を副業労働量でこなすのは破綻リスク。趣味/副業なら2反まで、それ以上やるなら本業化が現実的。',
+      kpi: '期待効果: 持続可能性向上 / 燃え尽き予防',
+      score: 40
+    });
+  }
+  // 常時候補
+  m.push({
+    name: '合鴨米を「健康経営×食農」ストーリーで売る',
+    desc: '無農薬米×アスリート向けに、玄米・もち麦ブレンド・低GI設計のサブスクで月額3,980円販売。NSCA-CPT資格と組み合わせて差別化。',
+    kpi: '期待効果: 単価 3,000円/kg超 / リピート率↑',
+    score: 25
+  });
+  m.push({
+    name: 'コンテンツ化（YouTube/Substack）で「移住前の貯金」',
+    desc: '田植え・除草・解体（自家消費）を動画化。広告収入よりも、移住後の販路の事前集客がメイン目的。',
+    kpi: '期待効果: 移住前ファン化 / 販路先行確保',
+    score: 20
+  });
+
+  m.sort((a,b) => b.score - a.score);
+  const top3 = m.slice(0,3);
+
+  document.getElementById('topMeasures').innerHTML = top3.map((x,i) => `
+    <li>
+      <div class="top-rank">${i+1}</div>
+      <div class="top-content">
+        <div class="top-name">${x.name}</div>
+        <div class="top-desc">${x.desc}</div>
+        <div class="top-kpi">▶ ${x.kpi}</div>
+      </div>
+    </li>
+  `).join('');
+}
+
+function generateStory({tan, region, netProfit, totalRev, totalSub, labor, partner}) {
+  const profitMan = Math.round(netProfit / 10000);
+  const revMan = Math.round(totalRev / 10000);
+  const subMan = Math.round(totalSub / 10000);
+  let mood = '';
+  if (profitMan > 500) mood = '<strong>これは"自給自足装置"を超えて、副業収益源として成立するレンジ</strong>です。';
+  else if (profitMan > 100) mood = '<strong>本業 + α の「自給率20〜30%装置」</strong>として機能するレンジ。コンテンツ価値もあり、QOL投資としてリターン十分。';
+  else if (profitMan > -100) mood = '<strong>収支トントンの「QOL投資」</strong>として捉えるレンジ。労働時間を機会費用換算するとほぼゼロ。';
+  else mood = '<strong>純粋なライフスタイル投資</strong>として理解するレンジ。事業ではなく「自分のための田んぼ」として位置づける判断もアリ。';
+
+  let laborLabel = { hobby: '趣味（週末のみ）', side: '副業（週10h）', main: '本業（週30h）' }[labor];
+  let partnerLabel = { solo: '単独運営', link: '既存農家連携', coop: '地域おこし協力隊枠' }[partner];
+
+  const text = `
+    あなたの設定：<strong>${region.name}で${tan}反、${laborLabel}、${partnerLabel}</strong>。<br>
+    5年で <strong>売上${revMan}万円 ＋ 補助金${subMan}万円 − 諸コスト</strong> ＝ <strong>純利益${profitMan.toLocaleString()}万円</strong>。<br><br>
+    ${mood}<br><br>
+    <span style="color:var(--text3);font-size:12px;">▶ ${region.note}</span>
+  `;
+  document.getElementById('storyText').innerHTML = text;
+}
+
+// 初期表示の同期
+['ch1','ch2','ch3','ch4'].forEach(i => updateVal(i, document.getElementById(i).value + '%'));
+updateMixBar();
+</script>
+</body>
+</html>

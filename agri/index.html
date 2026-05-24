@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岡田 光 | 食農DX × 移住 ポートフォリオ</title>
+<meta name="description" content="NSCA-CPT・パーソナルトレーナー歴11年の岡田光が、食農DX領域への転職と将来の移住・自給ビジョンを当事者目線でツール化。アイガモ農法ROIシミュレーター 他。">
+<meta name="theme-color" content="#141826">
+<meta property="og:title" content="岡田 光 | 食農DX × 移住 ポートフォリオ">
+<meta property="og:description" content="健康経営の現場経験と AI 自走力を、食農の生産者支援に転用する。31歳元PTが当事者として作るツール群。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://okada-hikari.github.io/portfolio/agri/">
+<meta property="og:image" content="https://okada-hikari.github.io/portfolio/agri/ogp/ogp-agri-top.png">
+<link rel="canonical" href="https://okada-hikari.github.io/portfolio/agri/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌾%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --train-c: #8cbfff;
+  --sleep-c: #c38eff;
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:-1;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
+
+/* NAV */
+.nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.nav-logo{font-size:15px;font-weight:700;letter-spacing:0.5px;display:flex;align-items:center;gap:8px;}
+.nav-logo i[data-lucide]{color:var(--meal-c);}
+.nav-switch{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:8px 14px;border-radius:100px;letter-spacing:1px;text-decoration:none;transition:all 0.2s;}
+.nav-switch:hover{border-color:var(--text3);background:var(--surface2);color:var(--text);}
+.nav-switch i[data-lucide]{width:12px;height:12px;}
+
+/* HERO */
+.hero{padding:56px 0 72px;border-bottom:1px solid var(--border);margin-bottom:48px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(101,212,131,0.14),transparent 45%),radial-gradient(circle at 80% 20%,rgba(242,199,92,0.10),transparent 45%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:6px 14px;border-radius:100px;letter-spacing:1.5px;margin-bottom:24px;}
+.hero-tag .pulse{width:6px;height:6px;border-radius:50%;background:var(--meal-c);box-shadow:0 0 0 0 rgba(101,212,131,0.6);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(101,212,131,0.6);}70%{box-shadow:0 0 0 8px rgba(101,212,131,0);}100%{box-shadow:0 0 0 0 rgba(101,212,131,0);}}
+.hero-title{font-size:52px;font-weight:800;line-height:1.18;letter-spacing:-0.5px;margin-bottom:22px;}
+.hero-title .gradient{background:linear-gradient(120deg,var(--meal-c),var(--gold) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:32px;max-width:720px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+
+.hero-pills{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);padding:10px 18px;border-radius:100px;font-size:13px;color:var(--text);font-weight:500;}
+.hero-pill i[data-lucide]{width:14px;height:14px;}
+.hero-pill:nth-child(1) i[data-lucide]{color:var(--meal-c);}
+.hero-pill:nth-child(2) i[data-lucide]{color:var(--gold);}
+.hero-pill:nth-child(3) i[data-lucide]{color:var(--train-c);}
+.hero-pill:nth-child(4) i[data-lucide]{color:var(--sleep-c);}
+
+/* HIRING NOTE */
+.hiring-note{margin-top:24px;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--meal-c);border-radius:14px;display:flex;gap:16px;align-items:flex-start;max-width:780px;}
+.hiring-note .ico{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:rgba(101,212,131,0.15);display:flex;align-items:center;justify-content:center;color:var(--meal-c);}
+.hiring-note .ico i[data-lucide]{width:18px;height:18px;}
+.hiring-note .body{font-size:13px;color:var(--text2);line-height:1.85;}
+.hiring-note .body strong{color:var(--text);font-weight:600;}
+.hiring-note-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px 16px;margin-top:10px;}
+.hiring-note-grid div{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:0.5px;}
+.hiring-note-grid div b{color:var(--text2);font-weight:600;margin-right:6px;}
+
+/* SECTION HEAD */
+.sec-head{margin-bottom:24px;}
+.sec-tag{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.sec-title{font-size:24px;font-weight:700;margin-bottom:6px;}
+.sec-desc{font-size:13px;color:var(--text2);line-height:1.7;max-width:680px;}
+
+/* TOOL GRID */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:48px;}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;}
+.tool-card:hover{transform:translateY(-3px);border-color:var(--meal-c);box-shadow:0 12px 32px rgba(101,212,131,0.15);}
+.tool-card.coming{opacity:0.55;cursor:default;}
+.tool-card.coming:hover{transform:none;border-color:var(--border);box-shadow:none;}
+.tool-icon{width:44px;height:44px;border-radius:12px;background:rgba(101,212,131,0.15);color:var(--meal-c);display:flex;align-items:center;justify-content:center;}
+.tool-icon.gold{background:rgba(242,199,92,0.15);color:var(--gold);}
+.tool-icon.blue{background:rgba(140,191,255,0.15);color:var(--train-c);}
+.tool-icon.purple{background:rgba(195,142,255,0.15);color:var(--sleep-c);}
+.tool-icon i[data-lucide]{width:22px;height:22px;}
+.tool-name{font-size:16px;font-weight:700;line-height:1.4;}
+.tool-desc{font-size:12px;color:var(--text2);line-height:1.7;flex:1;}
+.tool-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.tool-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 10px;border-radius:100px;letter-spacing:0.5px;}
+.tool-status{position:absolute;top:14px;right:14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--meal-c);background:rgba(101,212,131,0.12);border:1px solid rgba(101,212,131,0.3);padding:3px 10px;border-radius:100px;letter-spacing:1px;}
+.tool-status.coming{color:var(--text3);background:var(--surface2);border-color:var(--border);}
+.tool-cta{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--meal-c);font-weight:600;margin-top:6px;}
+.tool-cta i[data-lucide]{width:14px;height:14px;transition:transform 0.2s;}
+.tool-card:hover .tool-cta i[data-lucide]{transform:translateX(3px);}
+
+/* STORY BOX */
+.story{background:linear-gradient(135deg,rgba(242,199,92,0.06),rgba(101,212,131,0.04));border:1px solid rgba(242,199,92,0.2);border-radius:18px;padding:28px 30px;margin-bottom:40px;}
+.story-title{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;letter-spacing:0.5px;}
+.story-text{font-size:14px;color:var(--text2);line-height:1.95;}
+.story-text strong{color:var(--text);font-weight:600;}
+
+/* ROADMAP */
+.roadmap{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:40px;}
+.roadmap-title{font-size:14px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;color:var(--text);}
+.roadmap-title i[data-lucide]{color:var(--meal-c);width:16px;height:16px;}
+.roadmap-steps{display:flex;flex-direction:column;gap:12px;}
+.roadmap-step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;}
+.roadmap-step.current{border-color:var(--meal-c);background:rgba(101,212,131,0.06);}
+.roadmap-year{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--meal-c);background:rgba(101,212,131,0.15);padding:6px 10px;border-radius:8px;min-width:84px;text-align:center;flex-shrink:0;}
+.roadmap-step:not(.current) .roadmap-year{background:var(--surface);color:var(--text3);}
+.roadmap-content{flex:1;}
+.roadmap-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.roadmap-desc{font-size:11px;color:var(--text2);line-height:1.6;}
+
+/* SWITCH BANNER */
+.switch{display:flex;align-items:center;gap:20px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px 26px;margin-bottom:40px;text-decoration:none;color:inherit;transition:all 0.2s;flex-wrap:wrap;}
+.switch:hover{border-color:var(--train-c);background:var(--surface2);}
+.switch-icon{width:48px;height:48px;border-radius:12px;background:rgba(140,191,255,0.15);color:var(--train-c);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.switch-icon i[data-lucide]{width:24px;height:24px;}
+.switch-body{flex:1;min-width:200px;}
+.switch-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.switch-title{font-size:15px;font-weight:700;margin-bottom:3px;}
+.switch-desc{font-size:12px;color:var(--text2);}
+.switch-arrow{color:var(--train-c);font-size:18px;display:flex;align-items:center;}
+.switch-arrow i[data-lucide]{width:20px;height:20px;transition:transform 0.2s;}
+.switch:hover .switch-arrow i[data-lucide]{transform:translateX(4px);}
+
+/* FOOTER */
+.footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--border);text-align:center;}
+.footer-creator{display:inline-flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:16px;}
+.footer-creator-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--meal-c),var(--gold));display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0;}
+.footer-creator-icon i[data-lucide]{width:18px;height:18px;}
+.footer-creator-text{text-align:left;font-size:12px;color:var(--text2);line-height:1.6;}
+.footer-creator-text strong{color:var(--text);font-weight:600;display:block;font-size:13px;}
+.footer-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1.5px;}
+
+@media(max-width:540px){
+  .wrap{padding:0 16px 60px;}
+  .hero{padding:36px 0 50px;margin-bottom:36px;}
+  .hero-title{font-size:34px;}
+  .hero-sub{font-size:14px;}
+  .tool-grid{grid-template-columns:1fr;}
+  .switch{padding:18px 20px;gap:14px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="wheat"></i>OKADA HIKARI · AGRI DX</div>
+    <a href="../index.html" class="nav-switch"><i data-lucide="arrow-left"></i>健康経営 × AI 軸へ</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><span class="pulse"></span>FOR FOOD-AGRI DX / 2026.05〜</div>
+      <h1 class="hero-title">
+        生産者の現場を、<br>
+        <span class="gradient">AIで肩代わりする。</span>
+      </h1>
+      <p class="hero-sub">
+        畜産・水産・農業・食品流通のDXを、健康経営の現場で11年磨いた「行動変容を導く力」と「AI自走力」で支える。<br>
+        移住・自給ビジョンも含めて、<strong>当事者として食農の意思決定をシミュレーション</strong>するツール群。リモート主軸 × 週1-2回 現場出張型のキャリアを目指して制作中。
+      </p>
+
+      <div class="hero-pills">
+        <div class="hero-pill"><i data-lucide="bird"></i>畜産DX</div>
+        <div class="hero-pill"><i data-lucide="wheat"></i>農業DX</div>
+        <div class="hero-pill"><i data-lucide="waves"></i>水産DX</div>
+        <div class="hero-pill"><i data-lucide="home"></i>移住・6次産業化</div>
+      </div>
+
+      <div class="hiring-note">
+        <div class="ico"><i data-lucide="briefcase"></i></div>
+        <div class="body">
+          <strong>採用担当の方へ。</strong>食農DX・自然系SaaSのCS・IS・FSポジションに応募中。<br>
+          健康経営の11年間で培った「無形商材の体験提案」「KPI設計」「データ可視化」を、<strong>御社プロダクト（Porker / Farmnote / U-motion / ISANA など）の現場活用支援に直接転用できます</strong>。
+          <div class="hiring-note-grid">
+            <div><b>希望職種</b>CS / IS / FS</div>
+            <div><b>希望年収</b>400万円〜</div>
+            <div><b>勤務形態</b>リモート+出張</div>
+            <div><b>入社時期</b>2026年〜（要相談）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">PORTFOLIO · TOOLS</div>
+      <div class="sec-title">食農DX × 移住 制作物</div>
+      <div class="sec-desc">健康経営×AI軸（14ツール）とは別軸で構築中。生産者と消費者・移住者の意思決定をAIで支援するシミュレーター群。順次拡充。</div>
+    </div>
+
+    <div class="tool-grid">
+
+      <a href="アイガモ農法ROIシミュレーター.html" class="tool-card">
+        <div class="tool-status">v1 公開中</div>
+        <div class="tool-icon"><i data-lucide="bird"></i></div>
+        <div class="tool-name">アイガモ農法ROIシミュレーター</div>
+        <div class="tool-desc">反数・販路ミックス・地域・労働投入を入れると、5年累積純利益・適地スコア・改善提案TOP3まで自動算出。佐久・南魚沼・那須塩原・北杜・三島の5候補地に対応。</div>
+        <div class="tool-tags">
+          <span class="tool-tag">Chart.js</span>
+          <span class="tool-tag">5地域比較</span>
+          <span class="tool-tag">補助金試算</span>
+          <span class="tool-tag">移住検討</span>
+        </div>
+        <div class="tool-cta">起動する <i data-lucide="arrow-right"></i></div>
+      </a>
+
+      <a href="畜産DXダッシュボード.html" class="tool-card">
+        <div class="tool-status">v1 公開中（豚モード）</div>
+        <div class="tool-icon gold"><i data-lucide="layout-dashboard"></i></div>
+        <div class="tool-name">畜産DXダッシュボード（豚 / 牛 / 鶏 3モード）</div>
+        <div class="tool-desc">母豚100頭の個体管理 + 4軸KPI + 時系列推移 + 至急対応TOP3 + AI改善提案（コスト削減/生産性UP/健康優先の3軸切替）。Eco-Pork (Porker) リファレンス。牛・鶏モードはv2予定。</div>
+        <div class="tool-tags">
+          <span class="tool-tag">Claude API</span>
+          <span class="tool-tag">畜種横断</span>
+          <span class="tool-tag">KPI 4指標</span>
+          <span class="tool-tag">v1 公開</span>
+        </div>
+        <div class="tool-cta">起動する <i data-lucide="arrow-right"></i></div>
+      </a>
+
+      <div class="tool-card coming">
+        <div class="tool-status coming">制作予定</div>
+        <div class="tool-icon blue"><i data-lucide="landmark"></i></div>
+        <div class="tool-name">6次産業化補助金マッチャー</div>
+        <div class="tool-desc">都道府県 × 事業種別で、該当する補助金・申請難易度・採択率・実例を横断検索。ふるさと納税返礼品事業者登録ハードルも併記。</div>
+        <div class="tool-tags">
+          <span class="tool-tag">補助金DB</span>
+          <span class="tool-tag">自治体別</span>
+          <span class="tool-tag">6次産業化</span>
+        </div>
+        <div class="tool-cta" style="color:var(--text3);">準備中 <i data-lucide="clock"></i></div>
+      </div>
+
+      <div class="tool-card coming">
+        <div class="tool-status coming">構想中</div>
+        <div class="tool-icon purple"><i data-lucide="git-merge"></i></div>
+        <div class="tool-name">健康 × 食農 クロスマップ</div>
+        <div class="tool-desc">機能性成分から食材を逆引きできるマッピングツール。「健康経営×食農」のクロスポイントで、両軸の交差価値を可視化。</div>
+        <div class="tool-tags">
+          <span class="tool-tag">機能性表示</span>
+          <span class="tool-tag">健康×食農</span>
+          <span class="tool-tag">構想段階</span>
+        </div>
+        <div class="tool-cta" style="color:var(--text3);">構想中 <i data-lucide="circle-dashed"></i></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <div class="story">
+    <div class="story-title"><i data-lucide="sparkles"></i>なぜ「食農DX」軸を立てたか</div>
+    <div class="story-text">
+      11年間トレーナーとして<strong>個人の健康</strong>を支えてきた中で、健康経営という「組織の健康」の領域に出会い、AI ツールを14個作りました。<br>
+      その先に、自分が次に立ちたい場所として浮かんだのが <strong>食農の現場</strong>です。生産者の方々の意思決定をAIで支える仕事は、私が11年やってきた「データで人の行動変容を導く」仕事と同じ構造でした。<br>
+      長期的には自分自身も、合鴨農法や小規模畜産で <strong>"育てて食べる"</strong> 側に立ちたい。だからまず、自分の3年後のシミュレーションをツール化することから始めています。<br>
+      生産者の現場に立つ前提のCSとして、御社プロダクトの普及に貢献したいです。
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="roadmap">
+    <div class="roadmap-title"><i data-lucide="map"></i>キャリア × 移住ロードマップ</div>
+    <div class="roadmap-steps">
+      <div class="roadmap-step current">
+        <div class="roadmap-year">2026</div>
+        <div class="roadmap-content">
+          <div class="roadmap-name">食農DX企業へ転職（CS / IS / FS）</div>
+          <div class="roadmap-desc">リモート主軸 × 週1-2回 現場出張型のキャリアを開始。横浜ベース継続。</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-year">2027</div>
+        <div class="roadmap-content">
+          <div class="roadmap-name">業界実務 × コンテンツ蓄積</div>
+          <div class="roadmap-desc">畜産/農業の現場を肌で知る。Substack / YouTube でB2B寄りの発信を継続。</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-year">2028-29</div>
+        <div class="roadmap-content">
+          <div class="roadmap-name">移住・賃貸開始（佐久 / 南魚沼 / 那須塩原 など）</div>
+          <div class="roadmap-desc">リモート継続可能な企業前提。小さな田んぼ + 鶏 + 養蜂で「自給率20〜30%装置」を運用。</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-year">2030-31</div>
+        <div class="roadmap-content">
+          <div class="roadmap-name">アイガモ農法 + 米粉ベーグル 6次産業化</div>
+          <div class="roadmap-desc">既存農家連携で1〜2反からアイガモ農法スタート。生産者目線を持つ食農DXコンサルとして独立も視野。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SWITCH BANNER -->
+  <a href="../index.html" class="switch">
+    <div class="switch-icon"><i data-lucide="heart-pulse"></i></div>
+    <div class="switch-body">
+      <div class="switch-label">ANOTHER AXIS</div>
+      <div class="switch-title">健康経営 × AI 軸のポートフォリオ（14ツール）</div>
+      <div class="switch-desc">こちらが本流。NSCA-CPT × 健康経営 × AI のフルセット。</div>
+    </div>
+    <div class="switch-arrow"><i data-lucide="arrow-right"></i></div>
+  </a>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        食農DX × 健康経営 領域 転職活動中（2026年〜）
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; AGRI DX PORTFOLIO v1</div>
+  </footer>
+
+</div>
+<script>lucide.createIcons();</script>
+</body>
+</html>

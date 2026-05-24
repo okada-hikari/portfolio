@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>畜産DXダッシュボード｜豚・牛・鶏 3畜種対応の個体管理シミュレーター</title>
+<meta name="description" content="養豚100頭母豚 / 搾乳牛50頭 / 採卵鶏500羽の個体管理・KPI可視化・AI改善提案を共通UIで提供。Eco-Pork / ファームノート / デザミス / アクト・ノード のCS応募向け試作。">
+<meta property="og:title" content="畜産DXダッシュボード｜豚・牛・鶏 3畜種対応">
+<meta property="og:description" content="畜種を超えた共通課題は『個体データ × KPI可視化 × AI改善提案』。CSとして農家さんに翻訳して届ける視点で試作。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://okada-hikari.github.io/portfolio/agri/ogp/ogp-畜産DXダッシュボード.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐖%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --train-c: #8cbfff;
+  --sleep-c: #c38eff;
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+  --pig-c: #ffa86b;
+  --cow-c: #8cbfff;
+  --chk-c: #f2c75c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:-1;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
+
+/* NAV */
+.nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.nav-logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.nav-logo i[data-lucide]{color:var(--pig-c);}
+.nav-back{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:8px 14px;border-radius:100px;letter-spacing:1px;text-decoration:none;transition:all 0.2s;}
+.nav-back:hover{border-color:var(--text3);background:var(--surface2);color:var(--text);}
+.nav-back i[data-lucide]{width:12px;height:12px;}
+
+/* HERO */
+.hero{padding:40px 0 48px;border-bottom:1px solid var(--border);margin-bottom:32px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(255,168,107,0.12),transparent 45%),radial-gradient(circle at 80% 20%,rgba(140,191,255,0.08),transparent 45%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:6px 14px;border-radius:100px;letter-spacing:1.5px;margin-bottom:20px;}
+.hero-title{font-size:38px;font-weight:800;line-height:1.2;letter-spacing:-0.5px;margin-bottom:16px;}
+.hero-title .gradient{background:linear-gradient(120deg,var(--pig-c),var(--gold),var(--train-c));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.85;margin-bottom:24px;max-width:720px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+
+/* MODE TABS */
+.mode-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+.mode-tab{flex:1;min-width:140px;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px;font-family:inherit;color:var(--text);text-align:left;}
+.mode-tab:hover:not(.disabled){border-color:var(--text3);background:var(--surface2);}
+.mode-tab.active{border-color:var(--pig-c);background:rgba(255,168,107,0.08);}
+.mode-tab.active.cow{border-color:var(--cow-c);background:rgba(140,191,255,0.08);}
+.mode-tab.active.chk{border-color:var(--chk-c);background:rgba(242,199,92,0.08);}
+.mode-tab.disabled{opacity:0.5;cursor:not-allowed;}
+.mode-tab-icon{width:42px;height:42px;border-radius:11px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mode-tab-icon i[data-lucide]{width:22px;height:22px;}
+.mode-tab.pig .mode-tab-icon{color:var(--pig-c);background:rgba(255,168,107,0.15);}
+.mode-tab.cow .mode-tab-icon{color:var(--cow-c);background:rgba(140,191,255,0.15);}
+.mode-tab.chk .mode-tab-icon{color:var(--chk-c);background:rgba(242,199,92,0.15);}
+.mode-tab-body{flex:1;}
+.mode-tab-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.mode-tab-meta{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;}
+.mode-tab-badge{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:1px;padding:3px 8px;border-radius:100px;background:var(--surface2);color:var(--text3);}
+.mode-tab.active .mode-tab-badge{background:var(--pig-c);color:var(--bg);}
+.mode-tab.active.cow .mode-tab-badge{background:var(--cow-c);}
+.mode-tab.active.chk .mode-tab-badge{background:var(--chk-c);}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:28px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 18px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--pig-c);opacity:0.6;}
+.kpi-card .kpi-label{font-size:11px;color:var(--text3);letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.kpi-card .kpi-label i[data-lucide]{width:13px;height:13px;color:var(--pig-c);}
+.kpi-card .kpi-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:600;color:var(--text);line-height:1;}
+.kpi-card .kpi-value .unit{font-size:13px;color:var(--text2);margin-left:4px;}
+.kpi-card .kpi-trend{font-size:11px;margin-top:6px;font-family:'DM Mono',monospace;}
+.kpi-card .kpi-trend.up{color:var(--meal-c);}
+.kpi-card .kpi-trend.down{color:var(--red);}
+.kpi-card .kpi-bench{font-size:10px;color:var(--text3);margin-top:4px;}
+
+/* PANELS */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px;}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.panel-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.panel-title i[data-lucide]{color:var(--pig-c);width:16px;height:16px;}
+.panel-desc{font-size:11px;color:var(--text3);}
+.panel-actions{display:flex;gap:6px;}
+.chip{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);padding:6px 12px;border-radius:100px;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;}
+.chip:hover{border-color:var(--text3);color:var(--text);}
+.chip.active{background:var(--pig-c);color:var(--bg);border-color:var(--pig-c);}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{text-align:left;padding:10px 12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);font-weight:500;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+tr.alert td{background:rgba(242,107,124,0.05);}
+tr.warn td{background:rgba(242,199,92,0.04);}
+tr:hover td{background:var(--surface2);}
+.score-bar{display:inline-flex;align-items:center;gap:8px;}
+.score-num{font-family:'DM Mono',monospace;font-weight:600;font-size:13px;min-width:30px;}
+.score-num.high{color:var(--meal-c);}
+.score-num.mid{color:var(--gold);}
+.score-num.low{color:var(--red);}
+.score-track{width:60px;height:5px;border-radius:3px;background:var(--surface2);overflow:hidden;}
+.score-fill{height:100%;}
+.tag-alert{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:100px;letter-spacing:0.5px;}
+.tag-alert.urgent{background:rgba(242,107,124,0.15);color:var(--red);border:1px solid rgba(242,107,124,0.3);}
+.tag-alert.warn{background:rgba(242,199,92,0.15);color:var(--gold);border:1px solid rgba(242,199,92,0.3);}
+.tag-alert.ok{background:rgba(101,212,131,0.15);color:var(--meal-c);border:1px solid rgba(101,212,131,0.3);}
+.tag-alert i[data-lucide]{width:10px;height:10px;}
+
+/* CHART */
+.chart-wrap{position:relative;height:280px;}
+
+/* ALERT LIST */
+.alert-list{display:flex;flex-direction:column;gap:10px;}
+.alert-row{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;}
+.alert-row.urgent{border-color:rgba(242,107,124,0.4);background:rgba(242,107,124,0.05);}
+.alert-icon{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.alert-icon.urgent{background:rgba(242,107,124,0.15);color:var(--red);}
+.alert-icon.warn{background:rgba(242,199,92,0.15);color:var(--gold);}
+.alert-icon i[data-lucide]{width:18px;height:18px;}
+.alert-body{flex:1;}
+.alert-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.alert-desc{font-size:11px;color:var(--text2);line-height:1.6;}
+.alert-id{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-left:8px;}
+
+/* AI BOX */
+.ai-box{background:linear-gradient(135deg,rgba(255,168,107,0.08),rgba(101,212,131,0.05));border:1px solid rgba(255,168,107,0.25);border-radius:18px;padding:24px 26px;margin-bottom:16px;}
+.ai-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.ai-title{font-size:13px;font-weight:700;color:var(--pig-c);display:flex;align-items:center;gap:8px;letter-spacing:0.5px;}
+.ai-axis{display:flex;gap:6px;}
+.api-input{display:flex;gap:8px;margin-bottom:14px;}
+.api-input input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace;}
+.api-input input:focus{outline:none;border-color:var(--pig-c);}
+.api-input button{background:var(--pig-c);color:var(--bg);border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:12px;font-family:inherit;cursor:pointer;transition:all 0.2s;}
+.api-input button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,168,107,0.3);}
+.ai-suggestions{display:flex;flex-direction:column;gap:10px;}
+.ai-suggest{display:flex;gap:12px;padding:12px 14px;background:rgba(20,24,38,0.4);border:1px solid var(--border);border-radius:10px;}
+.ai-suggest-rank{width:24px;height:24px;border-radius:6px;background:rgba(255,168,107,0.2);color:var(--pig-c);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-suggest-body{flex:1;}
+.ai-suggest-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.ai-suggest-impact{font-family:'DM Mono',monospace;font-size:10px;color:var(--meal-c);margin-bottom:4px;}
+.ai-suggest-desc{font-size:11px;color:var(--text2);line-height:1.6;}
+.ai-status{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:8px;}
+
+/* INFO BOX */
+.assumption{background:rgba(140,191,255,0.05);border:1px solid rgba(140,191,255,0.2);border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.assumption-text{font-size:11px;color:var(--text2);line-height:1.7;}
+.assumption-text strong{color:var(--text);}
+
+/* FOOTER */
+.footer{margin-top:48px;padding:28px 0;border-top:1px solid var(--border);text-align:center;}
+.footer-links{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+.footer-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);text-decoration:none;padding:8px 16px;border:1px solid var(--border);border-radius:100px;transition:all 0.2s;}
+.footer-link:hover{color:var(--text);border-color:var(--text3);background:var(--surface);}
+.footer-link i[data-lucide]{width:14px;height:14px;}
+.footer-creator{display:inline-flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:14px;}
+.footer-creator-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pig-c),var(--gold));display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0;}
+.footer-creator-icon i[data-lucide]{width:18px;height:18px;}
+.footer-creator-text{text-align:left;font-size:12px;color:var(--text2);line-height:1.6;}
+.footer-creator-text strong{color:var(--text);font-weight:600;display:block;font-size:13px;}
+.footer-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1.5px;}
+
+@media(max-width:640px){
+  .wrap{padding:0 16px 60px;}
+  .hero-title{font-size:28px;}
+  .mode-tab{min-width:100%;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="pig-head" id="navIcon"></i>畜産DXダッシュボード</div>
+    <a href="index.html" class="nav-back"><i data-lucide="arrow-left"></i>食農DX TOP</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><i data-lucide="sparkles" style="color:var(--pig-c);"></i> FOR ECO-PORK / FARMNOTE / U-MOTION / ACT.APP</div>
+      <h1 class="hero-title">
+        畜種を超えて、<br>
+        <span class="gradient">同じ構造で勝つ。</span>
+      </h1>
+      <p class="hero-sub">
+        豚・牛・鶏のどれを管理しても、CSとして農家さんに翻訳すべき価値は <strong>「個体データ × KPI可視化 × AI改善提案」</strong>の3点に集約される。<br>
+        現時点では <strong>豚モード（v1 公開中）</strong>のみ。牛・鶏モードは順次拡充。Eco-Pork の Porker をリファレンスにしながら、4社の本丸を1ツールで対策できる構造を目指して制作中。
+      </p>
+    </div>
+  </section>
+
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <button class="mode-tab pig active" onclick="switchMode('pig')">
+      <div class="mode-tab-icon"><i data-lucide="pig-head"></i></div>
+      <div class="mode-tab-body">
+        <div class="mode-tab-name">豚（母豚100頭）</div>
+        <div class="mode-tab-meta">PORKER / 養豚DX</div>
+      </div>
+      <span class="mode-tab-badge">v1 公開中</span>
+    </button>
+    <button class="mode-tab cow disabled" onclick="showComingSoon('cow')">
+      <div class="mode-tab-icon"><i data-lucide="beef"></i></div>
+      <div class="mode-tab-body">
+        <div class="mode-tab-name">牛（搾乳牛50頭）</div>
+        <div class="mode-tab-meta">FARMNOTE / U-MOTION</div>
+      </div>
+      <span class="mode-tab-badge">v2 予定</span>
+    </button>
+    <button class="mode-tab chk disabled" onclick="showComingSoon('chk')">
+      <div class="mode-tab-icon"><i data-lucide="bird"></i></div>
+      <div class="mode-tab-body">
+        <div class="mode-tab-name">鶏（採卵鶏500羽）</div>
+        <div class="mode-tab-meta">ACT.APP / 採卵DX</div>
+      </div>
+      <span class="mode-tab-badge">v2 予定</span>
+    </button>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label"><i data-lucide="baby"></i>母豚あたり離乳子豚数</div>
+      <div class="kpi-value"><span id="kpi-psy">—</span><span class="unit">頭/年</span></div>
+      <div class="kpi-trend up" id="kpi-psy-trend">— vs 前期</div>
+      <div class="kpi-bench" id="kpi-psy-bench">業界平均 24.5頭</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><i data-lucide="utensils"></i>飼料要求率 FCR</div>
+      <div class="kpi-value"><span id="kpi-fcr">—</span></div>
+      <div class="kpi-trend up" id="kpi-fcr-trend">— vs 前期</div>
+      <div class="kpi-bench" id="kpi-fcr-bench">業界平均 2.85</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><i data-lucide="calendar"></i>出荷日齢</div>
+      <div class="kpi-value"><span id="kpi-age">—</span><span class="unit">日</span></div>
+      <div class="kpi-trend up" id="kpi-age-trend">— vs 前期</div>
+      <div class="kpi-bench" id="kpi-age-bench">業界平均 175日</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><i data-lucide="alert-octagon"></i>死亡率</div>
+      <div class="kpi-value"><span id="kpi-mort">—</span><span class="unit">%</span></div>
+      <div class="kpi-trend up" id="kpi-mort-trend">— vs 前期</div>
+      <div class="kpi-bench" id="kpi-mort-bench">業界平均 12.0%</div>
+    </div>
+  </div>
+
+  <!-- TIME CHART -->
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title"><i data-lucide="line-chart"></i>離乳子豚数の推移（12ヶ月）</div>
+        <div class="panel-desc">月別の母豚1頭あたり離乳子豚数。点線は業界平均ベンチマーク。</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="timeChart"></canvas></div>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title"><i data-lucide="alert-triangle" style="color:var(--red);"></i>至急対応すべき個体 TOP3</div>
+        <div class="panel-desc">健康スコア・生産量・直近トレンドの複合異常検知。獣医連絡推奨。</div>
+      </div>
+    </div>
+    <div class="alert-list" id="alertList"></div>
+  </div>
+
+  <!-- AI SUGGESTIONS -->
+  <div class="ai-box">
+    <div class="ai-head">
+      <div class="ai-title"><i data-lucide="brain-circuit"></i>AI改善提案 TOP 3</div>
+      <div class="ai-axis">
+        <button class="chip active" data-axis="cost" onclick="selectAxis(this)">コスト削減</button>
+        <button class="chip" data-axis="prod" onclick="selectAxis(this)">生産性UP</button>
+        <button class="chip" data-axis="health" onclick="selectAxis(this)">健康優先</button>
+      </div>
+    </div>
+
+    <div class="api-input">
+      <input type="password" id="apiKey" placeholder="Claude API キー（任意・入力なしでもテンプレ提案表示）">
+      <button onclick="runAI()"><i data-lucide="sparkles"></i> AI生成</button>
+    </div>
+
+    <div class="ai-suggestions" id="aiSuggestions"></div>
+    <div class="ai-status" id="aiStatus">▶ APIキー未入力時は、群の状態に応じたテンプレ提案を表示しています</div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title"><i data-lucide="list"></i>母豚 個体管理（サンプル20頭）</div>
+        <div class="panel-desc">100頭の代表抽出。健康スコア順 / アラート優先表示。クリックで個体詳細（次バージョン実装予定）。</div>
+      </div>
+      <div class="panel-actions">
+        <button class="chip active" data-filter="all" onclick="filterTable(this,'all')">全て</button>
+        <button class="chip" data-filter="alert" onclick="filterTable(this,'alert')">アラート</button>
+        <button class="chip" data-filter="warn" onclick="filterTable(this,'warn')">要観察</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>年齢</th>
+            <th>分娩回数</th>
+            <th>直近離乳数</th>
+            <th>健康スコア</th>
+            <th>最終分娩</th>
+            <th>状態</th>
+          </tr>
+        </thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="assumption">
+    <div class="assumption-text">
+      <strong>計算根拠（主要仮定 / 2026年5月時点）</strong><br>
+      業界ベンチマーク：日本養豚協会・農水省畜産物生産費調査ベース。PSY（Pigs weaned per Sow per Year）24.5頭、FCR 2.85、出荷日齢175日、死亡率12%。<br>
+      サンプルデータは20頭分のダミー。実プロダクトでは100〜1,000頭規模を想定。CSとしては「データの読み方を農家さんに翻訳する」「重点個体への注目を集める」「経営指標で経営者と会話する」が役割。
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="index.html" class="footer-link"><i data-lucide="arrow-left"></i>食農DX TOP</a>
+      <a href="アイガモ農法ROIシミュレーター.html" class="footer-link"><i data-lucide="bird"></i>アイガモROI</a>
+      <a href="../index.html" class="footer-link"><i data-lucide="layout-grid"></i>健康経営×AI軸</a>
+    </div>
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        食農DX × 健康経営 領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; LIVESTOCK DX v1 (PIG MODE)</div>
+  </footer>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+// ===== サンプルデータ生成（母豚20頭） =====
+function genHerd() {
+  const ids = [];
+  for (let i = 1; i <= 20; i++) {
+    const parities = Math.floor(2 + Math.random() * 8); // 分娩回数 2-9
+    const age = parities * 5 + Math.floor(Math.random() * 6); // 月齢
+    const hScore = Math.max(35, Math.min(98, Math.round(70 + (Math.random() - 0.3) * 35)));
+    // 産歴と健康で離乳数を決定
+    const baseWean = 11.5 + (parities >= 4 && parities <= 6 ? 0.8 : 0) - (parities >= 8 ? 1.2 : 0);
+    const lastWean = Math.max(5, Math.round((baseWean + (hScore - 70) / 30 + (Math.random() - 0.5) * 2) * 10) / 10);
+    const lastFarrow = Math.floor(Math.random() * 145); // 日前
+    let status = 'ok';
+    if (hScore < 55 || lastWean < 8) status = 'urgent';
+    else if (hScore < 70 || lastWean < 10) status = 'warn';
+    ids.push({
+      id: 'S' + String(i).padStart(3, '0'),
+      age,
+      parities,
+      hScore,
+      lastWean,
+      lastFarrow,
+      status
+    });
+  }
+  // 健康スコア順（昇順、要対応を上に）
+  return ids.sort((a, b) => a.hScore - b.hScore);
+}
+
+const HERD = genHerd();
+
+// ===== KPI計算 =====
+function calcKPI() {
+  const psy = HERD.reduce((a, h) => a + h.lastWean * 2.35, 0) / HERD.length; // 年間2.35回分娩想定
+  const avgScore = HERD.reduce((a, h) => a + h.hScore, 0) / HERD.length;
+  // 模擬値（健康スコアに連動）
+  const fcr = 2.95 - (avgScore - 70) * 0.005;
+  const age = 178 - (avgScore - 70) * 0.4;
+  const mort = Math.max(3, 14 - (avgScore - 60) * 0.2);
+
+  document.getElementById('kpi-psy').textContent = psy.toFixed(1);
+  document.getElementById('kpi-fcr').textContent = fcr.toFixed(2);
+  document.getElementById('kpi-age').textContent = Math.round(age);
+  document.getElementById('kpi-mort').textContent = mort.toFixed(1);
+
+  // 業界平均との比較
+  const vs = (val, bench, inverse = false) => {
+    const diff = inverse ? bench - val : val - bench;
+    const sign = diff >= 0 ? '+' : '';
+    return { txt: `${sign}${diff.toFixed(1)} vs 業界平均`, good: diff >= 0 };
+  };
+  setTrend('kpi-psy-trend', vs(psy, 24.5));
+  setTrend('kpi-fcr-trend', vs(fcr, 2.85, true));
+  setTrend('kpi-age-trend', vs(age, 175, true));
+  setTrend('kpi-mort-trend', vs(mort, 12.0, true));
+}
+
+function setTrend(id, r) {
+  const el = document.getElementById(id);
+  el.textContent = r.txt;
+  el.className = 'kpi-trend ' + (r.good ? 'up' : 'down');
+}
+
+// ===== テーブル描画 =====
+function renderTable(filter = 'all') {
+  const tbody = document.getElementById('tblBody');
+  const filtered = filter === 'all' ? HERD : HERD.filter(h => filter === 'alert' ? h.status === 'urgent' : h.status === 'warn');
+  tbody.innerHTML = filtered.map(h => {
+    const scoreClass = h.hScore >= 80 ? 'high' : h.hScore >= 60 ? 'mid' : 'low';
+    const fillColor = h.hScore >= 80 ? 'var(--meal-c)' : h.hScore >= 60 ? 'var(--gold)' : 'var(--red)';
+    const tagMap = {
+      urgent: '<span class="tag-alert urgent"><i data-lucide="alert-triangle"></i> 至急</span>',
+      warn: '<span class="tag-alert warn"><i data-lucide="eye"></i> 要観察</span>',
+      ok: '<span class="tag-alert ok"><i data-lucide="check"></i> 正常</span>'
+    };
+    return `
+      <tr class="${h.status === 'urgent' ? 'alert' : h.status === 'warn' ? 'warn' : ''}">
+        <td><strong>${h.id}</strong></td>
+        <td>${h.age}ヶ月</td>
+        <td>${h.parities}産</td>
+        <td>${h.lastWean}頭</td>
+        <td>
+          <div class="score-bar">
+            <span class="score-num ${scoreClass}">${h.hScore}</span>
+            <div class="score-track"><div class="score-fill" style="width:${h.hScore}%;background:${fillColor};"></div></div>
+          </div>
+        </td>
+        <td>${h.lastFarrow}日前</td>
+        <td>${tagMap[h.status]}</td>
+      </tr>
+    `;
+  }).join('');
+  lucide.createIcons();
+}
+
+// ===== アラートTOP3 =====
+function renderAlerts() {
+  const top = HERD.filter(h => h.status === 'urgent').slice(0, 3);
+  const list = document.getElementById('alertList');
+  if (top.length === 0) {
+    list.innerHTML = '<div class="alert-row"><div class="alert-icon" style="background:rgba(101,212,131,0.15);color:var(--meal-c);"><i data-lucide="check-circle"></i></div><div class="alert-body"><div class="alert-title">至急対応個体なし</div><div class="alert-desc">全頭が許容範囲内です。要観察個体のフォローを継続してください。</div></div></div>';
+  } else {
+    list.innerHTML = top.map(h => `
+      <div class="alert-row urgent">
+        <div class="alert-icon urgent"><i data-lucide="alert-triangle"></i></div>
+        <div class="alert-body">
+          <div class="alert-title">${h.id} <span class="alert-id">健康スコア ${h.hScore} / 直近離乳 ${h.lastWean}頭</span></div>
+          <div class="alert-desc">${
+            h.hScore < 50 ? '健康スコア大幅低下。獣医連絡＋単独管理を推奨。' :
+            h.lastWean < 8 ? '離乳数が業界平均を大きく下回る。次産は別管理 or 淘汰検討。' :
+            '複数指標で異常。早期介入で経済損失を最小化。'
+          }</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  lucide.createIcons();
+}
+
+// ===== AI改善提案（テンプレ＋API） =====
+const TEMPLATE_SUGGESTIONS = {
+  cost: [
+    { name: '飼料切替のフェーズ別最適化', impact: 'FCR -0.15 / 年間飼料費 -8%', desc: '哺乳期・育成期・肥育期で配合を最適化。直近データで FCR が業界平均より高いため、まずここから着手するのが最大ROI。' },
+    { name: '繁殖管理アプリのデータ精度向上', impact: '入力漏れ -50% / KPI信頼度UP', desc: '発情・分娩・離乳の記録漏れがあると KPI 自体が歪む。日次入力ルーチンの再徹底で、改善余地の見える化から始める。' },
+    { name: '加温・換気のスマート制御導入', impact: '光熱費 -15% / 増体安定化', desc: 'IoT制御で温度ムラを抑える。豚舎エネルギーコストは経営費の10-15%を占めるため、削減効果は大きい。' }
+  ],
+  prod: [
+    { name: '4-6産母豚の集中ケア', impact: 'PSY +1.5頭 / 年間出荷数UP', desc: 'データ上、4-6産母豚が最も生産性が高い。この層の栄養管理・ストレス低減を最優先に。' },
+    { name: '人工授精のタイミング最適化', impact: '受胎率 +5pt / 空胎日数短縮', desc: '発情検知の精度向上（IoTセンサーor目視回数増）で、適期授精のずれをなくす。受胎率は経営インパクト最大の指標。' },
+    { name: '出荷体重の標準偏差を縮める', impact: '出荷日齢 -5日 / ロット均一化', desc: '個体差を抑えて出荷ロットを均一化。市場価格交渉力UP＋飼料効率改善の両取り。' }
+  ],
+  health: [
+    { name: '低健康スコア個体の早期淘汰判断', impact: '経済損失 -30% / 全体スコアUP', desc: '健康スコア55未満の母豚を継続飼養すると、飼料費＋治療費＋繁殖機会損失で年20万円超のマイナス。早期判断が経営防衛。' },
+    { name: 'ワクチネーション接種率の100%化', impact: '疾病発生率 -40%', desc: 'PRRS・サーコ・マイコの3疾病対策が基本。接種記録のデジタル化で漏れをゼロに。' },
+    { name: '分娩舎の衛生・温度湿度モニタ', impact: '哺乳期死亡率 -25%', desc: '子豚死亡の60%は出生後3日以内。分娩舎環境の常時モニタリングで、母豚産子数のうち実際に育つ頭数を引き上げる。' }
+  ]
+};
+
+let currentAxis = 'cost';
+
+function selectAxis(btn) {
+  document.querySelectorAll('.ai-axis .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  currentAxis = btn.dataset.axis;
+  renderSuggestions(TEMPLATE_SUGGESTIONS[currentAxis]);
+  document.getElementById('aiStatus').textContent = '▶ ' + ({cost:'コスト削減', prod:'生産性UP', health:'健康優先'}[currentAxis]) + ' 軸のテンプレ提案を表示中（APIキー入力でカスタム生成可）';
+}
+
+function renderSuggestions(arr) {
+  document.getElementById('aiSuggestions').innerHTML = arr.map((s, i) => `
+    <div class="ai-suggest">
+      <div class="ai-suggest-rank">${i + 1}</div>
+      <div class="ai-suggest-body">
+        <div class="ai-suggest-name">${s.name}</div>
+        <div class="ai-suggest-impact">▶ ${s.impact}</div>
+        <div class="ai-suggest-desc">${s.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function runAI() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const status = document.getElementById('aiStatus');
+  if (!apiKey) {
+    status.textContent = '▶ APIキー未入力です。テンプレ提案のままです。';
+    return;
+  }
+  if (!apiKey.startsWith('sk-')) {
+    status.textContent = '⚠ APIキーの形式が不正です（sk- で始まる文字列）';
+    return;
+  }
+  status.textContent = '⏳ Claude APIで提案生成中...';
+
+  // 群の集計データ
+  const avgScore = (HERD.reduce((a, h) => a + h.hScore, 0) / HERD.length).toFixed(1);
+  const avgWean = (HERD.reduce((a, h) => a + h.lastWean, 0) / HERD.length).toFixed(1);
+  const urgentCount = HERD.filter(h => h.status === 'urgent').length;
+
+  const prompt = `あなたは養豚経営コンサルタントです。以下の母豚20頭の群データから、「${({cost:'コスト削減', prod:'生産性UP', health:'健康優先'}[currentAxis])}」軸でTOP3の改善提案を生成してください。
+
+【群データ】
+- 平均健康スコア: ${avgScore}/100
+- 平均直近離乳数: ${avgWean}頭/母豚
+- 至急対応個体: ${urgentCount}頭/20頭中
+
+【出力形式】純粋なJSONで返してください。説明文不要。
+[{"name":"施策名(15字以内)","impact":"KPIへの効果(20字以内)","desc":"具体的アクション(70字以内)"}]`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error('API error: ' + res.status);
+    const data = await res.json();
+    const txt = data.content[0].text.trim();
+    // JSON抽出
+    const m = txt.match(/\[[\s\S]*\]/);
+    if (!m) throw new Error('JSON not found');
+    const suggestions = JSON.parse(m[0]);
+    renderSuggestions(suggestions.slice(0, 3));
+    status.textContent = '✓ Claude API で生成しました（モデル: claude-3-5-haiku）';
+  } catch (e) {
+    status.textContent = '⚠ API呼び出し失敗: ' + e.message + '。テンプレ提案のままです。';
+  }
+}
+
+// ===== モード切替 =====
+function switchMode(mode) {
+  if (mode === 'pig') return; // 現在は豚のみ
+}
+function showComingSoon(mode) {
+  alert(({cow:'牛モード', chk:'鶏モード'}[mode]) + ' は v2 で実装予定です。\n\n現在は Eco-Pork (Porker) リファレンスの豚モード v1 を公開中。\n\n豚モードで検証した「個体管理 × KPI × AI提案」の共通UIを、牛・鶏に展開していきます。');
+}
+
+// ===== フィルタ =====
+function filterTable(btn, filter) {
+  document.querySelectorAll('.panel-actions .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable(filter);
+}
+
+// ===== 時系列チャート =====
+function drawTimeChart() {
+  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  // 健康スコア連動 + ランダム
+  const base = HERD.reduce((a, h) => a + h.lastWean, 0) / HERD.length;
+  const data = labels.map((_, i) => Math.round((base + Math.sin(i * 0.5) * 0.4 + (Math.random() - 0.5) * 0.3) * 10) / 10);
+  const bench = labels.map(() => 11.0);
+
+  new Chart(document.getElementById('timeChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: '当群 平均', data, borderColor: '#ffa86b', backgroundColor: 'rgba(255,168,107,0.15)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#ffa86b' },
+        { label: '業界平均', data: bench, borderColor: '#6a7699', borderDash: [4,4], pointRadius: 0, fill: false, tension: 0 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#a3b0d4' } },
+        y: { grid: { color: 'rgba(46,54,84,0.5)' }, ticks: { color: '#6a7699' }, beginAtZero: false }
+      },
+      plugins: {
+        legend: { labels: { color: '#a3b0d4', padding: 12, usePointStyle: true, font: { size: 11 } } },
+        tooltip: { backgroundColor: '#282e45', borderColor: '#3d4670', borderWidth: 1 }
+      }
+    }
+  });
+}
+
+// ===== 初期化 =====
+calcKPI();
+renderTable();
+renderAlerts();
+renderSuggestions(TEMPLATE_SUGGESTIONS.cost);
+drawTimeChart();
+</script>
+</body>
+</html>
