@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6次産業化 補助金マッチャー｜都道府県×事業種別で横断検索</title>
+<meta name="description" content="国の補助金8件＋都道府県別の支援制度＋ふるさと納税返礼品事業者登録ハードルを、都道府県×事業種別で横断検索。生産者・移住検討者・6次産業化推進者向け。">
+<meta property="og:title" content="6次産業化 補助金マッチャー｜都道府県×事業種別で横断検索">
+<meta property="og:description" content="生産者の経営課題は「何を作るか」だけでなく「どう売って、どう補助金を取るか」。横断検索ツールで意思決定を支援。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://okada-hikari.github.io/portfolio/agri/ogp/ogp-6次産業化補助金マッチャー.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏛️%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root {
+  --bg: #141826;
+  --surface: #1e2335;
+  --surface2: #282e45;
+  --text: #f2f5fc;
+  --text2: #a3b0d4;
+  --text3: #6a7699;
+  --border: #2e3654;
+  --border2: #3d4670;
+  --meal-c: #65d483;
+  --train-c: #8cbfff;
+  --sleep-c: #c38eff;
+  --gold: #f2c75c;
+  --orange: #ffa86b;
+  --red: #f26b7c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:-1;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
+
+/* NAV */
+.nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.nav-logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.nav-logo i[data-lucide]{color:var(--train-c);}
+.nav-back{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:8px 14px;border-radius:100px;letter-spacing:1px;text-decoration:none;transition:all 0.2s;}
+.nav-back:hover{border-color:var(--text3);background:var(--surface2);color:var(--text);}
+.nav-back i[data-lucide]{width:12px;height:12px;}
+
+/* HERO */
+.hero{padding:40px 0 48px;border-bottom:1px solid var(--border);margin-bottom:32px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(140,191,255,0.12),transparent 45%),radial-gradient(circle at 80% 20%,rgba(101,212,131,0.08),transparent 45%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);padding:6px 14px;border-radius:100px;letter-spacing:1.5px;margin-bottom:20px;}
+.hero-title{font-size:38px;font-weight:800;line-height:1.2;letter-spacing:-0.5px;margin-bottom:16px;}
+.hero-title .gradient{background:linear-gradient(120deg,var(--train-c),var(--meal-c) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.85;margin-bottom:24px;max-width:720px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+
+/* SEARCH */
+.search-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:24px;}
+.search-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field-label{font-size:11px;color:var(--text3);letter-spacing:1.5px;font-family:'DM Mono',monospace;text-transform:uppercase;}
+.field select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);font-family:inherit;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5682' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:32px;transition:all 0.2s;}
+.field select:focus{outline:none;border-color:var(--train-c);box-shadow:0 0 0 3px rgba(140,191,255,0.12);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px;}
+.stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;}
+.stat-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:600;line-height:1;margin-bottom:4px;}
+.stat-num.train{color:var(--train-c);}
+.stat-num.gold{color:var(--gold);}
+.stat-num.meal{color:var(--meal-c);}
+.stat-num.orange{color:var(--orange);}
+.stat-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1px;}
+
+/* RESULTS */
+.results-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 4px;flex-wrap:wrap;gap:8px;}
+.results-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.results-title i[data-lucide]{color:var(--train-c);width:16px;height:16px;}
+.results-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
+
+/* GRANT CARDS */
+.grants{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.grant{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:all 0.2s;}
+.grant:hover{border-color:var(--text3);background:var(--surface2);}
+.grant-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.grant-name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.grant-name i[data-lucide]{width:18px;height:18px;}
+.grant-name i[data-lucide].nation{color:var(--train-c);}
+.grant-name i[data-lucide].local{color:var(--gold);}
+.grant-name i[data-lucide].furusato{color:var(--meal-c);}
+.grant-name i[data-lucide].newcomer{color:var(--orange);}
+.grant-difficulty{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:100px;letter-spacing:0.5px;}
+.diff-easy{background:rgba(101,212,131,0.15);color:var(--meal-c);border:1px solid rgba(101,212,131,0.3);}
+.diff-med{background:rgba(242,199,92,0.15);color:var(--gold);border:1px solid rgba(242,199,92,0.3);}
+.diff-hard{background:rgba(242,107,124,0.15);color:var(--red);border:1px solid rgba(242,107,124,0.3);}
+.grant-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px 16px;margin-bottom:10px;padding:10px 14px;background:rgba(20,24,38,0.4);border-radius:10px;}
+.meta-row{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
+.meta-row b{color:var(--text2);font-weight:600;}
+.meta-row strong{color:var(--text);font-weight:600;}
+.grant-desc{font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:8px;}
+.grant-desc strong{color:var(--text);}
+.grant-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 9px;border-radius:100px;letter-spacing:0.5px;}
+
+/* TOTAL BOX */
+.total-box{background:linear-gradient(135deg,rgba(140,191,255,0.08),rgba(101,212,131,0.05));border:1px solid rgba(140,191,255,0.25);border-radius:16px;padding:22px 26px;margin-bottom:24px;}
+.total-label{font-size:11px;color:var(--text3);letter-spacing:2px;font-family:'DM Mono',monospace;margin-bottom:8px;text-transform:uppercase;}
+.total-value{font-family:'DM Mono',monospace;font-size:36px;font-weight:600;color:var(--train-c);line-height:1;}
+.total-value .unit{font-size:16px;color:var(--text2);margin-left:6px;}
+.total-sub{font-size:12px;color:var(--text2);margin-top:8px;}
+.total-sub strong{color:var(--text);}
+
+/* INFO */
+.info{background:rgba(140,191,255,0.05);border:1px solid rgba(140,191,255,0.2);border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.info-text{font-size:11px;color:var(--text2);line-height:1.75;}
+.info-text strong{color:var(--text);}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;background:var(--surface);border:1px dashed var(--border);border-radius:14px;}
+.empty-state i[data-lucide]{width:32px;height:32px;color:var(--text3);margin-bottom:10px;}
+
+/* FOOTER */
+.footer{margin-top:48px;padding:28px 0;border-top:1px solid var(--border);text-align:center;}
+.footer-links{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+.footer-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);text-decoration:none;padding:8px 16px;border:1px solid var(--border);border-radius:100px;transition:all 0.2s;}
+.footer-link:hover{color:var(--text);border-color:var(--text3);background:var(--surface);}
+.footer-link i[data-lucide]{width:14px;height:14px;}
+.footer-creator{display:inline-flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:14px;}
+.footer-creator-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--train-c),var(--meal-c));display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0;}
+.footer-creator-icon i[data-lucide]{width:18px;height:18px;}
+.footer-creator-text{text-align:left;font-size:12px;color:var(--text2);line-height:1.6;}
+.footer-creator-text strong{color:var(--text);font-weight:600;display:block;font-size:13px;}
+.footer-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1.5px;}
+
+@media(max-width:640px){
+  .wrap{padding:0 16px 60px;}
+  .hero-title{font-size:28px;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="nav-logo"><i data-lucide="landmark"></i>6次産業化 補助金マッチャー</div>
+    <a href="index.html" class="nav-back"><i data-lucide="arrow-left"></i>食農DX TOP</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><i data-lucide="search" style="color:var(--train-c);"></i> 都道府県 × 事業種別 で横断検索</div>
+      <h1 class="hero-title">
+        どう作るかと、<br>
+        <span class="gradient">どう取るか。</span>
+      </h1>
+      <p class="hero-sub">
+        生産者・移住検討者の経営課題は「何を作るか」だけでなく「<strong>どう売って、どう補助金を取るか</strong>」。
+        国の補助金8件 + 都道府県別の支援 + ふるさと納税返礼品事業者登録のハードルを、都道府県×事業種別で1画面に集約。
+      </p>
+    </div>
+  </section>
+
+  <!-- SEARCH -->
+  <div class="search-card">
+    <div class="search-grid">
+      <div class="field">
+        <label class="field-label">都道府県</label>
+        <select id="pref"></select>
+      </div>
+      <div class="field">
+        <label class="field-label">事業種別</label>
+        <select id="sector">
+          <option value="livestock">畜産（豚・牛・鶏・養蜂）</option>
+          <option value="agri" selected>農業（露地・施設・米・果樹）</option>
+          <option value="fishery">水産（漁業・養殖・流通）</option>
+          <option value="forestry">林業・木材</option>
+          <option value="process">食品加工・6次産業化</option>
+          <option value="tourism">観光・体験・関係人口</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">事業フェーズ</label>
+        <select id="phase">
+          <option value="all" selected>全て</option>
+          <option value="start">起業・移住直後（0〜1年）</option>
+          <option value="growth">拡大・設備投資（2〜5年）</option>
+          <option value="6th">6次産業化・加工販売</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">難易度上限</label>
+        <select id="diff">
+          <option value="all" selected>全て</option>
+          <option value="easy">簡単のみ</option>
+          <option value="med">中まで</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num train" id="stat-count">—</div><div class="stat-label">該当補助金</div></div>
+      <div class="stat"><div class="stat-num gold" id="stat-max">—</div><div class="stat-label">最大上限額</div></div>
+      <div class="stat"><div class="stat-num meal" id="stat-easy">—</div><div class="stat-label">簡単枠</div></div>
+      <div class="stat"><div class="stat-num orange" id="stat-furusato">—</div><div class="stat-label">ふるさと納税</div></div>
+    </div>
+  </div>
+
+  <!-- TOTAL POSSIBLE -->
+  <div class="total-box">
+    <div class="total-label">あなたの設定で活用可能な合計上限額（理論値）</div>
+    <div class="total-value"><span id="total-val">—</span><span class="unit">万円</span></div>
+    <div class="total-sub">※全ての補助金を上限まで併用できると仮定した理論最大値。<strong>実際は併用制限・採択率・要件あり</strong>。意思決定の出発点として活用してください。</div>
+  </div>
+
+  <div class="info">
+    <div class="info-text">
+      <strong>使い方</strong>：都道府県＋事業種別＋フェーズを選ぶと、該当する補助金が下に列挙されます。各カードに上限額・補助率・難易度・採択率の目安・公募時期・主な要件を表示。<br>
+      <strong>「難易度」の見方</strong>：簡単=書類のみで多くが採択／中=事業計画書＋審査／難=高度な計画＋面接審査
+    </div>
+  </div>
+
+  <div class="results-head">
+    <div class="results-title"><i data-lucide="layers"></i>該当補助金リスト</div>
+    <div class="results-count" id="results-count">—</div>
+  </div>
+
+  <div class="grants" id="grantList"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="index.html" class="footer-link"><i data-lucide="arrow-left"></i>食農DX TOP</a>
+      <a href="アイガモ農法ROIシミュレーター.html" class="footer-link"><i data-lucide="bird"></i>アイガモROI</a>
+      <a href="畜産DXダッシュボード.html" class="footer-link"><i data-lucide="layout-dashboard"></i>畜産DXダッシュ</a>
+    </div>
+    <div class="footer-creator">
+      <div class="footer-creator-icon"><i data-lucide="user"></i></div>
+      <div class="footer-creator-text">
+        <strong>岡田 光（Okada Hikari）</strong>
+        NSCA-CPT 保有 / パーソナルトレーナー歴11年<br>
+        食農DX × 健康経営 領域 転職活動中
+      </div>
+    </div>
+    <div class="footer-meta">© 2026 OKADA HIKARI &nbsp;·&nbsp; SUBSIDY MATCHER v1</div>
+  </footer>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+// ===== 都道府県マスタ =====
+const PREFS = [
+  ['hokkaido','北海道'],['aomori','青森'],['iwate','岩手'],['miyagi','宮城'],['akita','秋田'],['yamagata','山形'],['fukushima','福島'],
+  ['ibaraki','茨城'],['tochigi','栃木'],['gunma','群馬'],['saitama','埼玉'],['chiba','千葉'],['tokyo','東京'],['kanagawa','神奈川'],
+  ['niigata','新潟'],['toyama','富山'],['ishikawa','石川'],['fukui','福井'],
+  ['yamanashi','山梨'],['nagano','長野'],['gifu','岐阜'],['shizuoka','静岡'],['aichi','愛知'],
+  ['mie','三重'],['shiga','滋賀'],['kyoto','京都'],['osaka','大阪'],['hyogo','兵庫'],['nara','奈良'],['wakayama','和歌山'],
+  ['tottori','鳥取'],['shimane','島根'],['okayama','岡山'],['hiroshima','広島'],['yamaguchi','山口'],
+  ['tokushima','徳島'],['kagawa','香川'],['ehime','愛媛'],['kochi','高知'],
+  ['fukuoka','福岡'],['saga','佐賀'],['nagasaki','長崎'],['kumamoto','熊本'],['oita','大分'],['miyazaki','宮崎'],['kagoshima','鹿児島'],['okinawa','沖縄']
+];
+
+// 都道府県補助金スコア（移住・新規就農の手厚さ）
+const PREF_BONUS = {
+  nagano:1.2, niigata:1.15, yamanashi:1.15, tochigi:1.1, shizuoka:1.0,
+  hokkaido:1.25, kagoshima:1.2, miyazaki:1.2, kumamoto:1.15,
+  ishikawa:1.1, fukui:1.1, akita:1.1, yamagata:1.1, fukushima:1.1,
+  okinawa:1.3, kochi:1.2, shimane:1.2, tottori:1.2,
+  kanagawa:0.9, tokyo:0.85, osaka:0.85, aichi:0.95, chiba:0.95, saitama:0.95
+};
+
+// ===== 補助金DB =====
+const GRANTS = [
+  // === 国の補助金 ===
+  {
+    id:'nougyou-shinki', name:'認定新規就農者 経営開始資金',
+    type:'nation', sectors:['agri','livestock','fishery','process'], phases:['start'],
+    max:450, rate:'交付金（補助率概念なし）', diff:'easy', accept:'70-85%',
+    period:'通年（市町村経由）',
+    desc:'45歳未満で新規就農する個人に<strong>月12.5万円×最長3年（最大450万円）</strong>を交付。資金繰りの不安なく初期投資に集中できる、移住・新規参入の最大の味方。',
+    tags:['新規就農','45歳未満','交付金','市町村経由']
+  },
+  {
+    id:'rokuji', name:'6次産業化交付金',
+    type:'nation', sectors:['agri','livestock','fishery','process'], phases:['6th','growth'],
+    max:1000, rate:'1/3〜1/2', diff:'hard', accept:'30-45%',
+    period:'年1-2回（春・秋）',
+    desc:'農林漁業者が自ら加工・販売に取り組む場合の施設整備費を補助。<strong>最大1,000万円・補助率1/3〜1/2</strong>。事業計画書＋審査会＋現地確認が必要で難易度高めだが、6次化の本丸。',
+    tags:['6次産業化','加工施設','補助率1/2','要事業計画']
+  },
+  {
+    id:'jizokuka', name:'小規模事業者持続化補助金',
+    type:'nation', sectors:['agri','livestock','fishery','process','tourism','forestry'], phases:['start','growth','6th'],
+    max:200, rate:'2/3', diff:'med', accept:'50-65%',
+    period:'年4回公募',
+    desc:'販路開拓・業務効率化に使える汎用補助金。<strong>上限200万円・補助率2/3</strong>。商工会議所の伴走支援つきで、初心者でも採択されやすい。チラシ作成・HP制作・展示会出展などフルカバー。',
+    tags:['小規模','商工会議所','販路開拓','HP制作OK']
+  },
+  {
+    id:'it-dounyu', name:'IT導入補助金',
+    type:'nation', sectors:['agri','livestock','fishery','process','tourism'], phases:['growth','6th'],
+    max:450, rate:'1/2〜3/4', diff:'med', accept:'55-70%',
+    period:'年複数回',
+    desc:'業務管理SaaS・農業ITツール導入費を補助。<strong>最大450万円・補助率1/2〜3/4</strong>。Eco-Pork / Farmnote / RightARM 等のSaaS導入は対象になりうる。',
+    tags:['SaaS導入','IT化','ITベンダー連携']
+  },
+  {
+    id:'monoduku', name:'ものづくり補助金',
+    type:'nation', sectors:['process','livestock','agri','fishery'], phases:['growth','6th'],
+    max:1250, rate:'1/2〜2/3', diff:'hard', accept:'40-55%',
+    period:'年4回',
+    desc:'革新的サービス開発・試作品開発・生産プロセス改善の設備投資を補助。<strong>最大1,250万円・補助率1/2〜2/3</strong>。加工機器導入や革新的生産システム導入に強い。',
+    tags:['設備投資','革新性','加工機器']
+  },
+  {
+    id:'saikouchiku', name:'事業再構築補助金',
+    type:'nation', sectors:['process','tourism','livestock','agri','fishery'], phases:['growth','6th'],
+    max:7000, rate:'1/2〜2/3', diff:'hard', accept:'35-50%',
+    period:'年3-4回',
+    desc:'新分野展開・業態転換の大型補助金。<strong>最大7,000万円・補助率1/2〜2/3</strong>。「地域おこし型」など中小事業者向け枠あり。ハードル高いが、移住して農業＋宿泊複合などやるなら本命。',
+    tags:['業態転換','大型','地域おこし型枠あり']
+  },
+  {
+    id:'chiiki-okoshi', name:'地域おこし協力隊 起業支援補助金',
+    type:'newcomer', sectors:['agri','livestock','fishery','process','tourism','forestry'], phases:['start'],
+    max:100, rate:'実費（要件達成型）', diff:'easy', accept:'90%+（任期満了時）',
+    period:'任期終了時申請',
+    desc:'地域おこし協力隊として最長3年活動後、その地域で起業すると<strong>最大100万円</strong>を交付。任期中の月20万円報酬と合わせて累計約820万円の財政支援。移住×新規就農の最強ルート。',
+    tags:['協力隊','最強ルート','3年活動']
+  },
+  {
+    id:'ijuu-shienkin', name:'移住支援金（東京圏→地方）',
+    type:'newcomer', sectors:['agri','livestock','fishery','process','tourism','forestry'], phases:['start'],
+    max:300, rate:'要件達成型', diff:'med', accept:'要件満たせば確実',
+    period:'移住後1年以内',
+    desc:'東京23区内に5年以上通勤実績＋地方移住で<strong>夫婦100万円＋子1人につき100万円（最大300万円）</strong>。横浜→23区通勤の岡田さんは要件確認必須。**横浜→神奈川県内は対象外**。',
+    tags:['移住','東京圏要件','子加算あり']
+  },
+  // === ふるさと納税返礼品 ===
+  {
+    id:'furusato-touroku', name:'ふるさと納税 返礼品事業者登録',
+    type:'furusato', sectors:['agri','livestock','fishery','process'], phases:['growth','6th'],
+    max:0, rate:'販路提供（補助金ではない）', diff:'med', accept:'自治体審査次第',
+    period:'通年（自治体ごと）',
+    desc:'自治体に返礼品事業者として登録すると、ふるさとチョイス・さとふる等の<strong>大型プラットフォームに自動掲載</strong>。年間100〜300万円規模の販路を集客労力ゼロで確保可能。手数料は乗るが「営業しなくても売れる構造」が手に入る。',
+    tags:['販路確保','プラットフォーム','手数料あり']
+  },
+  // === 仮想の都道府県補助金（代表例） ===
+  {
+    id:'pref-norin', name:'都道府県 農林水産振興補助金',
+    type:'local', sectors:['agri','livestock','fishery','forestry'], phases:['start','growth'],
+    max:200, rate:'1/3〜1/2', diff:'med', accept:'40-60%',
+    period:'年1-2回',
+    desc:'各都道府県が独自に設ける農林水産業振興補助金の総称。設備・販路・人材育成等に充当可能。<strong>都道府県により条件・上限が大きく異なる</strong>ため、必ず該当自治体のHPで最新公募要領を確認すること。',
+    tags:['自治体独自','上限変動','HP要確認']
+  },
+  {
+    id:'pref-syun', name:'都道府県 6次産業化推進事業',
+    type:'local', sectors:['process','agri','livestock','fishery'], phases:['6th'],
+    max:300, rate:'1/2', diff:'med', accept:'30-50%',
+    period:'年1回',
+    desc:'都道府県の6次化推進事業。商品開発・パッケージ・販促・販路開拓に補助。<strong>国の6次産業化交付金との併用は不可な場合あり</strong>。地域ブランド認定とセットで申請すると採択率上昇。',
+    tags:['6次化','地域ブランド連動']
+  },
+  {
+    id:'pref-syokuhin', name:'都道府県 食品加工振興補助金',
+    type:'local', sectors:['process'], phases:['growth','6th'],
+    max:150, rate:'1/2〜2/3', diff:'easy', accept:'60-75%',
+    period:'年1回',
+    desc:'食品加工設備の小規模導入補助。<strong>HACCP対応設備・冷凍設備・パッケージ機などが対象</strong>。米粉ベーグル・合鴨米加工品など小ロット6次化と相性が良い。',
+    tags:['食品加工','HACCP','小ロット向け']
+  }
+];
+
+// ===== UI初期化 =====
+const prefSel = document.getElementById('pref');
+prefSel.innerHTML = PREFS.map(([v,n]) => `<option value="${v}" ${v==='nagano'?'selected':''}>${n}</option>`).join('');
+
+['pref','sector','phase','diff'].forEach(id => {
+  document.getElementById(id).addEventListener('change', render);
+});
+
+function render() {
+  const pref = prefSel.value;
+  const sector = document.getElementById('sector').value;
+  const phase = document.getElementById('phase').value;
+  const diffLimit = document.getElementById('diff').value;
+
+  const bonus = PREF_BONUS[pref] || 1.0;
+
+  // フィルタ
+  const filtered = GRANTS.filter(g => {
+    if (!g.sectors.includes(sector)) return false;
+    if (phase !== 'all' && !g.phases.includes(phase)) return false;
+    if (diffLimit === 'easy' && g.diff !== 'easy') return false;
+    if (diffLimit === 'med' && g.diff === 'hard') return false;
+    return true;
+  });
+
+  // 統計
+  const count = filtered.length;
+  const max = Math.max(0, ...filtered.map(g => g.max));
+  const easyCount = filtered.filter(g => g.diff === 'easy').length;
+  const furusatoCount = filtered.filter(g => g.type === 'furusato').length;
+  const total = filtered.reduce((a, g) => a + g.max, 0);
+
+  document.getElementById('stat-count').textContent = count + '件';
+  document.getElementById('stat-max').textContent = max.toLocaleString() + '万円';
+  document.getElementById('stat-easy').textContent = easyCount + '件';
+  document.getElementById('stat-furusato').textContent = furusatoCount ? 'あり' : 'なし';
+  document.getElementById('total-val').textContent = Math.round(total * bonus).toLocaleString();
+  document.getElementById('results-count').textContent = `該当 ${count} 件 / 全 ${GRANTS.length} 件中（${PREFS.find(p=>p[0]===pref)[1]} × ${{livestock:'畜産',agri:'農業',fishery:'水産',forestry:'林業',process:'加工',tourism:'観光'}[sector]}）`;
+
+  const list = document.getElementById('grantList');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i data-lucide="search-x"></i><div>該当する補助金がありません。<br>事業種別・フェーズ・難易度の条件を緩めて再検索してください。</div></div>`;
+    lucide.createIcons();
+    return;
+  }
+
+  list.innerHTML = filtered.sort((a,b) => b.max - a.max).map(g => {
+    const iconMap = { nation:['flag','nation'], local:['map-pin','local'], furusato:['gift','furusato'], newcomer:['compass','newcomer'] };
+    const [icon, cls] = iconMap[g.type];
+    const diffMap = { easy:['簡単','diff-easy','check'], med:['中','diff-med','minus'], hard:['難','diff-hard','alert-triangle'] };
+    const [dLabel, dClass, dIcon] = diffMap[g.diff];
+
+    return `
+    <div class="grant">
+      <div class="grant-head">
+        <div class="grant-name">
+          <i data-lucide="${icon}" class="${cls}"></i>
+          ${g.name}
+        </div>
+        <div class="grant-difficulty ${dClass}"><i data-lucide="${dIcon}" style="width:11px;height:11px;"></i>難易度：${dLabel}</div>
+      </div>
+      <div class="grant-meta">
+        <div class="meta-row"><b>上限</b><strong>${g.max ? g.max.toLocaleString() + '万円' : '販路提供'}</strong></div>
+        <div class="meta-row"><b>補助率</b>${g.rate}</div>
+        <div class="meta-row"><b>採択率</b>${g.accept}</div>
+        <div class="meta-row"><b>公募</b>${g.period}</div>
+      </div>
+      <div class="grant-desc">${g.desc}</div>
+      <div class="grant-tags">
+        ${g.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+      </div>
+    </div>
+    `;
+  }).join('');
+  lucide.createIcons();
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>
