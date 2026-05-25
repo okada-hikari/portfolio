@@ -98,8 +98,13 @@ i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
 .meta-row strong{color:var(--text);font-weight:600;}
 .grant-desc{font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:8px;}
 .grant-desc strong{color:var(--text);}
-.grant-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.grant-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
 .tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 9px;border-radius:100px;letter-spacing:0.5px;}
+.grant-source{margin-top:8px;padding-top:10px;border-top:1px dashed var(--border);font-size:11px;}
+.grant-source a{color:var(--train-c);text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.3px;}
+.grant-source a:hover{text-decoration:underline;color:var(--text);}
+.grant-source i[data-lucide]{width:12px;height:12px;}
+.grant-source .src-note{color:var(--text3);font-family:'DM Mono',monospace;font-size:9px;margin-left:8px;}
 
 /* TOTAL BOX */
 .total-box{background:linear-gradient(135deg,rgba(140,191,255,0.08),rgba(101,212,131,0.05));border:1px solid rgba(140,191,255,0.25);border-radius:16px;padding:22px 26px;margin-bottom:24px;}
@@ -214,8 +219,9 @@ i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-0.125em;}
 
   <div class="info">
     <div class="info-text">
-      <strong>使い方</strong>：都道府県＋事業種別＋フェーズを選ぶと、該当する補助金が下に列挙されます。各カードに上限額・補助率・難易度・採択率の目安・公募時期・主な要件を表示。<br>
-      <strong>「難易度」の見方</strong>：簡単=書類のみで多くが採択／中=事業計画書＋審査／難=高度な計画＋面接審査
+      <strong>使い方</strong>：都道府県＋事業種別＋フェーズを選ぶと、該当する補助金が下に列挙されます。各カードに上限額・補助率・難易度・採択率の目安・公募時期・主な要件・<strong>公式情報の出典URL</strong>を表示。<br>
+      <strong>「難易度」の見方</strong>：簡単=書類のみで多くが採択／中=事業計画書＋審査／難=高度な計画＋面接審査<br>
+      <strong>データソース（2026年5月時点）</strong>：農林水産省・総務省・内閣官房・中小機構（持続化補助金・IT導入・ものづくり）の公式ページ。<strong>採択率・上限額は公募回ごとに変動</strong>するため、応募前に各カード末尾の公式リンクから最新公募要領を必ず確認してください。
     </div>
   </div>
 
@@ -270,7 +276,7 @@ const PREF_BONUS = {
   kanagawa:0.9, tokyo:0.85, osaka:0.85, aichi:0.95, chiba:0.95, saitama:0.95
 };
 
-// ===== 補助金DB =====
+// ===== 補助金DB（出典URLは2026年5月時点で実在確認済の公式ページ） =====
 const GRANTS = [
   // === 国の補助金 ===
   {
@@ -279,63 +285,79 @@ const GRANTS = [
     max:450, rate:'交付金（補助率概念なし）', diff:'easy', accept:'70-85%',
     period:'通年（市町村経由）',
     desc:'45歳未満で新規就農する個人に<strong>月12.5万円×最長3年（最大450万円）</strong>を交付。資金繰りの不安なく初期投資に集中できる、移住・新規参入の最大の味方。',
-    tags:['新規就農','45歳未満','交付金','市町村経由']
+    tags:['新規就農','45歳未満','交付金','市町村経由'],
+    source:'https://www.maff.go.jp/j/new_farmer/n_syunou/kaisi_shikin.html',
+    sourceLabel:'農林水産省 公式ページ'
   },
   {
-    id:'rokuji', name:'6次産業化交付金',
+    id:'rokuji', name:'6次産業化・地産地消法 認定計画',
     type:'nation', sectors:['agri','livestock','fishery','process'], phases:['6th','growth'],
     max:1000, rate:'1/3〜1/2', diff:'hard', accept:'30-45%',
     period:'年1-2回（春・秋）',
-    desc:'農林漁業者が自ら加工・販売に取り組む場合の施設整備費を補助。<strong>最大1,000万円・補助率1/3〜1/2</strong>。事業計画書＋審査会＋現地確認が必要で難易度高めだが、6次化の本丸。',
-    tags:['6次産業化','加工施設','補助率1/2','要事業計画']
+    desc:'農林漁業者が自ら加工・販売に取り組む場合の施設整備費を補助。<strong>最大1,000万円・補助率1/3〜1/2</strong>（事業区分により変動）。事業計画書＋審査会＋現地確認が必要で難易度高めだが、6次化の本丸。',
+    tags:['6次産業化','加工施設','補助率1/2','要事業計画'],
+    source:'https://www.maff.go.jp/j/shokusan/sanki/6jika/',
+    sourceLabel:'農林水産省 6次産業化ページ'
   },
   {
     id:'jizokuka', name:'小規模事業者持続化補助金',
     type:'nation', sectors:['agri','livestock','fishery','process','tourism','forestry'], phases:['start','growth','6th'],
     max:200, rate:'2/3', diff:'med', accept:'50-65%',
     period:'年4回公募',
-    desc:'販路開拓・業務効率化に使える汎用補助金。<strong>上限200万円・補助率2/3</strong>。商工会議所の伴走支援つきで、初心者でも採択されやすい。チラシ作成・HP制作・展示会出展などフルカバー。',
-    tags:['小規模','商工会議所','販路開拓','HP制作OK']
+    desc:'販路開拓・業務効率化に使える汎用補助金。<strong>上限200万円・補助率2/3</strong>（インボイス特例等の枠あり）。商工会議所の伴走支援つきで、初心者でも採択されやすい。チラシ作成・HP制作・展示会出展などフルカバー。',
+    tags:['小規模','商工会議所','販路開拓','HP制作OK'],
+    source:'https://r6.jizokukahojokin.info/',
+    sourceLabel:'持続化補助金 公式サイト'
   },
   {
     id:'it-dounyu', name:'IT導入補助金',
     type:'nation', sectors:['agri','livestock','fishery','process','tourism'], phases:['growth','6th'],
     max:450, rate:'1/2〜3/4', diff:'med', accept:'55-70%',
     period:'年複数回',
-    desc:'業務管理SaaS・農業ITツール導入費を補助。<strong>最大450万円・補助率1/2〜3/4</strong>。Eco-Pork / Farmnote / RightARM 等のSaaS導入は対象になりうる。',
-    tags:['SaaS導入','IT化','ITベンダー連携']
+    desc:'業務管理SaaS・農業ITツール導入費を補助。<strong>最大450万円・補助率1/2〜3/4</strong>（インボイス枠等で変動）。Eco-Pork (Porker) / Farmnote / RightARM 等のSaaS導入は対象になりうる（IT導入支援事業者登録が前提）。',
+    tags:['SaaS導入','IT化','ITベンダー連携'],
+    source:'https://it-shien.smrj.go.jp/',
+    sourceLabel:'IT導入補助金 公式サイト'
   },
   {
     id:'monoduku', name:'ものづくり補助金',
     type:'nation', sectors:['process','livestock','agri','fishery'], phases:['growth','6th'],
     max:1250, rate:'1/2〜2/3', diff:'hard', accept:'40-55%',
-    period:'年4回',
-    desc:'革新的サービス開発・試作品開発・生産プロセス改善の設備投資を補助。<strong>最大1,250万円・補助率1/2〜2/3</strong>。加工機器導入や革新的生産システム導入に強い。',
-    tags:['設備投資','革新性','加工機器']
+    period:'年3-4回',
+    desc:'革新的サービス開発・試作品開発・生産プロセス改善の設備投資を補助。<strong>最大1,250万円・補助率1/2〜2/3</strong>（事業類型による）。加工機器導入や革新的生産システム導入に強い。',
+    tags:['設備投資','革新性','加工機器'],
+    source:'https://portal.monodukuri-hojo.jp/',
+    sourceLabel:'ものづくり補助金 公式サイト'
   },
   {
-    id:'saikouchiku', name:'事業再構築補助金',
+    id:'saikouchiku', name:'中小企業 新事業進出補助金（旧・事業再構築補助金）',
     type:'nation', sectors:['process','tourism','livestock','agri','fishery'], phases:['growth','6th'],
     max:7000, rate:'1/2〜2/3', diff:'hard', accept:'35-50%',
     period:'年3-4回',
-    desc:'新分野展開・業態転換の大型補助金。<strong>最大7,000万円・補助率1/2〜2/3</strong>。「地域おこし型」など中小事業者向け枠あり。ハードル高いが、移住して農業＋宿泊複合などやるなら本命。',
-    tags:['業態転換','大型','地域おこし型枠あり']
+    desc:'新分野展開・業態転換の大型補助金。<strong>最大7,000万円・補助率1/2〜2/3</strong>（事業類型により変動）。ハードル高いが、移住して農業＋宿泊複合などやるなら本命。<strong>2026年以降は制度名・要件が改訂され続けているため最新公募要領必読</strong>。',
+    tags:['業態転換','大型','要最新確認'],
+    source:'https://jigyou-saikouchiku.go.jp/',
+    sourceLabel:'公式サイト（後継制度含む）'
   },
   {
     id:'chiiki-okoshi', name:'地域おこし協力隊 起業支援補助金',
     type:'newcomer', sectors:['agri','livestock','fishery','process','tourism','forestry'], phases:['start'],
     max:100, rate:'実費（要件達成型）', diff:'easy', accept:'90%+（任期満了時）',
     period:'任期終了時申請',
-    desc:'地域おこし協力隊として最長3年活動後、その地域で起業すると<strong>最大100万円</strong>を交付。任期中の月20万円報酬と合わせて累計約820万円の財政支援。移住×新規就農の最強ルート。',
-    tags:['協力隊','最強ルート','3年活動']
+    desc:'地域おこし協力隊として最長3年活動後、その地域で起業すると<strong>最大100万円</strong>を交付。任期中の報償費（年最大280-420万円相当）と合わせて、移住×新規就農の最強ルート。<strong>任期後3年以内の自己都合転出で返還義務あり</strong>。',
+    tags:['協力隊','最強ルート','3年活動','返還条件あり'],
+    source:'https://www.soumu.go.jp/main_sosiki/jichi_gyousei/c-gyousei/02gyosei08_03000066.html',
+    sourceLabel:'総務省 公式ページ'
   },
   {
     id:'ijuu-shienkin', name:'移住支援金（東京圏→地方）',
     type:'newcomer', sectors:['agri','livestock','fishery','process','tourism','forestry'], phases:['start'],
     max:300, rate:'要件達成型', diff:'med', accept:'要件満たせば確実',
     period:'移住後1年以内',
-    desc:'東京23区内に5年以上通勤実績＋地方移住で<strong>夫婦100万円＋子1人につき100万円（最大300万円）</strong>。横浜→23区通勤の岡田さんは要件確認必須。**横浜→神奈川県内は対象外**。',
-    tags:['移住','東京圏要件','子加算あり']
+    desc:'東京23区内に5年以上通勤実績＋地方移住で<strong>夫婦100万円＋子1人につき100万円（最大300万円）</strong>。横浜在住で東京23区通勤の方は要件確認必須。<strong>横浜→神奈川県内移住は対象外</strong>（神奈川は条件付支援対象地域）。',
+    tags:['移住','東京圏要件','子加算あり'],
+    source:'https://www.chisou.go.jp/sousei/about/ijuu-shienkin/',
+    sourceLabel:'内閣官房 公式ページ'
   },
   // === ふるさと納税返礼品 ===
   {
@@ -343,33 +365,41 @@ const GRANTS = [
     type:'furusato', sectors:['agri','livestock','fishery','process'], phases:['growth','6th'],
     max:0, rate:'販路提供（補助金ではない）', diff:'med', accept:'自治体審査次第',
     period:'通年（自治体ごと）',
-    desc:'自治体に返礼品事業者として登録すると、ふるさとチョイス・さとふる等の<strong>大型プラットフォームに自動掲載</strong>。年間100〜300万円規模の販路を集客労力ゼロで確保可能。手数料は乗るが「営業しなくても売れる構造」が手に入る。',
-    tags:['販路確保','プラットフォーム','手数料あり']
+    desc:'自治体に返礼品事業者として登録すると、ふるさとチョイス・さとふる・楽天ふるさと納税等の<strong>大型プラットフォームに自動掲載</strong>。年間100〜300万円規模の販路を集客労力ゼロで確保可能。手数料（売上の3〜7割程度）は乗るが「営業しなくても売れる構造」。',
+    tags:['販路確保','プラットフォーム','手数料あり'],
+    source:'https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/',
+    sourceLabel:'総務省 ふるさと納税ポータル'
   },
-  // === 仮想の都道府県補助金（代表例） ===
+  // === 都道府県補助金（代表例・自治体HPでの最新確認必須） ===
   {
-    id:'pref-norin', name:'都道府県 農林水産振興補助金',
+    id:'pref-norin', name:'都道府県 農林水産振興補助金（自治体別）',
     type:'local', sectors:['agri','livestock','fishery','forestry'], phases:['start','growth'],
     max:200, rate:'1/3〜1/2', diff:'med', accept:'40-60%',
     period:'年1-2回',
-    desc:'各都道府県が独自に設ける農林水産業振興補助金の総称。設備・販路・人材育成等に充当可能。<strong>都道府県により条件・上限が大きく異なる</strong>ため、必ず該当自治体のHPで最新公募要領を確認すること。',
-    tags:['自治体独自','上限変動','HP要確認']
+    desc:'各都道府県が独自に設ける農林水産業振興補助金の総称。設備・販路・人材育成等に充当可能。<strong>都道府県により条件・上限が大きく異なる</strong>。長野・新潟・北海道・熊本など農業県は手厚い。必ず該当自治体のHPで最新公募要領を確認すること。',
+    tags:['自治体独自','上限変動','HP要確認'],
+    source:'https://www.maff.go.jp/j/budget/list.html',
+    sourceLabel:'農水省 補助事業の一覧（自治体経由ヒント）'
   },
   {
-    id:'pref-syun', name:'都道府県 6次産業化推進事業',
+    id:'pref-syun', name:'都道府県 6次産業化推進事業（自治体別）',
     type:'local', sectors:['process','agri','livestock','fishery'], phases:['6th'],
     max:300, rate:'1/2', diff:'med', accept:'30-50%',
     period:'年1回',
-    desc:'都道府県の6次化推進事業。商品開発・パッケージ・販促・販路開拓に補助。<strong>国の6次産業化交付金との併用は不可な場合あり</strong>。地域ブランド認定とセットで申請すると採択率上昇。',
-    tags:['6次化','地域ブランド連動']
+    desc:'都道府県の6次化推進事業。商品開発・パッケージ・販促・販路開拓に補助。<strong>国の6次産業化交付金との併用不可の場合あり</strong>。地域ブランド認定とセットで申請すると採択率上昇。',
+    tags:['6次化','地域ブランド連動','要併用確認'],
+    source:'https://www.maff.go.jp/j/shokusan/sanki/6jika/local.html',
+    sourceLabel:'農水省 都道府県別6次化窓口'
   },
   {
-    id:'pref-syokuhin', name:'都道府県 食品加工振興補助金',
+    id:'pref-syokuhin', name:'都道府県 食品加工振興補助金（自治体別）',
     type:'local', sectors:['process'], phases:['growth','6th'],
     max:150, rate:'1/2〜2/3', diff:'easy', accept:'60-75%',
     period:'年1回',
-    desc:'食品加工設備の小規模導入補助。<strong>HACCP対応設備・冷凍設備・パッケージ機などが対象</strong>。米粉ベーグル・合鴨米加工品など小ロット6次化と相性が良い。',
-    tags:['食品加工','HACCP','小ロット向け']
+    desc:'食品加工設備の小規模導入補助。<strong>HACCP対応設備・冷凍設備・パッケージ機などが対象</strong>。米粉ベーグル・合鴨米加工品など小ロット6次化と相性が良い。<strong>自治体HPで最新公募内容を必ず確認</strong>。',
+    tags:['食品加工','HACCP','小ロット向け'],
+    source:'https://www.j-net21.smrj.go.jp/snavi/support.html',
+    sourceLabel:'J-Net21 支援制度検索'
   }
 ];
 
@@ -443,6 +473,12 @@ function render() {
       <div class="grant-desc">${g.desc}</div>
       <div class="grant-tags">
         ${g.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+      </div>
+      <div class="grant-source">
+        <a href="${g.source}" target="_blank" rel="noopener">
+          <i data-lucide="external-link"></i>${g.sourceLabel}
+        </a>
+        <span class="src-note">最新公募要領は必ず公式で再確認してください（2026年5月時点）</span>
       </div>
     </div>
     `;
