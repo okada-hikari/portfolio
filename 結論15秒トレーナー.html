@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結論15秒トレーナー | 岡田光ポートフォリオ</title>
+<meta name="description" content="面接で「結論ファースト」を体に染み込ませる練習アプリ。15秒で答える訓練と4軸セルフ評価で「ちぐはぐ問題」を直す。">
+<style>
+  :root {
+    --sage-50:  #f3f6f3;
+    --sage-100: #e3ebe1;
+    --sage-300: #a8c4a2;
+    --sage-500: #6b8e6b;
+    --sage-700: #4a6b4a;
+    --gold-500: #c9a961;
+    --gold-700: #a08544;
+    --ink:      #1a2a1a;
+    --text:     #2a3a2a;
+    --muted:    #6b7b6b;
+    --bg:       #fafbf9;
+    --danger:   #d04040;
+    --warn:     #e89544;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+  }
+  .container { max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  header { text-align: center; margin-bottom: 24px; }
+  h1 {
+    color: var(--ink); font-size: clamp(24px, 4vw, 36px); margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0; }
+  .tagline {
+    display: inline-block; margin-top: 12px;
+    background: var(--sage-100); color: var(--sage-700);
+    padding: 4px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  }
+
+  .card {
+    background: white; border: 1px solid var(--sage-100);
+    border-radius: 16px; padding: 28px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(40,60,40,.04);
+  }
+
+  h2 {
+    color: var(--sage-700); font-size: 18px; margin: 0 0 16px;
+    border-left: 4px solid var(--gold-500); padding-left: 14px;
+  }
+
+  .question-box {
+    background: var(--sage-50); border-radius: 12px;
+    padding: 28px 24px; text-align: center; margin-bottom: 20px;
+    min-height: 100px; display: flex; align-items: center; justify-content: center;
+  }
+  .question-text {
+    font-size: clamp(18px, 3vw, 24px); font-weight: 700; color: var(--ink);
+    line-height: 1.5;
+  }
+  .question-text.placeholder { color: var(--muted); font-weight: 400; font-size: 16px; }
+
+  .timer-box {
+    text-align: center; margin: 24px 0;
+  }
+  .timer {
+    font-size: clamp(56px, 12vw, 84px); font-weight: 800; color: var(--sage-700);
+    font-variant-numeric: tabular-nums; line-height: 1;
+    transition: color .2s;
+  }
+  .timer.warn { color: var(--warn); }
+  .timer.danger { color: var(--danger); animation: pulse .5s infinite; }
+  @keyframes pulse { 50% { opacity: .5; } }
+  .timer-label { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .progress {
+    width: 100%; height: 6px; background: var(--sage-100); border-radius: 3px;
+    margin-top: 16px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: linear-gradient(90deg, var(--sage-500), var(--gold-500));
+    width: 100%; transition: width 1s linear;
+  }
+
+  .button-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    margin: 20px 0 8px;
+  }
+  button {
+    background: var(--sage-500); color: white; border: none;
+    padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+    font-family: inherit;
+  }
+  button:hover { background: var(--sage-700); transform: translateY(-1px); }
+  button:disabled { background: var(--sage-100); color: var(--muted); cursor: not-allowed; transform: none; }
+  button.secondary { background: white; color: var(--sage-700); border: 1.5px solid var(--sage-300); }
+  button.secondary:hover { background: var(--sage-50); }
+  button.danger { background: var(--danger); }
+  button.danger:hover { background: #a83333; }
+
+  .checks { display: grid; gap: 10px; margin: 16px 0; }
+  .check {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px; background: var(--sage-50); border-radius: 8px;
+    cursor: pointer; transition: background .15s;
+  }
+  .check:hover { background: var(--sage-100); }
+  .check input { margin-top: 4px; transform: scale(1.2); accent-color: var(--sage-500); }
+  .check label { flex: 1; font-size: 14px; cursor: pointer; }
+  .check .hint { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+  .score-display {
+    text-align: center; padding: 20px; background: var(--sage-50); border-radius: 12px;
+    margin: 16px 0;
+  }
+  .score-num { font-size: 48px; font-weight: 800; color: var(--sage-700); }
+  .score-label { color: var(--muted); font-size: 13px; }
+
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--sage-100); }
+  th { background: var(--sage-50); color: var(--sage-700); font-weight: 600; font-size: 12px; }
+  td.score-cell { font-weight: 700; }
+  .score-cell.s4 { color: var(--sage-700); }
+  .score-cell.s3 { color: var(--gold-700); }
+  .score-cell.s2 { color: var(--warn); }
+  .score-cell.s1 { color: var(--danger); }
+  .empty-row { text-align: center; color: var(--muted); padding: 20px; }
+
+  .audio-box {
+    background: var(--sage-50); padding: 16px; border-radius: 10px; margin: 12px 0;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .audio-box audio { flex: 1; min-width: 200px; }
+  .recording-indicator {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--danger);
+    font-weight: 600; font-size: 13px;
+  }
+  .recording-indicator::before {
+    content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--danger);
+    animation: pulse 1s infinite;
+  }
+
+  .insight {
+    background: linear-gradient(135deg, var(--sage-50), white);
+    border-left: 3px solid var(--gold-500); padding: 14px 18px; border-radius: 0 10px 10px 0;
+    margin: 12px 0; font-size: 14px;
+  }
+  .insight strong { color: var(--sage-700); }
+
+  .footer {
+    margin-top: 40px; text-align: center; color: var(--muted); font-size: 13px;
+  }
+  .footer a { color: var(--sage-700); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  .tip {
+    background: white; border: 1px dashed var(--gold-500);
+    padding: 12px 16px; border-radius: 10px; font-size: 13px; color: var(--text);
+    margin: 12px 0;
+  }
+  .tip strong { color: var(--gold-700); }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .stat-card {
+    background: var(--sage-50); padding: 14px 12px; border-radius: 10px; text-align: center;
+  }
+  .stat-val { font-size: 24px; font-weight: 800; color: var(--sage-700); }
+  .stat-label { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  @media (max-width: 600px) {
+    .container { padding: 20px 14px 60px; }
+    .card { padding: 20px 16px; }
+    button { padding: 10px 20px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>結論15秒トレーナー</h1>
+    <p class="subtitle">面接の「ちぐはぐ問題」を直す・毎日15分の自己改善ツール</p>
+    <span class="tagline">トレーナーは全部教える、面接は余白を残す</span>
+  </header>
+
+  <!-- 練習エリア -->
+  <div class="card">
+    <h2>🎤 練習開始</h2>
+
+    <div class="question-box">
+      <div id="questionText" class="question-text placeholder">「練習開始」を押すと質問がランダム表示されます</div>
+    </div>
+
+    <div class="timer-box">
+      <div id="timer" class="timer">30</div>
+      <div class="timer-label">秒（15秒で結論を出すのが目標）</div>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+    </div>
+
+    <div class="button-row">
+      <button id="startBtn">練習開始</button>
+      <button id="recordBtn" class="secondary" disabled>🎙 録音開始</button>
+      <button id="resetBtn" class="secondary" disabled>リセット</button>
+    </div>
+
+    <div id="recStatus"></div>
+    <div id="audioBox"></div>
+  </div>
+
+  <!-- 4スイッチ自己評価 -->
+  <div class="card" id="evalCard" style="display:none;">
+    <h2>📋 4スイッチ セルフ評価</h2>
+    <p style="color:var(--muted);font-size:13px;margin-top:-8px;">録音を聴き返して、できたものにチェック</p>
+
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" id="ck1">
+        <div>
+          <label for="ck1">① 結論ファースト</label>
+          <div class="hint">15秒以内に「結論から申し上げると〇〇です」が出た</div>
+        </div>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="ck2">
+        <div>
+          <label for="ck2">② 1つに絞った</label>
+          <div class="hint">「3つあります」と言わず、最重要1点で答えた</div>
+        </div>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="ck3">
+        <div>
+          <label for="ck3">③「、」で繋ぎすぎない</label>
+          <div class="hint">途中で「。」を入れて、相手の反応を見るタイミングを作った</div>
+        </div>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="ck4">
+        <div>
+          <label for="ck4">④ 余白を残した</label>
+          <div class="hint">「他にも〜」を飲み込んで、相手の質問を引き出す余白を残した</div>
+        </div>
+      </label>
+    </div>
+
+    <div class="score-display">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-label">/ 4 点</div>
+    </div>
+
+    <div class="button-row">
+      <button id="saveBtn">記録して次の質問へ</button>
+      <button id="skipBtn" class="secondary">記録せず次へ</button>
+    </div>
+  </div>
+
+  <!-- 統計 -->
+  <div class="card">
+    <h2>📊 上達ダッシュボード</h2>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="statTotal">0</div><div class="stat-label">総練習回数</div></div>
+      <div class="stat-card"><div class="stat-val" id="statAvg">-</div><div class="stat-label">平均スコア</div></div>
+      <div class="stat-card"><div class="stat-val" id="statStreak">0</div><div class="stat-label">連続日数</div></div>
+      <div class="stat-card"><div class="stat-val" id="statToday">0</div><div class="stat-label">今日の回数</div></div>
+    </div>
+
+    <div class="insight" id="insightBox" style="display:none;"></div>
+  </div>
+
+  <!-- 履歴 -->
+  <div class="card">
+    <h2>📜 練習履歴（直近30件）</h2>
+    <table>
+      <thead>
+        <tr><th>日時</th><th>質問</th><th>スコア</th></tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr><td colspan="3" class="empty-row">まだ記録がありません</td></tr>
+      </tbody>
+    </table>
+
+    <div class="button-row" style="margin-top:16px;">
+      <button id="exportBtn" class="secondary">📥 CSV出力</button>
+      <button id="clearBtn" class="secondary danger">🗑 履歴を全消去</button>
+    </div>
+  </div>
+
+  <!-- 解説 -->
+  <div class="card">
+    <h2>💡 「結論15秒」とは</h2>
+    <p>11年トレーナー経験で身についた「お客様に全部丁寧に教える」習慣は、面接では「ちぐはぐ」「散漫」と受け取られる致命傷になります。</p>
+    <div class="tip"><strong>覚える1行：</strong>トレーナーは「全部教える」のが優しさ。面接は「余白を残す」のが優しさ。</div>
+    <h2 style="margin-top:24px;">🎯 4つの切り替えスイッチ</h2>
+    <ol style="line-height:2;font-size:14px;">
+      <li><strong>質問返しの一拍</strong>：「〇〇というご質問でよろしいでしょうか？」</li>
+      <li><strong>結論15秒ルール</strong>：「結論から申し上げると〇〇です」</li>
+      <li><strong>3つ→1つに絞る</strong>：「最も大きいのは〇〇です」</li>
+      <li><strong>余白を残す</strong>：「ここまでで何かご質問ありますか？」</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    © 岡田光 ポートフォリオ |
+    <a href="portfolio-v7.html">← トップに戻る</a> ·
+    <a href="https://okada-hikari.github.io/portfolio/" target="_blank">公開URL</a>
+  </div>
+
+</div>
+
+<script>
+// ========== 質問ストック ==========
+const QUESTIONS = [
+  "自己紹介をお願いします",
+  "強みは何ですか？",
+  "弱みは何ですか？",
+  "今回の転職を考えた理由は？",
+  "現職を辞めようと考えた理由は？",
+  "今までで視点が変わったことは？",
+  "これまでで一番苦労したことは？",
+  "5年後のビジョンは？",
+  "希望年収を教えてください",
+  "当社のどこに惹かれましたか？",
+  "カスタマーサクセスの仕事をどう理解していますか？",
+  "AIツールを自作している実績を教えてください",
+  "11年で一番嬉しかったことは？",
+  "11年で一番後悔したことは？",
+  "チームをまとめる時に大事にしていることは？",
+];
+
+// ========== State ==========
+const STORAGE_KEY = "okada_15s_trainer_v1";
+let state = {
+  currentQ: null,
+  timerInterval: null,
+  remaining: 30,
+  recorder: null,
+  audioChunks: [],
+  audioBlob: null,
+  audioUrl: null,
+  history: loadHistory(),
+};
+
+// ========== Elements ==========
+const $ = (id) => document.getElementById(id);
+const questionText = $("questionText");
+const timer = $("timer");
+const progressBar = $("progressBar");
+const startBtn = $("startBtn");
+const recordBtn = $("recordBtn");
+const resetBtn = $("resetBtn");
+const evalCard = $("evalCard");
+const recStatus = $("recStatus");
+const audioBox = $("audioBox");
+const checks = [$("ck1"), $("ck2"), $("ck3"), $("ck4")];
+const scoreNum = $("scoreNum");
+const saveBtn = $("saveBtn");
+const skipBtn = $("skipBtn");
+const historyBody = $("historyBody");
+const exportBtn = $("exportBtn");
+const clearBtn = $("clearBtn");
+const insightBox = $("insightBox");
+
+// ========== Question ==========
+function pickQuestion() {
+  const idx = Math.floor(Math.random() * QUESTIONS.length);
+  return QUESTIONS[idx];
+}
+
+function startPractice() {
+  state.currentQ = pickQuestion();
+  questionText.textContent = state.currentQ;
+  questionText.classList.remove("placeholder");
+  state.remaining = 30;
+  timer.textContent = 30;
+  timer.className = "timer";
+  progressBar.style.width = "100%";
+  startBtn.disabled = true;
+  recordBtn.disabled = false;
+  resetBtn.disabled = false;
+  evalCard.style.display = "none";
+  audioBox.innerHTML = "";
+  checks.forEach(c => c.checked = false);
+  updateScore();
+
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(tick, 1000);
+}
+
+function tick() {
+  state.remaining--;
+  timer.textContent = state.remaining;
+  const pct = (state.remaining / 30) * 100;
+  progressBar.style.width = pct + "%";
+
+  if (state.remaining <= 5) timer.className = "timer danger";
+  else if (state.remaining <= 15) timer.className = "timer warn";
+  else timer.className = "timer";
+
+  if (state.remaining <= 0) {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+    stopRecording();
+    evalCard.style.display = "block";
+  }
+}
+
+function resetPractice() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  if (state.recorder && state.recorder.state === "recording") state.recorder.stop();
+  state.timerInterval = null;
+  state.remaining = 30;
+  timer.textContent = 30;
+  timer.className = "timer";
+  progressBar.style.width = "100%";
+  questionText.textContent = "「練習開始」を押すと質問がランダム表示されます";
+  questionText.classList.add("placeholder");
+  startBtn.disabled = false;
+  recordBtn.disabled = true;
+  recordBtn.textContent = "🎙 録音開始";
+  resetBtn.disabled = true;
+  evalCard.style.display = "none";
+  audioBox.innerHTML = "";
+  recStatus.innerHTML = "";
+}
+
+// ========== Recording ==========
+async function toggleRecording() {
+  if (state.recorder && state.recorder.state === "recording") {
+    stopRecording();
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    state.audioChunks = [];
+    state.recorder = new MediaRecorder(stream);
+    state.recorder.ondataavailable = (e) => state.audioChunks.push(e.data);
+    state.recorder.onstop = () => {
+      state.audioBlob = new Blob(state.audioChunks, { type: "audio/webm" });
+      state.audioUrl = URL.createObjectURL(state.audioBlob);
+      audioBox.innerHTML = `<div class="audio-box"><audio controls src="${state.audioUrl}"></audio><span style="font-size:12px;color:var(--muted);">録音を聴き返して下のセルフ評価へ</span></div>`;
+      stream.getTracks().forEach(t => t.stop());
+      recStatus.innerHTML = "";
+      recordBtn.textContent = "🎙 録音開始";
+    };
+    state.recorder.start();
+    recordBtn.textContent = "■ 録音停止";
+    recStatus.innerHTML = '<div class="recording-indicator">録音中…</div>';
+  } catch (err) {
+    alert("マイクの使用許可が必要です：" + err.message);
+  }
+}
+
+function stopRecording() {
+  if (state.recorder && state.recorder.state === "recording") {
+    state.recorder.stop();
+  }
+}
+
+// ========== Self Eval ==========
+function updateScore() {
+  const score = checks.filter(c => c.checked).length;
+  scoreNum.textContent = score;
+}
+
+checks.forEach(c => c.addEventListener("change", updateScore));
+
+function saveResult() {
+  const score = checks.filter(c => c.checked).length;
+  const record = {
+    ts: new Date().toISOString(),
+    q: state.currentQ,
+    s: score,
+    c: checks.map(c => c.checked ? 1 : 0),
+  };
+  state.history.unshift(record);
+  if (state.history.length > 200) state.history = state.history.slice(0, 200);
+  saveHistory();
+  renderHistory();
+  renderStats();
+  resetPractice();
+}
+
+function skipResult() { resetPractice(); }
+
+// ========== Storage ==========
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+function saveHistory() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.history));
+}
+
+// ========== Render ==========
+function renderHistory() {
+  if (state.history.length === 0) {
+    historyBody.innerHTML = '<tr><td colspan="3" class="empty-row">まだ記録がありません</td></tr>';
+    return;
+  }
+  const rows = state.history.slice(0, 30).map(r => {
+    const d = new Date(r.ts);
+    const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    return `<tr><td>${dateStr}</td><td>${escapeHtml(r.q)}</td><td class="score-cell s${r.s}">${r.s}/4</td></tr>`;
+  }).join("");
+  historyBody.innerHTML = rows;
+}
+
+function renderStats() {
+  const total = state.history.length;
+  $("statTotal").textContent = total;
+  if (total === 0) {
+    $("statAvg").textContent = "-";
+    $("statStreak").textContent = "0";
+    $("statToday").textContent = "0";
+    insightBox.style.display = "none";
+    return;
+  }
+  const avg = state.history.reduce((s, r) => s + r.s, 0) / total;
+  $("statAvg").textContent = avg.toFixed(1);
+
+  const today = new Date().toDateString();
+  const todayCount = state.history.filter(r => new Date(r.ts).toDateString() === today).length;
+  $("statToday").textContent = todayCount;
+
+  $("statStreak").textContent = calcStreak();
+
+  // Insight
+  const recent10 = state.history.slice(0, 10);
+  const recentAvg = recent10.reduce((s, r) => s + r.s, 0) / recent10.length;
+  const sumByCheck = [0,0,0,0];
+  recent10.forEach(r => r.c.forEach((v,i) => sumByCheck[i] += v));
+  const weakest = sumByCheck.indexOf(Math.min(...sumByCheck));
+  const labels = ["結論ファースト", "1つに絞る", "「、」で繋ぎすぎない", "余白を残す"];
+  insightBox.style.display = "block";
+  insightBox.innerHTML = `<strong>直近10回の平均：${recentAvg.toFixed(1)}/4</strong>　最も弱いスイッチ：<strong>${labels[weakest]}</strong>（${sumByCheck[weakest]}/10）。明日はこれを意識して練習。`;
+}
+
+function calcStreak() {
+  if (state.history.length === 0) return 0;
+  const dates = new Set(state.history.map(r => new Date(r.ts).toDateString()));
+  let streak = 0;
+  let d = new Date();
+  while (dates.has(d.toDateString())) {
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// ========== CSV Export ==========
+function exportCSV() {
+  if (state.history.length === 0) { alert("履歴がありません"); return; }
+  const header = "日時,質問,スコア,結論ファースト,1つに絞る,句点で切る,余白を残す\n";
+  const rows = state.history.map(r => {
+    const d = new Date(r.ts).toISOString();
+    return `${d},"${r.q}",${r.s},${r.c[0]},${r.c[1]},${r.c[2]},${r.c[3]}`;
+  }).join("\n");
+  const blob = new Blob(["﻿" + header + rows], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `15s_trainer_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearHistory() {
+  if (!confirm("全履歴を削除します。よろしいですか？")) return;
+  state.history = [];
+  saveHistory();
+  renderHistory();
+  renderStats();
+}
+
+// ========== Wire ==========
+startBtn.addEventListener("click", startPractice);
+recordBtn.addEventListener("click", toggleRecording);
+resetBtn.addEventListener("click", resetPractice);
+saveBtn.addEventListener("click", saveResult);
+skipBtn.addEventListener("click", skipResult);
+exportBtn.addEventListener("click", exportCSV);
+clearBtn.addEventListener("click", clearHistory);
+
+// ========== Init ==========
+renderHistory();
+renderStats();
+</script>
+</body>
+</html>
